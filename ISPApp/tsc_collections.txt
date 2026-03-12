@@ -1,5 +1,0 @@
-src/features/reporting/components/OutstandingAgingList.tsx(172,23): error TS2339: Property 'subtitle' does not exist on type '{ readonly screenTitle: { readonly fontSize: 24; readonly fontWeight: "700"; readonly color: string; readonly letterSpacing: -0.3; }; readonly screenSubtitle: { readonly fontSize: 14; readonly fontWeight: "400"; readonly color: string; }; ... 9 more ...; readonly badge: { ...; }; }'.
-src/features/reporting/screens/CollectionsAnalyticsScreen.tsx(102,21): error TS2353: Object literal may only specify known properties, and 'icon' does not exist in type 'ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<...>'.
-src/features/reporting/screens/CollectionsAnalyticsScreen.tsx(121,32): error TS2339: Property 'xxl' does not exist on type '{ xs: number; sm: number; md: number; lg: number; xl: number; '2xl': number; '3xl': number; '4xl': number; '5xl': number; }'.
-src/features/reporting/screens/RegionalAnalyticsScreen.tsx(131,41): error TS2339: Property 'background' does not exist on type '{ card: string; elevated: string; overlay: string; input: string; inputFocused: string; }'.
-
