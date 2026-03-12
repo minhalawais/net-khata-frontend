@@ -19,7 +19,7 @@ interface BankAccount {
 
 const BankAccountManagement: React.FC = () => {
   useEffect(() => {
-    document.title = "MBA NET - Bank Account Management"
+    document.title = "Net Khata - Bank Account Management"
   }, [])
 
   const columns = React.useMemo<ColumnDef<BankAccount>[]>(

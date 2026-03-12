@@ -42,7 +42,7 @@ const InvoiceManagement = () => {
   const [paymentFormData, setPaymentFormData] = useState<any>({})
   const [isPaymentLoading, setIsPaymentLoading] = useState(false)
   useEffect(() => {
-    document.title = "MBA NET - Invoice Management"
+    document.title = "Net Khata - Invoice Management"
   }, [])
   const handleBulkSuccess = () => {
     setRefreshTrigger(prev => prev + 1)

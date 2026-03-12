@@ -339,7 +339,7 @@ ${publicInvoiceUrl}
 
 Please review your invoice and make the payment if pending.
 
-Thank you for choosing MBA Communications!`
+Thank you for choosing Net Khata Communications!`
 
         // WhatsApp URL
         const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`
@@ -453,10 +453,10 @@ Thank you for choosing MBA Communications!`
                 onClick={() => handleWhatsAppShare(invoice)}
                 disabled={isLoading || !hasPhoneNumber}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors duration-200 text-sm shadow-sm ${!hasPhoneNumber
-                    ? "bg-gray-400 text-white cursor-not-allowed opacity-50"
-                    : isLoading
-                      ? "bg-emerald-green/50 text-white cursor-not-allowed"
-                      : "bg-emerald-green text-white hover:bg-emerald-green/90"
+                  ? "bg-gray-400 text-white cursor-not-allowed opacity-50"
+                  : isLoading
+                    ? "bg-emerald-green/50 text-white cursor-not-allowed"
+                    : "bg-emerald-green text-white hover:bg-emerald-green/90"
                   }`}
                 title={!hasPhoneNumber ? "Phone number not available" : "Share via WhatsApp"}
               >
@@ -605,7 +605,7 @@ Thank you for choosing MBA Communications!`
                       <p className="text-slate-gray text-sm">Paid {title}s</p>
                       <h3 className="text-2xl font-bold text-emerald-green mt-1">{stats.paid}</h3>
                       <p className="text-sm font-semibold text-emerald-green/70 mt-1">
-                       {(() => {
+                        {(() => {
                           const val = stats.paid_amount
                           if (val >= 1000000) return `PKR ${(val / 1000000).toFixed(2)}M`
                           if (val >= 1000) return `PKR ${(val / 1000).toFixed(1)}k`
@@ -625,7 +625,7 @@ Thank you for choosing MBA Communications!`
                       <p className="text-slate-gray text-sm">Pending {title}s</p>
                       <h3 className="text-2xl font-bold text-coral-red mt-1">{stats.pending}</h3>
                       <p className="text-sm font-semibold text-coral-red/70 mt-1">
-                       {(() => {
+                        {(() => {
                           const val = stats.pending_amount
                           if (val >= 1000000) return `PKR ${(val / 1000000).toFixed(2)}M`
                           if (val >= 1000) return `PKR ${(val / 1000).toFixed(1)}k`

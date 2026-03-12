@@ -43,20 +43,20 @@ export const BankPerformance: React.FC<BankPerformanceProps> = ({ data, cashPaym
       acc.current_balance += row.current_balance || 0
       return acc
     },
-    { 
-      collections: 0, 
-      payments: 0, 
-      isp_payments: 0, 
-      expenses: 0, 
-      net_flow: 0, 
+    {
+      collections: 0,
+      payments: 0,
+      isp_payments: 0,
+      expenses: 0,
+      net_flow: 0,
       initial_balance: 0, 
-    { 
-      collections: 0, 
-      payments: 0, 
-      isp_payments: 0, 
-      expenses: 0, 
-      net_flow: 0, 
-      initial_balance: 0, 
+    {
+      collections: 0,
+      payments: 0,
+      isp_payments: 0,
+      expenses: 0,
+      net_flow: 0,
+      initial_balance: 0,
       current_balance: 0
     },
   )
@@ -134,8 +134,8 @@ export const BankPerformance: React.FC<BankPerformanceProps> = ({ data, cashPaym
       </div>
 
       {/* Updated Table with expense columns */}
-      <div className="overflow-auto">
-        <table className="w-full table-fixed text-sm">
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm min-w-[800px]">
           <thead className="text-left text-gray-600">
             <tr className="border-b border-gray-200">
               <th className="py-2 pr-3 w-1/7">Account</th>
@@ -183,22 +183,22 @@ export const BankPerformance: React.FC<BankPerformanceProps> = ({ data, cashPaym
               const netPositive = (row.net_flow ?? 0) >= 0
               const adjustedBalance = (row.net_flow || 0) + (row.initial_balance || 0)
               const adjustedPositive = adjustedBalance >= 0
-              
+
               return (
                 <tr key={`${row.bank_name}-${row.account_number}-${idx}`} className="border-b border-gray-100 hover:bg-gray-50">
-                  <td className="py-2 pr-3">
+                  <td className="py-2 pr-3 whitespace-nowrap">
                     <div className="flex flex-col">
                       <span className="font-medium">{row.bank_name}</span>
                       <span className="text-xs text-gray-500">Acct: {row.account_number}</span>
                     </div>
                   </td>
-                  <td className="py-2 px-3 text-blue-700 font-medium">
+                  <td className="py-2 px-3 text-blue-700 font-medium whitespace-nowrap">
                     {formatCurrency(row.collections || 0)}
                   </td>
-                  <td className="py-2 px-3 text-orange-700 font-medium">
+                  <td className="py-2 px-3 text-orange-700 font-medium whitespace-nowrap">
                     {formatCurrency(row.isp_payments || 0)}
                   </td>
-                  <td className="py-2 px-3 text-red-700 font-medium">
+                  <td className="py-2 px-3 text-red-700 font-medium whitespace-nowrap">
                     {formatCurrency(row.expenses || 0)}
                   </td>
                   <td className={`py-2 px-3 ${netPositive ? "text-emerald-700" : "text-red-700"} font-semibold`}>
@@ -253,15 +253,15 @@ export const BankPerformance: React.FC<BankPerformanceProps> = ({ data, cashPaym
         {cashPayments && (
           <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
             <p className="text-sm text-blue-700">
-              <strong>Note:</strong> Cash payments represent physical cash transactions that are not processed through bank accounts. 
+              <strong>Note:</strong> Cash payments represent physical cash transactions that are not processed through bank accounts.
               They contribute to the overall cash flow but don't have associated bank balances.
             </p>
           </div>
         )}
-        
+
         <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
           <p className="text-sm text-green-700">
-            <strong>Utilization Rate:</strong> Shows the percentage of collections relative to total transactions (collections + payments). 
+            <strong>Utilization Rate:</strong> Shows the percentage of collections relative to total transactions (collections + payments).
             Higher rates indicate more efficient use of bank accounts for revenue collection.
           </p>
         </div>

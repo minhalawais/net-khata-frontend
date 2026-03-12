@@ -29,7 +29,7 @@ interface Area {
 const SubZoneManagement: React.FC = () => {
   const { areaId } = useParams<{ areaId: string }>();
   const navigate = useNavigate();
-  
+
   const [subZones, setSubZones] = useState<SubZone[]>([]);
   const [area, setArea] = useState<Area | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -40,7 +40,7 @@ const SubZoneManagement: React.FC = () => {
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
 
   useEffect(() => {
-    document.title = "MBA NET - Sub-Zone Management";
+    document.title = "Net Khata - Sub-Zone Management";
     fetchData();
   }, [areaId]);
 
@@ -99,7 +99,7 @@ const SubZoneManagement: React.FC = () => {
 
   const handleDelete = async (id: string) => {
     if (!window.confirm('Are you sure you want to delete this sub-zone?')) return;
-    
+
     const token = getToken();
     try {
       await axiosInstance.delete(`/sub-zones/delete/${id}`, {
@@ -132,9 +132,8 @@ const SubZoneManagement: React.FC = () => {
         header: 'Status',
         accessorKey: 'is_active',
         cell: info => (
-          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-            info.getValue() ? 'bg-emerald-green/10 text-emerald-green' : 'bg-coral-red/10 text-coral-red'
-          }`}>
+          <span className={`px-2 py-1 rounded-full text-xs font-medium ${info.getValue() ? 'bg-emerald-green/10 text-emerald-green' : 'bg-coral-red/10 text-coral-red'
+            }`}>
             {info.getValue() ? 'Active' : 'Inactive'}
           </span>
         ),
@@ -175,9 +174,8 @@ const SubZoneManagement: React.FC = () => {
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} setIsOpen={setIsSidebarOpen} />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Topbar toggleSidebar={toggleSidebar} />
-        <main className={`flex-1 overflow-x-hidden overflow-y-auto bg-light-sky/50 p-6 pt-20 transition-all duration-300 ${
-          isSidebarOpen ? 'ml-64' : 'ml-0 lg:ml-20'
-        }`}>
+        <main className={`flex-1 overflow-x-hidden overflow-y-auto bg-light-sky/50 p-6 pt-20 transition-all duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-0 lg:ml-20'
+          }`}>
           <div className="container mx-auto">
             {/* Header */}
             <div className="bg-white rounded-xl shadow-md p-6 mb-6">
@@ -196,7 +194,7 @@ const SubZoneManagement: React.FC = () => {
                   <p className="text-slate-gray">Manage sub-zones within this area</p>
                 </div>
               </div>
-              
+
               <div className="flex justify-end">
                 <button
                   onClick={() => {

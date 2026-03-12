@@ -1,4 +1,4 @@
-import React, { useMemo,useEffect } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { CRUDPage } from '../../components/crudPage.tsx';
 import { SupplierForm } from '../../components/forms/supplierForm.tsx';
@@ -15,7 +15,7 @@ interface Supplier {
 
 const SupplierManagement: React.FC = () => {
   useEffect(() => {
-    document.title = "MBA NET - Supplier Management";
+    document.title = "Net Khata - Supplier Management";
   }, []);
   const columns = useMemo<ColumnDef<Supplier>[]>(
     () => [

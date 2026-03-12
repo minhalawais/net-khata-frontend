@@ -1,0 +1,7 @@
+src/features/reporting/screens/CollectionsAnalyticsScreen.tsx(101,17): error TS2322: Type '{ title: string; leftIcon: string; onLeftPress: () => void; rightAction: Element; }' is not assignable to type 'IntrinsicAttributes & TopHeaderProps'.
+  Property 'leftIcon' does not exist on type 'IntrinsicAttributes & TopHeaderProps'.
+src/features/reporting/screens/CollectionsAnalyticsScreen.tsx(104,39): error TS2322: Type '(options?: RefetchOptions) => Promise<QueryObserverResult<CollectionsAnalyticsData, Error>>' is not assignable to type '(event: GestureResponderEvent) => void'.
+  Types of parameters 'options' and 'event' are incompatible.
+    Type 'NativeSyntheticEvent<NativeTouchEvent>' has no properties in common with type 'RefetchOptions'.
+src/features/reporting/screens/RegionalAnalyticsScreen.tsx(131,41): error TS2339: Property 'background' does not exist on type '{ card: string; elevated: string; overlay: string; input: string; inputFocused: string; }'.
+

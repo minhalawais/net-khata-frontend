@@ -6,7 +6,7 @@ import { useParams } from "react-router-dom"
 import jsPDF from "jspdf"
 import html2canvas from "html2canvas"
 import axiosInstance from "../utils/axiosConfig.ts"
-import MBALogo from "../assets/mba_logo.tsx"
+import NetKhataLogo from "../assets/NetKhataLogo.tsx"
 import { PaidStamp } from "../components/PaidStamp.tsx"
 
 interface LineItem {
@@ -109,7 +109,7 @@ const PublicInvoicePage: React.FC = () => {
   }, [invoiceData])
 
   useEffect(() => {
-    document.title = "MBA NET - Invoice"
+    document.title = "Net Khata - Invoice"
     fetchInvoiceData()
     fetchBankAccounts()
   }, [id])
@@ -342,10 +342,10 @@ const PublicInvoicePage: React.FC = () => {
                 )}
               </div>
               <div className="text-right">
-                <div className="h-12 w-28 mb-3">
-                  <MBALogo variant="landscape" />
+                <div className="h-12 w-48 mb-3">
+                  <NetKhataLogo variant="landscape" />
                 </div>
-                <p className="text-slate-800 font-semibold text-sm">MBA Communications</p>
+                <p className="text-slate-800 font-semibold text-sm">Net Khata Communications</p>
                 <p className="text-slate-500 text-xs leading-relaxed">Kharak Stop Overhead Bridge<br />City, Lahore 54000</p>
               </div>
             </div>
@@ -427,7 +427,7 @@ const PublicInvoicePage: React.FC = () => {
                       ))
                     ) : (
                       <tr className="hover:bg-slate-50/50 transition-colors">
-                        <td className="py-4 px-5" colSpan={invoiceData?.invoice_type === 'equipment' ? 3 : 1}>
+                        <td className="py-4 px-5" colSpan={invoiceData?.invoice_type === 'equipment' ? 3 : 1} style={{ width: "150px", minWidth: "150px" }}>
                           <p className="font-semibold text-slate-800 whitespace-nowrap">{invoiceData && getServiceDescription(invoiceData)}</p>
                           <p className="text-xs text-slate-500 mt-0.5 whitespace-nowrap">
                             {isSubscription ? `Period: ${formatDate(invoiceData!.billing_start_date)} — ${formatDate(invoiceData!.billing_end_date)}` : `Date: ${formatDate(invoiceData?.billing_start_date || invoiceData?.due_date || "")}`}
@@ -701,7 +701,7 @@ const PublicInvoicePage: React.FC = () => {
             {/* Footer */}
             <div className="text-center pt-8 mt-8 border-t border-slate-100">
               <p className="text-lg font-bold text-slate-800 mb-1">Thank you for your business!</p>
-              <p className="text-sm text-slate-500 mb-2">Questions? <a href="mailto:support@Mba.net92@gmail.com" className="text-blue-600 hover:underline">support@Mba.net92@gmail.com</a> • 0323 4689090</p>
+              <p className="text-sm text-slate-500 mb-2">Questions? <a href="mailto:support@netkhata.com" className="text-blue-600 hover:underline">support@netkhata.com</a> • 0323 4689090</p>
               <p className="text-xs text-slate-400">Invoice generated on {formatDate(new Date().toISOString())}</p>
             </div>
           </div>

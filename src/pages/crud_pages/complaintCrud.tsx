@@ -25,7 +25,7 @@ const ComplaintManagement: React.FC = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
-    document.title = "MBA NET - Complaint Management"
+    document.title = "Net Khata - Complaint Management"
   }, [])
 
   const columns = useMemo<ColumnDef<Complaint>[]>(
@@ -56,15 +56,14 @@ const ComplaintManagement: React.FC = () => {
         cell: (info) => (
           <span
             className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-            ${
-              info.getValue() === "open"
+            ${info.getValue() === "open"
                 ? "bg-yellow-100 text-yellow-800"
                 : info.getValue() === "in_progress"
                   ? "bg-blue-100 text-blue-800"
                   : info.getValue() === "resolved"
                     ? "bg-green-100 text-green-800"
                     : "bg-gray-100 text-gray-800"
-            }`}
+              }`}
           >
             {info.getValue() as string}
           </span>

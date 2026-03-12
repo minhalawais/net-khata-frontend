@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react"
 import { useNavigate, Link } from "react-router-dom"
 import { Eye, EyeOff, Lock, User, LogIn } from "lucide-react"
-import MBALogo from "../assets/mba_logo.tsx"
+import NetKhataLogo from "../assets/NetKhataLogo.tsx"
 import axiosInstance from "../utils/axiosConfig.ts"
 const Login = () => {
   const [username, setUsername] = useState("")
@@ -11,26 +11,26 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
   useEffect(() => {
-    document.title = "MBA NET - Login"
+    document.title = "Net Khata - Login"
   }, [])
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
     setIsLoading(true)
-  
+
     try {
       const response = await axiosInstance.post("/auth/login", {
         username,
         password,
       })
-  
+
       const data = response.data
-  
+
       localStorage.setItem("token", data.token)
       localStorage.setItem("role", data.role)
       localStorage.setItem("company_id", data.company_id)
       localStorage.setItem("id", data.id)
-  
+
       if (data.role === "company_owner" || data.role === "super_admin" || data.role === "auditor") {
         navigate("/reporting-analytics")
       } else if (data.role === "employee") {
@@ -43,7 +43,7 @@ const Login = () => {
       setIsLoading(false)
     }
   }
-  
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-indigo-100">
       <div className="max-w-md w-full mx-4">
@@ -51,8 +51,8 @@ const Login = () => {
         <div className="backdrop-blur-lg bg-white/80 p-8 rounded-3xl shadow-xl border border-white/20">
           {/* Logo Section */}
           <div className="text-center mb-8">
-            <div className="mx-auto mb-4">
-              <MBALogo variant="landscape" />
+            <div className="mx-auto mb-4 scale-110">
+              <NetKhataLogo variant="square" />
             </div>
             <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
               Welcome Back

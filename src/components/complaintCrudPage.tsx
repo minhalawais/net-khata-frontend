@@ -150,8 +150,7 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
         ),
       )
       toast.success(
-        `${selectedRows.length} ${title.toLowerCase()}${selectedRows.length > 1 ? "s" : ""} ${
-          newStatus ? "activated" : "deactivated"
+        `${selectedRows.length} ${title.toLowerCase()}${selectedRows.length > 1 ? "s" : ""} ${newStatus ? "activated" : "deactivated"
         } successfully`,
         {
           style: { background: "#D1FAE5", color: "#10B981" },
@@ -335,11 +334,10 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
           <div className="flex items-center">
             <button
               onClick={() => handleToggleStatus(info.row.original.id, info.getValue())}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 transition-all ${
-                info.getValue()
+              className={`px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 transition-all ${info.getValue()
                   ? "bg-emerald-green/10 text-emerald-green hover:bg-emerald-green/20"
                   : "bg-coral-red/10 text-coral-red hover:bg-coral-red/20"
-              }`}
+                }`}
             >
               {info.getValue() ? (
                 <>
@@ -391,10 +389,9 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
       <div className="flex-1 flex flex-col overflow-hidden">
         <Topbar toggleSidebar={toggleSidebar} />
         <main
-  className={`flex-1 overflow-x-hidden overflow-y-auto bg-light-sky/50 p-0 sm:p-6 pt-20 transition-all duration-300 ${
-    isSidebarOpen ? "ml-64" : "ml-0 lg:ml-20"
-  }`}
->
+          className={`flex-1 overflow-x-hidden overflow-y-auto bg-light-sky/50 p-0 sm:p-6 pt-20 transition-all duration-300 ${isSidebarOpen ? "ml-64" : "ml-0 lg:ml-20"
+            }`}
+        >
 
           <div className="container mx-auto">
             {/* Breadcrumb */}
@@ -443,7 +440,7 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
 
               {/* Stats Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-              <div className="bg-light-sky/50 rounded-lg p-4 border border-slate-gray/10">
+                <div className="bg-light-sky/50 rounded-lg p-4 border border-slate-gray/10">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-slate-gray text-sm">Total {title}s</p>
@@ -624,7 +621,7 @@ const ComplaintManagement: React.FC = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
-    document.title = "MBA NET - Complaint Management"
+    document.title = "Net Khata - Complaint Management"
   }, [])
 
   const columns = useMemo<ColumnDef<Complaint>[]>(
@@ -673,41 +670,40 @@ const ComplaintManagement: React.FC = () => {
         accessorKey: "attachment_path",
         cell: (info: any) => (
           <button
-          onClick={() => {
-            if (info.getValue()) {
-              axiosInstance
-                .get(`/complaints/attachment/${info.row.original.id}`, {
-                  responseType: 'blob', // Important for file downloads
-                  params: {}
-                })
-                .then((response) => {
-                  const blob = new Blob([response.data]);
-                  const url = window.URL.createObjectURL(blob);
-                  const a = document.createElement('a');
-                  a.style.display = 'none';
-                  a.href = url;
-                  a.download = `complaint_attachment_${info.row.original.id}`;
-                  document.body.appendChild(a);
-                  a.click();
-                  window.URL.revokeObjectURL(url);
-                  document.body.removeChild(a);
-                })
-                .catch((error) => {
-                  console.error('Error:', error);
-                  toast.error('Failed to download file');
-                });
-            }
-          }}
-          className={`px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-all ${
-            info.getValue()
-              ? 'bg-electric-blue/10 text-electric-blue hover:bg-electric-blue/20'
-              : 'bg-slate-gray/10 text-slate-gray cursor-not-allowed'
-          }`}
-          disabled={!info.getValue()}
-        >
-          <FileText className="h-3.5 w-3.5" />
-          {info.getValue() ? 'Download' : 'No File'}
-        </button>
+            onClick={() => {
+              if (info.getValue()) {
+                axiosInstance
+                  .get(`/complaints/attachment/${info.row.original.id}`, {
+                    responseType: 'blob', // Important for file downloads
+                    params: {}
+                  })
+                  .then((response) => {
+                    const blob = new Blob([response.data]);
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = `complaint_attachment_${info.row.original.id}`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                  })
+                  .catch((error) => {
+                    console.error('Error:', error);
+                    toast.error('Failed to download file');
+                  });
+              }
+            }}
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-all ${info.getValue()
+                ? 'bg-electric-blue/10 text-electric-blue hover:bg-electric-blue/20'
+                : 'bg-slate-gray/10 text-slate-gray cursor-not-allowed'
+              }`}
+            disabled={!info.getValue()}
+          >
+            <FileText className="h-3.5 w-3.5" />
+            {info.getValue() ? 'Download' : 'No File'}
+          </button>
         ),
       },
     ],

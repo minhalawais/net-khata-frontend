@@ -42,7 +42,7 @@ const ExtraIncomeManagement: React.FC = () => {
   const modalContentRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    document.title = "MBA NET - Extra Income Management"
+    document.title = "Net Khata - Extra Income Management"
     fetchIncomeTypes()
   }, [])
 

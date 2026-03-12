@@ -28,7 +28,7 @@ interface Task {
 
 const TaskManagement: React.FC = () => {
   useEffect(() => {
-    document.title = "MBA NET - Task Management";
+    document.title = "Net Khata - Task Management";
   }, []);
 
   const getTaskTypeColor = (type: string) => {
@@ -137,8 +137,8 @@ const TaskManagement: React.FC = () => {
             <div className="flex items-center gap-1">
               <Users className="h-4 w-4 text-slate-gray" />
               <span className="text-sm">
-                {assignees.length === 1 
-                  ? assignees[0].name 
+                {assignees.length === 1
+                  ? assignees[0].name
                   : `${assignees[0].name} +${assignees.length - 1}`}
               </span>
             </div>

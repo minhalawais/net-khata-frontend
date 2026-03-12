@@ -56,7 +56,7 @@ export const ISPPaymentAnalysis: React.FC<Props> = ({ data }) => {
         {/* Payment Types */}
         <div>
           <h4 className="text-lg font-semibold text-gray-800 mb-3">Payments by Type</h4>
-          <div className="overflow-auto">
+          <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="text-left text-gray-600">
                 <tr className="border-b border-gray-200">
@@ -69,10 +69,10 @@ export const ISPPaymentAnalysis: React.FC<Props> = ({ data }) => {
               <tbody className="text-gray-900">
                 {data.payment_types?.map((row, idx) => (
                   <tr key={`${row.type}-${idx}`} className="border-b border-gray-100">
-                    <td className="py-2 pr-3 capitalize">{row.type?.replaceAll("_", " ")}</td>
-                    <td className="py-2 px-3">{formatCurrency(row.total_amount || 0)}</td>
-                    <td className="py-2 px-3">{formatCurrency(row.avg_amount || 0)}</td>
-                    <td className="py-2 pl-3">{formatNumber(row.payment_count || 0)}</td>
+                    <td className="py-2 pr-3 capitalize whitespace-nowrap">{row.type?.replaceAll("_", " ")}</td>
+                    <td className="py-2 px-3 whitespace-nowrap">{formatCurrency(row.total_amount || 0)}</td>
+                    <td className="py-2 px-3 whitespace-nowrap">{formatCurrency(row.avg_amount || 0)}</td>
+                    <td className="py-2 pl-3 whitespace-nowrap">{formatNumber(row.payment_count || 0)}</td>
                   </tr>
                 ))}
                 {(!data.payment_types || data.payment_types.length === 0) && (
@@ -90,7 +90,7 @@ export const ISPPaymentAnalysis: React.FC<Props> = ({ data }) => {
         {/* Bandwidth Analysis */}
         <div>
           <h4 className="text-lg font-semibold text-gray-800 mb-3">Bandwidth Cost Analysis</h4>
-          <div className="overflow-auto">
+          <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="text-left text-gray-600">
                 <tr className="border-b border-gray-200">
@@ -103,10 +103,10 @@ export const ISPPaymentAnalysis: React.FC<Props> = ({ data }) => {
               <tbody className="text-gray-900">
                 {data.bandwidth_analysis?.map((row, idx) => (
                   <tr key={`${row.month}-${idx}`} className="border-b border-gray-100">
-                    <td className="py-2 pr-3">{row.month}</td>
-                    <td className="py-2 px-3">{formatCurrency(row.total_cost || 0)}</td>
-                    <td className="py-2 px-3">{formatRate(row.total_usage || 0)}</td>
-                    <td className="py-2 pl-3">{formatRate(row.cost_per_gb || 0)}</td>
+                    <td className="py-2 pr-3 whitespace-nowrap" style={{ width: "150px", maxWidth: "150px", minWidth: "150px" }}>{row.month}</td>
+                    <td className="py-2 px-3 whitespace-nowrap">{formatCurrency(row.total_cost || 0)}</td>
+                    <td className="py-2 px-3 whitespace-nowrap">{formatRate(row.total_usage || 0)}</td>
+                    <td className="py-2 pl-3 whitespace-nowrap">{formatRate(row.cost_per_gb || 0)}</td>
                   </tr>
                 ))}
                 {(!data.bandwidth_analysis || data.bandwidth_analysis.length === 0) && (

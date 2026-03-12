@@ -106,9 +106,14 @@ export const InventoryAssignmentsModal: React.FC<InventoryAssignmentsModalProps>
     e.preventDefault()
     try {
       const token = getToken()
+      const assignmentData = {
+        inventory_item_id: inventoryItemId,
+        assigned_to_customer_id: newAssignment.assigned_to_customer_id || null,
+        assigned_to_employee_id: newAssignment.assigned_to_employee_id || null,
+      }
       await axiosInstance.post(
         "/inventory/assignments/add",
-        { ...newAssignment, inventory_item_id: inventoryItemId },
+        assignmentData,
         { headers: { Authorization: `Bearer ${token}` } },
       )
       toast.success("Assignment added successfully")

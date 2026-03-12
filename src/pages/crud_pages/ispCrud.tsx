@@ -16,7 +16,7 @@ interface ISP {
 
 const ISPManagement: React.FC = () => {
   useEffect(() => {
-    document.title = "MBA NET - ISP Management"
+    document.title = "Net Khata - ISP Management"
   }, [])
 
   const columns: ColumnDef<ISP>[] = [

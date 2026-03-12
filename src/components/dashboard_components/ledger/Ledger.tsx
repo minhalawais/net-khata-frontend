@@ -200,9 +200,8 @@ const CustomSelect: React.FC<{
                   onChange(option.value)
                   setIsOpen(false)
                 }}
-                className={`w-full px-4 py-2.5 text-left hover:bg-[#F1F0E8] transition-colors ${
-                  value === option.value ? "bg-[#E5E1DA] text-[#1F2937] font-medium" : "text-[#374151]"
-                }`}
+                className={`w-full px-4 py-2.5 text-left hover:bg-[#F1F0E8] transition-colors ${value === option.value ? "bg-[#E5E1DA] text-[#1F2937] font-medium" : "text-[#374151]"
+                  }`}
               >
                 {option.label}
               </button>
@@ -299,15 +298,15 @@ export const Ledger: React.FC = () => {
 
   const bankAccounts: BankOption[] = useMemo(() => {
     if (!data) return []
-    
+
     // Try multiple possible locations for bank accounts
     const ledgerResp = data as LedgerApiResponse
     const unifiedResp = data as UnifiedResponse
-    
+
     if (Array.isArray(ledgerResp?.bank_accounts)) return ledgerResp.bank_accounts
     if (Array.isArray(unifiedResp?.bank_accounts)) return unifiedResp.bank_accounts
     if (Array.isArray((data as any)?.bank_accounts)) return (data as any).bank_accounts
-    
+
     // If no bank accounts in response, return empty array but don't reset the filter
     return []
   }, [data])
@@ -334,46 +333,46 @@ export const Ledger: React.FC = () => {
     return { credits, debits, net: credits - debits, count: filtered.length }
   }, [filtered])
 
-// Quick filter function
-const onQuickFilter = (timeRange: string) => {
-  const t = getPakistaniDate()
-  let start = new Date(t)
-  
-  switch (timeRange) {
-    case "today":
-      start = new Date(t)
-      break
-    case "week":
-      start = new Date(t.getFullYear(), t.getMonth(), t.getDate() - 7)
-      break
-    case "mtd":
-      start = new Date(t.getFullYear(), t.getMonth(), 1)
-      break
-    case "qtd":
-      start = new Date(t.getFullYear(), Math.floor(t.getMonth() / 3) * 3, 1)
-      break
-    case "ytd":
-      start = new Date(t.getFullYear(), 0, 1)
-      break
-    case "last_month":
-      start = new Date(t.getFullYear(), t.getMonth() - 1, 1)
-      const end = new Date(t.getFullYear(), t.getMonth(), 0)
-      setFilters((prev) => ({
-        ...prev,
-        timeRange,
-        startDate: formatDate(start),
-        endDate: formatDate(end),
-      }))
-      return
+  // Quick filter function
+  const onQuickFilter = (timeRange: string) => {
+    const t = getPakistaniDate()
+    let start = new Date(t)
+
+    switch (timeRange) {
+      case "today":
+        start = new Date(t)
+        break
+      case "week":
+        start = new Date(t.getFullYear(), t.getMonth(), t.getDate() - 7)
+        break
+      case "mtd":
+        start = new Date(t.getFullYear(), t.getMonth(), 1)
+        break
+      case "qtd":
+        start = new Date(t.getFullYear(), Math.floor(t.getMonth() / 3) * 3, 1)
+        break
+      case "ytd":
+        start = new Date(t.getFullYear(), 0, 1)
+        break
+      case "last_month":
+        start = new Date(t.getFullYear(), t.getMonth() - 1, 1)
+        const end = new Date(t.getFullYear(), t.getMonth(), 0)
+        setFilters((prev) => ({
+          ...prev,
+          timeRange,
+          startDate: formatDate(start),
+          endDate: formatDate(end),
+        }))
+        return
+    }
+
+    setFilters((prev) => ({
+      ...prev,
+      timeRange,
+      startDate: formatDate(start),
+      endDate: formatDate(getPakistaniDate()),
+    }))
   }
-  
-  setFilters((prev) => ({
-    ...prev,
-    timeRange,
-    startDate: formatDate(start),
-    endDate: formatDate(getPakistaniDate()),
-  }))
-}
   return (
     <div className="space-y-6">
       {/* Filters */}
@@ -476,7 +475,7 @@ const onQuickFilter = (timeRange: string) => {
                       setDetailOpen(true)
                     }}
                   >
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-[#374151]">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-[#374151]" style={{ width: "200px", maxWidth: "200px", minWidth: "200px" }}>
                       {new Date(row.date).toLocaleString()}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-[#374151] capitalize">
@@ -491,9 +490,8 @@ const onQuickFilter = (timeRange: string) => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-[#374151]">{row.method || "-"}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-[#374151]">{row.bank_account || "-"}</td>
                     <td
-                      className={`px-6 py-4 whitespace-nowrap text-sm text-right font-semibold ${
-                        isCredit ? "text-emerald-700" : "text-red-700"
-                      }`}
+                      className={`px-6 py-4 whitespace-nowrap text-sm text-right font-semibold ${isCredit ? "text-emerald-700" : "text-red-700"
+                        }`}
                     >
                       {isCredit ? "+" : "-"} PKR {Math.round(row.amount).toLocaleString()}
                     </td>
@@ -565,9 +563,8 @@ const onQuickFilter = (timeRange: string) => {
           <div className="md:col-span-2">
             <div className="text-xs font-medium text-[#6B7280] uppercase tracking-wide mb-1">Amount</div>
             <div
-              className={`text-3xl font-bold ${
-                selected?.direction === "credit" ? "text-emerald-700" : "text-red-700"
-              }`}
+              className={`text-3xl font-bold ${selected?.direction === "credit" ? "text-emerald-700" : "text-red-700"
+                }`}
             >
               {selected?.direction === "credit" ? "+" : "-"} PKR{" "}
               {selected ? Math.round(selected.amount).toLocaleString() : "0"}

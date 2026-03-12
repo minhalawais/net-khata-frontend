@@ -36,7 +36,7 @@ const UserProfile: React.FC = () => {
   }
 
   useEffect(() => {
-    document.title = "MBA NET - User Profile"
+    document.title = "Net Khata - User Profile"
     fetchUserData()
   }, [])
 

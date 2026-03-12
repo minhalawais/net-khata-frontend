@@ -37,7 +37,7 @@ const CustomerManagement: React.FC = () => {
   const imageViewer = useImageViewer()
 
   useEffect(() => {
-    document.title = "MBA NET - Customer Management"
+    document.title = "Net Khata - Customer Management"
   }, [])
 
   const columns = useMemo<ColumnDef<Customer>[]>(
@@ -62,34 +62,34 @@ const CustomerManagement: React.FC = () => {
         header: "Service Plan",
         accessorKey: "service_plan",
         cell: (info) => {
-           const planRaw = info.getValue() as string;
-           if (!planRaw) return <span className="text-gray-400 italic text-xs">No Plan</span>;
+          const planRaw = info.getValue() as string;
+          if (!planRaw) return <span className="text-gray-400 italic text-xs">No Plan</span>;
 
-           const plans = planRaw.includes(',') 
-             ? planRaw.split(',').map(p => p.trim()) 
-             : [planRaw];
-           
-           return (
-             <div className="flex flex-wrap gap-1.5">
-               {plans.map((plan, index) => {
-                 // Generate a deterministic color based on plan name length or char code
-                 const colors = [
-                   "bg-blue-50 text-blue-700 border-blue-200",
-                   "bg-purple-50 text-purple-700 border-purple-200",
-                   "bg-indigo-50 text-indigo-700 border-indigo-200",
-                   "bg-cyan-50 text-cyan-700 border-cyan-200",
-                   "bg-teal-50 text-teal-700 border-teal-200"
-                 ];
-                 const colorClass = colors[plan.length % colors.length];
+          const plans = planRaw.includes(',')
+            ? planRaw.split(',').map(p => p.trim())
+            : [planRaw];
 
-                 return (
-                   <span key={index} className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border ${colorClass} shadow-sm whitespace-nowrap`}>
-                     {plan}
-                   </span>
-                 );
-               })}
-             </div>
-           );
+          return (
+            <div className="flex flex-wrap gap-1.5">
+              {plans.map((plan, index) => {
+                // Generate a deterministic color based on plan name length or char code
+                const colors = [
+                  "bg-blue-50 text-blue-700 border-blue-200",
+                  "bg-purple-50 text-purple-700 border-purple-200",
+                  "bg-indigo-50 text-indigo-700 border-indigo-200",
+                  "bg-cyan-50 text-cyan-700 border-cyan-200",
+                  "bg-teal-50 text-teal-700 border-teal-200"
+                ];
+                const colorClass = colors[plan.length % colors.length];
+
+                return (
+                  <span key={index} className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border ${colorClass} shadow-sm whitespace-nowrap`}>
+                    {plan}
+                  </span>
+                );
+              })}
+            </div>
+          );
         }
       },
       {

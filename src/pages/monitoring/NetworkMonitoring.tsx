@@ -18,7 +18,7 @@ export default function NetworkMonitoring() {
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
-    document.title = "MBA NET - Network Monitoring"
+    document.title = "Net Khata - Network Monitoring"
     fetchConnections()
   }, [])
 
@@ -50,9 +50,8 @@ export default function NetworkMonitoring() {
       <div className="flex-1 flex flex-col overflow-hidden">
         <Topbar toggleSidebar={toggleSidebar} />
         <main
-          className={`flex-1 overflow-x-hidden overflow-y-auto p-0 sm:p-6 pt-20 transition-all duration-300 ${
-            isSidebarOpen ? "ml-64" : "ml-0 lg:ml-20"
-          }`}
+          className={`flex-1 overflow-x-hidden overflow-y-auto p-0 sm:p-6 pt-20 transition-all duration-300 ${isSidebarOpen ? "ml-64" : "ml-0 lg:ml-20"
+            }`}
           style={{ backgroundColor: "#F1F0E8" }}
         >
           <div className="container mx-auto mt-10">
@@ -85,9 +84,8 @@ export default function NetworkMonitoring() {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id as any)}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-md transition-all ${
-                      activeTab === tab.id ? "text-white" : "text-gray-600 hover:text-gray-900"
-                    }`}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-md transition-all ${activeTab === tab.id ? "text-white" : "text-gray-600 hover:text-gray-900"
+                      }`}
                     style={{
                       backgroundColor: activeTab === tab.id ? "#89A8B2" : "transparent",
                     }}

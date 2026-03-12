@@ -79,7 +79,7 @@ const sections = [
 ]
 const Dashboard = () => {
   useEffect(() => {
-    document.title = "MBA NET - Business Intelligence"
+    document.title = "Net Khata - Business Intelligence"
   }, [])
 
   const [filters, setFilters] = useState({
@@ -108,10 +108,9 @@ const Dashboard = () => {
         <Topbar toggleSidebar={toggleSidebar} />
 
         <div className="flex flex-col min-h-screen">
-        <main
-          className={`flex-1 overflow-x-hidden overflow-y-auto bg-[#F1F0E8] p-0 sm:p-6 pt-20 transition-all duration-300 ${
-              isSidebarOpen ? "ml-72" : "ml-0 lg:ml-20"
-            }`}
+          <main
+            className={`flex-1 overflow-x-hidden overflow-y-auto bg-[#F1F0E8] p-0 sm:p-6 pt-20 transition-all duration-300 ${isSidebarOpen ? "ml-72" : "ml-0 lg:ml-20"
+              }`}
           >
 
             {/* Header Section */}
@@ -122,45 +121,44 @@ const Dashboard = () => {
                     <h1 className="text-2xl font-semibold text-gray-900 mb-1">Business Intelligence</h1>
                     <p className="text-gray-600 text-sm">Comprehensive analytics and reporting dashboard</p>
 
+                  </div>
+
+                  {/* Filter Indicators */}
+                  <div className="flex items-center gap-3">
+                    <div className="text-xs text-gray-500 bg-[#F1F0E8] px-3 py-2 rounded-md border">
+                      {filters.dateRange.start.toLocaleDateString()} - {filters.dateRange.end.toLocaleDateString()}
                     </div>
+                    {filters.company !== "all" && (
+                      <div className="text-xs text-white bg-[#89A8B2] px-3 py-2 rounded-md">
+                        {filters.company}
+                      </div>
+                    )}
+                    <div className="flex items-center gap-2 text-xs text-gray-500">
+                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      Live
+                    </div>
+                  </div>
+                </div>
 
-{/* Filter Indicators */}
-<div className="flex items-center gap-3">
-  <div className="text-xs text-gray-500 bg-[#F1F0E8] px-3 py-2 rounded-md border">
-    {filters.dateRange.start.toLocaleDateString()} - {filters.dateRange.end.toLocaleDateString()}
-  </div>
-  {filters.company !== "all" && (
-    <div className="text-xs text-white bg-[#89A8B2] px-3 py-2 rounded-md">
-      {filters.company}
-    </div>
-  )}
-  <div className="flex items-center gap-2 text-xs text-gray-500">
-    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-    Live
-  </div>
-</div>
-</div>
-
-{/* Professional Tab Navigation */}
-<div className="flex space-x-1 bg-[#F1F0E8] p-1 rounded-lg mb-0">
-<div className="flex overflow-x-auto scrollbar-hide space-x-1 w-full">
-  {sections.map((section) => (
-    <button
-      key={section.id}
-      onClick={() => setActiveTab(section.id)}
-      className={`flex-shrink-0 px-4 py-2.5 text-sm font-medium rounded-md transition-all duration-200 whitespace-nowrap ${
-        activeTab === section.id
-          ? "bg-white text-[#89A8B2] shadow-sm border border-[#E5E1DA]"
-          : "text-gray-600 hover:text-gray-900 hover:bg-white/60"
-      }`}
-    >
-      {section.name}
-    </button>
-  ))}
-</div>
-</div>
-</div>
-</div>
+                {/* Professional Tab Navigation */}
+                <div className="flex space-x-1 bg-[#F1F0E8] p-1 rounded-lg mb-0">
+                  <div className="flex overflow-x-auto scrollbar-hide space-x-1 w-full">
+                    {sections.map((section) => (
+                      <button
+                        key={section.id}
+                        onClick={() => setActiveTab(section.id)}
+                        className={`flex-shrink-0 px-4 py-2.5 text-sm font-medium rounded-md transition-all duration-200 whitespace-nowrap ${activeTab === section.id
+                            ? "bg-white text-[#89A8B2] shadow-sm border border-[#E5E1DA]"
+                            : "text-gray-600 hover:text-gray-900 hover:bg-white/60"
+                          }`}
+                      >
+                        {section.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
 
 
             {/* Content Header */}
@@ -203,7 +201,7 @@ const Dashboard = () => {
                     <div className="transition-all duration-300 ease-in-out">
                       <ActiveComponent filters={filters} />
                     </div>
-                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -213,7 +211,7 @@ const Dashboard = () => {
               <div className="max-w-[1800px] mx-auto">
                 <div className="flex justify-between items-center text-xs text-gray-500">
                   <div className="flex items-center gap-6">
-                    <span>© 2024 MBA NET</span>
+                    <span>© 2024 Net Khata</span>
                     <span>Business Intelligence Platform</span>
                     <span>Version 2.1.0</span>
                   </div>

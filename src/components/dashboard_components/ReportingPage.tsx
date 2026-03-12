@@ -122,7 +122,7 @@ const ReportingPage = () => {
   const Icon = currentSection.icon
 
   useEffect(() => {
-    document.title = `MBA NET - ${currentSection.name}`
+    document.title = `Net Khata - ${currentSection.name}`
   }, [currentSection.name])
 
   const toggleSidebar = () => {
@@ -137,9 +137,8 @@ const ReportingPage = () => {
         <Topbar toggleSidebar={toggleSidebar} />
 
         <main
-          className={`flex-1 overflow-x-hidden overflow-y-auto bg-[#F1F0E8] p-0 sm:p-6 pt-20 transition-all duration-300 ${
-            isSidebarOpen ? "ml-72" : "ml-0 lg:ml-20"
-          }`}
+          className={`flex-1 overflow-x-hidden overflow-y-auto bg-[#F1F0E8] p-0 sm:p-6 pt-20 transition-all duration-300 ${isSidebarOpen ? "ml-72" : "ml-0 lg:ml-20"
+            }`}
         >
           {/* Header Section */}
           <div className="bg-white shadow-sm border-b border-[#E5E1DA] px-8 pt-20 pb-6">
@@ -190,7 +189,7 @@ const ReportingPage = () => {
             <div className="max-w-[1800px] mx-auto">
               <div className="flex justify-between items-center text-xs text-gray-500">
                 <div className="flex items-center gap-6">
-                  <span>© 2024 MBA NET</span>
+                  <span>© 2024 Net Khata</span>
                   <span>Business Intelligence Platform</span>
                   <span>Version 2.1.0</span>
                 </div>

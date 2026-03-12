@@ -22,7 +22,7 @@ interface Vendor {
 
 const VendorManagement: React.FC = () => {
   useEffect(() => {
-    document.title = "MBA NET - Vendor Management";
+    document.title = "Net Khata - Vendor Management";
   }, []);
 
   const columns = useMemo<ColumnDef<Vendor>[]>(
@@ -33,7 +33,7 @@ const VendorManagement: React.FC = () => {
         cell: info => (
           <div className="flex items-center gap-3">
             {info.row.original.picture ? (
-              <img 
+              <img
                 src={`/vendors/file/${info.row.original.id}/picture`}
                 alt={info.getValue() as string}
                 className="w-10 h-10 rounded-full object-cover border-2 border-electric-blue/20"
@@ -85,7 +85,7 @@ const VendorManagement: React.FC = () => {
         cell: info => {
           const vendor = info.row.original;
           const hasDocuments = vendor.cnic_front_image || vendor.cnic_back_image || vendor.agreement_document;
-          
+
           return (
             <div className="flex items-center gap-1">
               {hasDocuments ? (
@@ -118,22 +118,22 @@ const VendorManagement: React.FC = () => {
     []
   );
 
- return (
-  <CRUDPage<Vendor>
-    title="Vendor"
-    endpoint="vendors"
-    columns={columns}
-    FormComponent={VendorForm}
-    useFormData={true}
-    // Add validation to ensure required fields are filled
-    validateBeforeSubmit={(formData) => {
-      if (!formData.name?.trim()) return "Vendor name is required";
-      if (!formData.phone?.trim()) return "Phone number is required";
-      if (!formData.cnic?.trim()) return "CNIC is required";
-      return null;
-    }}
-  />
-);
+  return (
+    <CRUDPage<Vendor>
+      title="Vendor"
+      endpoint="vendors"
+      columns={columns}
+      FormComponent={VendorForm}
+      useFormData={true}
+      // Add validation to ensure required fields are filled
+      validateBeforeSubmit={(formData) => {
+        if (!formData.name?.trim()) return "Vendor name is required";
+        if (!formData.phone?.trim()) return "Phone number is required";
+        if (!formData.cnic?.trim()) return "CNIC is required";
+        return null;
+      }}
+    />
+  );
 };
 
 export default VendorManagement;

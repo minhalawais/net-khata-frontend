@@ -10,7 +10,7 @@ import html2canvas from "html2canvas"
 import axiosInstance from "../utils/axiosConfig.ts"
 import { Sidebar } from "../components/sideNavbar.tsx"
 import { Topbar } from "../components/topNavbar.tsx"
-import MBALogo from "../assets/mba_logo.tsx"
+import NetKhataLogo from "../assets/NetKhataLogo.tsx"
 import { PaidStamp } from "../components/PaidStamp.tsx"
 
 interface LineItem {
@@ -98,7 +98,7 @@ const InvoiceGenerationPage: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   useEffect(() => {
-    document.title = "MBA NET - Invoice Details"
+    document.title = "Net Khata - Invoice Details"
     fetchInvoiceData()
     fetchBankAccounts()
   }, [id])
@@ -216,7 +216,7 @@ const InvoiceGenerationPage: React.FC = () => {
       else if (phoneNumber.startsWith("0092") && phoneNumber.length === 14) { phoneNumber = phoneNumber.substring(2) }
       else if (phoneNumber.startsWith("+92") && phoneNumber.length === 13) { phoneNumber = phoneNumber.substring(1) }
       const publicInvoiceUrl = `${window.location.origin}/public/invoice/${invoiceData.id}`
-      const message = `Hello ${invoiceData.customer_name},\n\nYour invoice #${invoiceData.invoice_number} is ready.\n\n📋 Invoice Details:\n• Amount: PKR ${invoiceData.total_amount.toFixed(2)}\n• Due Date: ${formatDate(invoiceData.due_date)}\n• Status: ${invoiceData.status}\n\n📄 View your complete invoice here:\n${publicInvoiceUrl}\n\nPlease review your invoice and make the payment if pending.\n\nThank you for choosing MBA Communications!`
+      const message = `Hello ${invoiceData.customer_name},\n\nYour invoice #${invoiceData.invoice_number} is ready.\n\n📋 Invoice Details:\n• Amount: PKR ${invoiceData.total_amount.toFixed(2)}\n• Due Date: ${formatDate(invoiceData.due_date)}\n• Status: ${invoiceData.status}\n\n📄 View your complete invoice here:\n${publicInvoiceUrl}\n\nPlease review your invoice and make the payment if pending.\n\nThank you for choosing Net Khata Communications!`
       const whatsappAppUrl = `whatsapp://send?phone=${phoneNumber}&text=${encodeURIComponent(message)}`
       const whatsappWebUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`
       window.location.href = whatsappAppUrl
@@ -318,8 +318,8 @@ const InvoiceGenerationPage: React.FC = () => {
                     )}
                   </div>
                   <div className="text-right">
-                    <div className="h-12 w-28 mb-3"><MBALogo variant="landscape" /></div>
-                    <p className="text-slate-800 font-semibold text-sm">MBA Communications</p>
+                    <div className="h-12 w-48 mb-3"><NetKhataLogo variant="landscape" /></div>
+                    <p className="text-slate-800 font-semibold text-sm">Net Khata Communications</p>
                     <p className="text-slate-500 text-xs leading-relaxed">Kharak Stop Overhead Bridge<br />City, Lahore 54000</p>
                   </div>
                 </div>
@@ -365,7 +365,7 @@ const InvoiceGenerationPage: React.FC = () => {
                     <table className="w-full table-fixed">
                       <thead>
                         <tr className="bg-gradient-to-r from-slate-800 to-slate-700">
-                          <th className="text-left text-xs font-bold text-white/90 uppercase tracking-wider py-4 px-5 w-[70%]">{invoiceData?.invoice_type === 'equipment' ? 'Item Description' : 'Service Description'}</th>
+                          <th className="text-left text-xs font-bold text-white/90 uppercase tracking-wider py-4 px-5 w-[70%]" style={{ width: "200px", maxWidth: "200px", minWidth: "200px" }} >{invoiceData?.invoice_type === 'equipment' ? 'Item Description' : 'Service Description'} </th>
                           {invoiceData?.invoice_type === 'equipment' && (
                             <>
                               <th className="text-center text-xs font-bold text-white/90 uppercase tracking-wider py-4 px-3 whitespace-nowrap w-[10%]">Qty</th>
@@ -379,7 +379,7 @@ const InvoiceGenerationPage: React.FC = () => {
                         {invoiceData?.line_items && invoiceData.line_items.length > 0 ? (
                           invoiceData.line_items.map((item, index) => (
                             <tr key={item.id || index} className="hover:bg-slate-50/50 transition-colors">
-                              <td className="py-4 px-5" style={{ width: "70%" }}>
+                              <td className="py-4 px-5" style={{ width: "200px", minWidth: "200px", maxWidth: "200px" }}>
                                 <p className="font-semibold text-slate-800 whitespace-nowrap">{item.description}</p>
                                 {index === 0 && isSubscription && (
                                   <p className="text-xs text-slate-500 mt-0.5 whitespace-nowrap">Period: {formatDate(invoiceData.billing_start_date)} — {formatDate(invoiceData.billing_end_date)}</p>
@@ -399,7 +399,7 @@ const InvoiceGenerationPage: React.FC = () => {
                           ))
                         ) : (
                           <tr className="hover:bg-slate-50/50 transition-colors">
-                            <td className="py-4 px-5" colSpan={invoiceData?.invoice_type === 'equipment' ? 3 : 1}>
+                            <td className="py-4 px-5" colSpan={invoiceData?.invoice_type === 'equipment' ? 3 : 1} style={{ width: "150px", minWidth: "150px" }}>
                               <p className="font-semibold text-slate-800 whitespace-nowrap">{invoiceData && getServiceDescription(invoiceData)}</p>
                               <p className="text-xs text-slate-500 mt-0.5 whitespace-nowrap">
                                 {isSubscription ? `Period: ${formatDate(invoiceData!.billing_start_date)} — ${formatDate(invoiceData!.billing_end_date)}` : `Date: ${formatDate(invoiceDateToShow || "")}`}
@@ -554,7 +554,7 @@ const InvoiceGenerationPage: React.FC = () => {
                 {/* Footer */}
                 <div className="text-center pt-8 mt-8 border-t border-slate-100">
                   <p className="text-lg font-bold text-slate-800 mb-1">Thank you for your business!</p>
-                  <p className="text-sm text-slate-500 mb-2">Questions? <a href="mailto:support@Mba.net92@gmail.com" className="text-blue-600 hover:underline">support@Mba.net92@gmail.com</a> • 0323 4689090</p>
+                  <p className="text-sm text-slate-500 mb-2">Questions? <a href="mailto:support@netkhata.com" className="text-blue-600 hover:underline">support@netkhata.com</a> • 0323 4689090</p>
                   <p className="text-xs text-slate-400">Invoice generated on {formatDate(new Date().toISOString())}</p>
                 </div>
               </div>

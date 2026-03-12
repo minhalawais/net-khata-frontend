@@ -56,9 +56,9 @@ const EmployeeManagement: React.FC = () => {
   const [newPassword, setNewPassword] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const [copied, setCopied] = useState<string | null>(null)
-  
+
   useEffect(() => {
-    document.title = "MBA NET - Employee Management"
+    document.title = "Net Khata - Employee Management"
   }, [])
 
   const openCredentialsModal = async (employeeId: string) => {
@@ -93,7 +93,7 @@ const EmployeeManagement: React.FC = () => {
         username: formData.username,
         email: formData.email,
       }
-      
+
       if (generatePassword) {
         payload.generate_password = true
       } else if (formData.password) {
@@ -105,9 +105,9 @@ const EmployeeManagement: React.FC = () => {
         payload,
         { headers: { Authorization: `Bearer ${token}` } }
       )
-      
+
       toast.success("Credentials updated successfully!")
-      
+
       if (response.data.password) {
         setNewPassword(response.data.password)
       } else {
@@ -263,7 +263,7 @@ const EmployeeManagement: React.FC = () => {
                       Please copy these credentials now. The password cannot be viewed again.
                     </p>
                   </div>
-                  
+
                   <div className="space-y-3">
                     <div>
                       <label className="text-sm font-medium text-gray-700">Username</label>
@@ -286,7 +286,7 @@ const EmployeeManagement: React.FC = () => {
                         </button>
                       </div>
                     </div>
-                    
+
                     <div>
                       <label className="text-sm font-medium text-gray-700">Password</label>
                       <div className="flex items-center gap-2 mt-1">

@@ -1,0 +1,78 @@
+src/components/navigation/DrawerContent.tsx(126,27): error TS2322: Type '"landscape"' is not assignable to type '"horizontal" | "stacked" | "icon"'.
+src/components/navigation/TopHeader.tsx(42,35): error TS2322: Type '"landscape"' is not assignable to type '"horizontal" | "stacked" | "icon"'.
+src/components/navigation/TopHeader.tsx(46,27): error TS2322: Type '{ fontSize: number; color: string; marginLeft: number; fontWeight: string; letterSpacing: number; }' is not assignable to type 'StyleProp<TextStyle>'.
+  Type '{ fontSize: number; color: string; marginLeft: number; fontWeight: string; letterSpacing: number; }' is not assignable to type 'TextStyle'.
+    Types of property 'fontWeight' are incompatible.
+      Type 'string' is not assignable to type '"700" | 900 | "400" | 500 | "600" | 800 | 700 | "500" | 600 | 200 | "normal" | "bold" | "100" | "200" | "300" | "800" | "900" | "condensed" | 100 | 300 | 400 | "ultralight" | "thin" | ... 6 more ... | "black"'.
+src/components/navigation/TopHeader.tsx(69,36): error TS2339: Property 'fullName' does not exist on type 'User'.
+src/features/customers/components/CustomerListEmpty.tsx(15,7): error TS2322: Type 'Element' is not assignable to type 'string'.
+src/features/reporting/components/AreaPerformanceList.tsx(6,8): error TS2613: Module '"D:/Projects/ISP-Management-App/ISPApp/src/components/data/EmptyState"' has no default export. Did you mean to use 'import { EmptyState } from "D:/Projects/ISP-Management-App/ISPApp/src/components/data/EmptyState"' instead?
+src/features/reporting/components/BankAccountAnalysis.tsx(4,59): error TS2307: Cannot find module '../../../../styles/theme' or its corresponding type declarations.
+src/features/reporting/components/CashFlowAnalysis.tsx(5,59): error TS2307: Cannot find module '../../../../styles/theme' or its corresponding type declarations.
+src/features/reporting/components/DashboardFilterModal.tsx(64,61): error TS2322: Type '{ children: Element; onPress: () => void; padding: number; }' is not assignable to type 'IntrinsicAttributes & TouchableOpacityProps & RefAttributes<View>'.
+  Property 'padding' does not exist on type 'IntrinsicAttributes & TouchableOpacityProps & RefAttributes<View>'.
+src/features/reporting/components/ISPPaymentAnalysis.tsx(4,59): error TS2307: Cannot find module '../../../../styles/theme' or its corresponding type declarations.
+src/features/reporting/components/KPICard.tsx(110,5): error TS2322: Type '{ fontSize: number; fontWeight: string; color: string; letterSpacing: number; }' is not assignable to type 'ViewStyle | TextStyle | ImageStyle'.
+  Type '{ fontSize: number; fontWeight: string; color: string; letterSpacing: number; }' is not assignable to type 'TextStyle'.
+    Types of property 'fontWeight' are incompatible.
+      Type 'string' is not assignable to type '"700" | 900 | "400" | 500 | "600" | 800 | 700 | "500" | 600 | 200 | "normal" | "bold" | "100" | "200" | "300" | "800" | "900" | "condensed" | 100 | 300 | 400 | "ultralight" | "thin" | ... 6 more ... | "black"'.
+src/features/reporting/components/UnifiedFinancialFilterModal.tsx(6,68): error TS2307: Cannot find module '../../../../styles/theme' or its corresponding type declarations.
+src/features/reporting/screens/CustomerAnalyticsScreen.tsx(118,31): error TS2322: Type '{ color: string; marginBottom: number; fontSize: number; fontWeight: string; letterSpacing: number; }' is not assignable to type 'StyleProp<TextStyle>'.
+  Type '{ color: string; marginBottom: number; fontSize: number; fontWeight: string; letterSpacing: number; }' is not assignable to type 'TextStyle'.
+    Types of property 'fontWeight' are incompatible.
+      Type 'string' is not assignable to type '"700" | 900 | "400" | 500 | "600" | 800 | 700 | "500" | 600 | 200 | "normal" | "bold" | "100" | "200" | "300" | "800" | "900" | "condensed" | 100 | 300 | 400 | "ultralight" | "thin" | ... 6 more ... | "black"'.
+src/features/reporting/screens/CustomerAnalyticsScreen.tsx(161,39): error TS2322: Type '{ color: string; marginBottom: number; fontSize: number; fontWeight: string; letterSpacing: number; }' is not assignable to type 'Falsy | TextStyle | RegisteredStyle<TextStyle> | RecursiveArray<Falsy | TextStyle | RegisteredStyle<TextStyle>> | readonly (Falsy | ... 1 more ... | RegisteredStyle<...>)[]'.
+  Type '{ color: string; marginBottom: number; fontSize: number; fontWeight: string; letterSpacing: number; }' is not assignable to type 'TextStyle'.
+    Types of property 'fontWeight' are incompatible.
+      Type 'string' is not assignable to type '"700" | 900 | "400" | 500 | "600" | 800 | 700 | "500" | 600 | 200 | "normal" | "bold" | "100" | "200" | "300" | "800" | "900" | "condensed" | 100 | 300 | 400 | "ultralight" | "thin" | ... 6 more ... | "black"'.
+src/features/reporting/screens/CustomerAnalyticsScreen.tsx(175,31): error TS2322: Type '{ color: string; marginBottom: number; fontSize: number; fontWeight: string; letterSpacing: number; }' is not assignable to type 'StyleProp<TextStyle>'.
+  Type '{ color: string; marginBottom: number; fontSize: number; fontWeight: string; letterSpacing: number; }' is not assignable to type 'TextStyle'.
+    Types of property 'fontWeight' are incompatible.
+      Type 'string' is not assignable to type '"700" | 900 | "400" | 500 | "600" | 800 | 700 | "500" | 600 | 200 | "normal" | "bold" | "100" | "200" | "300" | "800" | "900" | "condensed" | 100 | 300 | 400 | "ultralight" | "thin" | ... 6 more ... | "black"'.
+src/features/reporting/screens/CustomerAnalyticsScreen.tsx(183,31): error TS2322: Type '{ color: string; marginBottom: number; fontSize: number; fontWeight: string; letterSpacing: number; }' is not assignable to type 'StyleProp<TextStyle>'.
+  Type '{ color: string; marginBottom: number; fontSize: number; fontWeight: string; letterSpacing: number; }' is not assignable to type 'TextStyle'.
+    Types of property 'fontWeight' are incompatible.
+      Type 'string' is not assignable to type '"700" | 900 | "400" | 500 | "600" | 800 | 700 | "500" | 600 | 200 | "normal" | "bold" | "100" | "200" | "300" | "800" | "900" | "condensed" | 100 | 300 | 400 | "ultralight" | "thin" | ... 6 more ... | "black"'.
+src/features/reporting/screens/ExecutiveDashboardScreen.tsx(86,27): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(props: TextProps): Text', gave the following error.
+    Type '{ color: string; marginBottom: number; fontSize: number; fontWeight: string; letterSpacing: number; }' is not assignable to type 'StyleProp<TextStyle>'.
+      Type '{ color: string; marginBottom: number; fontSize: number; fontWeight: string; letterSpacing: number; }' is not assignable to type 'TextStyle'.
+        Types of property 'fontWeight' are incompatible.
+          Type 'string' is not assignable to type '"700" | 900 | "400" | 500 | "600" | 800 | 700 | "500" | 600 | 200 | "normal" | "bold" | "100" | "200" | "300" | "800" | "900" | "condensed" | 100 | 300 | 400 | "ultralight" | "thin" | ... 6 more ... | "black"'.
+  Overload 2 of 2, '(props: TextProps, context: any): Text', gave the following error.
+    Type '{ color: string; marginBottom: number; fontSize: number; fontWeight: string; letterSpacing: number; }' is not assignable to type 'StyleProp<TextStyle>'.
+      Type '{ color: string; marginBottom: number; fontSize: number; fontWeight: string; letterSpacing: number; }' is not assignable to type 'TextStyle'.
+        Types of property 'fontWeight' are incompatible.
+          Type 'string' is not assignable to type '"700" | 900 | "400" | 500 | "600" | 800 | 700 | "500" | 600 | 200 | "normal" | "bold" | "100" | "200" | "300" | "800" | "900" | "condensed" | 100 | 300 | 400 | "ultralight" | "thin" | ... 6 more ... | "black"'.
+src/features/reporting/screens/ExecutiveDashboardScreen.tsx(129,27): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(props: TextProps): Text', gave the following error.
+    Type '{ color: string; marginBottom: number; fontSize: number; fontWeight: string; letterSpacing: number; }' is not assignable to type 'StyleProp<TextStyle>'.
+      Type '{ color: string; marginBottom: number; fontSize: number; fontWeight: string; letterSpacing: number; }' is not assignable to type 'TextStyle'.
+        Types of property 'fontWeight' are incompatible.
+          Type 'string' is not assignable to type '"700" | 900 | "400" | 500 | "600" | 800 | 700 | "500" | 600 | 200 | "normal" | "bold" | "100" | "200" | "300" | "800" | "900" | "condensed" | 100 | 300 | 400 | "ultralight" | "thin" | ... 6 more ... | "black"'.
+  Overload 2 of 2, '(props: TextProps, context: any): Text', gave the following error.
+    Type '{ color: string; marginBottom: number; fontSize: number; fontWeight: string; letterSpacing: number; }' is not assignable to type 'StyleProp<TextStyle>'.
+      Type '{ color: string; marginBottom: number; fontSize: number; fontWeight: string; letterSpacing: number; }' is not assignable to type 'TextStyle'.
+        Types of property 'fontWeight' are incompatible.
+          Type 'string' is not assignable to type '"700" | 900 | "400" | 500 | "600" | 800 | 700 | "500" | 600 | 200 | "normal" | "bold" | "100" | "200" | "300" | "800" | "900" | "condensed" | 100 | 300 | 400 | "ultralight" | "thin" | ... 6 more ... | "black"'.
+src/features/reporting/screens/FinancialAnalyticsScreen.tsx(12,28): error TS2307: Cannot find module '../../../components/feedback/EmptyState' or its corresponding type declarations.
+src/features/reporting/screens/FinancialAnalyticsScreen.tsx(13,33): error TS2307: Cannot find module '../../../styles/theme' or its corresponding type declarations.
+src/features/reporting/screens/FinancialAnalyticsScreen.tsx(93,17): error TS2322: Type '{ title: string; rightItems: { icon: string; onPress: () => void; }[]; }' is not assignable to type 'IntrinsicAttributes & TopHeaderProps'.
+  Property 'rightItems' does not exist on type 'IntrinsicAttributes & TopHeaderProps'.
+src/features/reporting/screens/FinancialAnalyticsScreen.tsx(110,50): error TS2322: Type '{ kpis: any; }' is not assignable to type 'IntrinsicAttributes & KPIGridProps'.
+  Property 'kpis' does not exist on type 'IntrinsicAttributes & KPIGridProps'.
+src/navigation/AppNavigator.tsx(18,6): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(props: Omit<DefaultRouterOptions<string> & { children: ReactNode; layout?: (props: { state: StackNavigationState<ParamListBase>; navigation: NavigationHelpers<...>; descriptors: Record<...>; children: ReactNode; }) => ReactElement<...>; ... 4 more ...; UNSTABLE_routeNamesChangeBehavior?: "firstMatch" | "lastUnhandled"; } & { ...; } & StackRouterOptions & StackNavigationConfig, "children" | ... 7 more ... | "UNSTABLE_routeNamesChangeBehavior"> & DefaultRouterOptions<...> & { ...; } & { ...; }, context?: any): string | ... 6 more ... | Component<...>', gave the following error.
+    Property 'id' is missing in type '{ children: Element; screenOptions: { headerShown: false; }; }' but required in type '{ id: string; }'.
+  Overload 2 of 2, '(props: Omit<DefaultRouterOptions<string> & { children: ReactNode; layout?: (props: { state: StackNavigationState<ParamListBase>; navigation: NavigationHelpers<...>; descriptors: Record<...>; children: ReactNode; }) => ReactElement<...>; ... 4 more ...; UNSTABLE_routeNamesChangeBehavior?: "firstMatch" | "lastUnhandled"; } & { ...; } & StackRouterOptions & StackNavigationConfig, "children" | ... 7 more ... | "UNSTABLE_routeNamesChangeBehavior"> & DefaultRouterOptions<...> & { ...; } & { ...; }): string | ... 6 more ... | Component<...>', gave the following error.
+    Property 'id' is missing in type '{ children: Element; screenOptions: { headerShown: false; }; }' but required in type '{ id: string; }'.
+src/navigation/AuthNavigator.tsx(17,9): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(props: Omit<DefaultRouterOptions<string> & { children: ReactNode; layout?: (props: { state: StackNavigationState<ParamListBase>; navigation: NavigationHelpers<...>; descriptors: Record<...>; children: ReactNode; }) => ReactElement<...>; ... 4 more ...; UNSTABLE_routeNamesChangeBehavior?: "firstMatch" | "lastUnhandled"; } & { ...; } & StackRouterOptions & StackNavigationConfig, "children" | ... 7 more ... | "UNSTABLE_routeNamesChangeBehavior"> & DefaultRouterOptions<...> & { ...; } & { ...; }, context?: any): string | ... 6 more ... | Component<...>', gave the following error.
+    Object literal may only specify known properties, and 'animationEnabled' does not exist in type 'StackNavigationOptions | ((props: { route: RouteProp<AuthStackParamList, keyof AuthStackParamList>; navigation: StackNavigationProp<...> | StackNavigationProp<...>; theme: Theme; }) => StackNavigationOptions)'.
+  Overload 2 of 2, '(props: Omit<DefaultRouterOptions<string> & { children: ReactNode; layout?: (props: { state: StackNavigationState<ParamListBase>; navigation: NavigationHelpers<...>; descriptors: Record<...>; children: ReactNode; }) => ReactElement<...>; ... 4 more ...; UNSTABLE_routeNamesChangeBehavior?: "firstMatch" | "lastUnhandled"; } & { ...; } & StackRouterOptions & StackNavigationConfig, "children" | ... 7 more ... | "UNSTABLE_routeNamesChangeBehavior"> & DefaultRouterOptions<...> & { ...; } & { ...; }): string | ... 6 more ... | Component<...>', gave the following error.
+    Object literal may only specify known properties, and 'animationEnabled' does not exist in type 'StackNavigationOptions | ((props: { route: RouteProp<AuthStackParamList, keyof AuthStackParamList>; navigation: StackNavigationProp<...> | StackNavigationProp<...>; theme: Theme; }) => StackNavigationOptions)'.
+src/navigation/MainNavigator.tsx(101,6): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(props: Omit<DefaultRouterOptions<string> & { children: ReactNode; layout?: (props: { state: DrawerNavigationState<ParamListBase>; navigation: NavigationHelpers<...>; descriptors: Record<...>; children: ReactNode; }) => ReactElement<...>; ... 4 more ...; UNSTABLE_routeNamesChangeBehavior?: "firstMatch" | "lastUnhandled"; } & ... 4 more ... & DrawerNavigationConfig, "children" | ... 7 more ... | "UNSTABLE_routeNamesChangeBehavior"> & DefaultRouterOptions<...> & { ...; } & { ...; }, context?: any): string | ... 6 more ... | Component<...>', gave the following error.
+    Property 'id' is missing in type '{ children: Element[]; drawerContent: (props: DrawerContentComponentProps) => Element; screenOptions: { headerShown: false; drawerStyle: { ...; }; }; initialRouteName: "ExecutiveOverview"; }' but required in type '{ id: string; }'.
+  Overload 2 of 2, '(props: Omit<DefaultRouterOptions<string> & { children: ReactNode; layout?: (props: { state: DrawerNavigationState<ParamListBase>; navigation: NavigationHelpers<...>; descriptors: Record<...>; children: ReactNode; }) => ReactElement<...>; ... 4 more ...; UNSTABLE_routeNamesChangeBehavior?: "firstMatch" | "lastUnhandled"; } & ... 4 more ... & DrawerNavigationConfig, "children" | ... 7 more ... | "UNSTABLE_routeNamesChangeBehavior"> & DefaultRouterOptions<...> & { ...; } & { ...; }): string | ... 6 more ... | Component<...>', gave the following error.
+    Property 'id' is missing in type '{ children: Element[]; drawerContent: (props: DrawerContentComponentProps) => Element; screenOptions: { headerShown: false; drawerStyle: { ...; }; }; initialRouteName: "ExecutiveOverview"; }' but required in type '{ id: string; }'.

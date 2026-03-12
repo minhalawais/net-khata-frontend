@@ -64,8 +64,8 @@ export const IncomeAnalysis: React.FC<Props> = ({ data }) => {
         {/* Income by Method */}
         <div>
           <h4 className="text-lg font-semibold text-gray-800 mb-3">By Payment Method</h4>
-          <div className="overflow-auto max-h-64">
-            <table className="w-full text-sm">
+          <div className="overflow-x-auto max-h-64">
+            <table className="w-full text-sm min-w-[500px]">
               <thead className="text-left text-gray-600 sticky top-0 bg-white">
                 <tr className="border-b border-gray-200">
                   <th className="py-2 pr-3">Method</th>
@@ -78,7 +78,7 @@ export const IncomeAnalysis: React.FC<Props> = ({ data }) => {
                   const percentage = totalIncome > 0 ? (row.amount / totalIncome) * 100 : 0
                   return (
                     <tr key={`${row.method}-${idx}`} className="border-b border-gray-100">
-                      <td className="py-2 pr-3">
+                      <td className="py-2 pr-3" style={{ width: "150px", maxWidth: "150px", minWidth: "150px" }}>
                         <div className="capitalize font-medium">{row.method?.replaceAll("_", " ")}</div>
                         <div className="w-full bg-gray-100 rounded-full h-1.5 mt-1">
                           <div
@@ -110,8 +110,8 @@ export const IncomeAnalysis: React.FC<Props> = ({ data }) => {
         {/* Income by Bank Account */}
         <div>
           <h4 className="text-lg font-semibold text-gray-800 mb-3">By Bank Account</h4>
-          <div className="overflow-auto max-h-64">
-            <table className="w-full text-sm">
+          <div className="overflow-x-auto max-h-64">
+            <table className="w-full text-sm min-w-[500px]">
               <thead className="text-left text-gray-600 sticky top-0 bg-white">
                 <tr className="border-b border-gray-200">
                   <th className="py-2 pr-3">Bank</th>
@@ -124,7 +124,7 @@ export const IncomeAnalysis: React.FC<Props> = ({ data }) => {
                   const percentage = totalIncome > 0 ? (row.amount / totalIncome) * 100 : 0
                   return (
                     <tr key={`${row.bank}-${row.account}-${idx}`} className="border-b border-gray-100">
-                      <td className="py-2 pr-3">
+                      <td className="py-2 pr-3" style={{ width: "150px", maxWidth: "150px", minWidth: "150px" }}>
                         <div className="font-medium truncate max-w-[120px]" title={row.bank}>{row.bank}</div>
                         <div className="text-xs text-gray-500">{row.account}</div>
                         <div className="w-full bg-gray-100 rounded-full h-1.5 mt-1">
@@ -157,8 +157,8 @@ export const IncomeAnalysis: React.FC<Props> = ({ data }) => {
         {/* Income by Service Plan */}
         <div>
           <h4 className="text-lg font-semibold text-gray-800 mb-3">Income by Plan</h4>
-          <div className="overflow-auto max-h-64">
-            <table className="w-full text-sm">
+          <div className="overflow-x-auto max-h-64">
+            <table className="w-full text-sm min-w-[500px]">
               <thead className="text-left text-gray-600 sticky top-0 bg-white">
                 <tr className="border-b border-gray-200">
                   <th className="py-2 pr-3">Plan</th>
@@ -172,8 +172,8 @@ export const IncomeAnalysis: React.FC<Props> = ({ data }) => {
                   const percentage = maxAmount > 0 ? (row.amount / maxAmount) * 100 : 0
                   return (
                     <tr key={`${row.plan}-${idx}`} className="border-b border-gray-100">
-                      <td className="py-2 pr-3">
-                        <div className="font-medium truncate max-w-[120px]" title={row.plan}>{row.plan}</div>
+                      <td className="py-2 pr-3" style={{ width: "150px", maxWidth: "150px", minWidth: "150px" }}>
+                        <div className="font-medium truncate max-w-[150px]" title={row.plan}>{row.plan}</div>
                         <div className="w-full bg-gray-100 rounded-full h-1.5 mt-1">
                           <div
                             className="bg-green-500 h-1.5 rounded-full"

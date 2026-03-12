@@ -1,0 +1,8 @@
+src/features/reporting/components/ServicePlanCharts.tsx(94,21): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(props: AbstractChartProps & BarChartProps): BarChart', gave the following error.
+    Type '{ data: { labels: string[]; datasets: { data: number[]; }[]; }; width: number; height: number; chartConfig: { color: (opacity?: number) => string; propsForLabels: { fontSize: number; }; backgroundGradientFrom: string; ... 6 more ...; propsForDots: { ...; }; }; ... 6 more ...; segments: number; }' is not assignable to type 'IntrinsicAttributes & IntrinsicClassAttributes<BarChart> & Readonly<AbstractChartProps & BarChartProps>'.
+      Property 'formatYLabel' does not exist on type 'IntrinsicAttributes & IntrinsicClassAttributes<BarChart> & Readonly<AbstractChartProps & BarChartProps>'.
+  Overload 2 of 2, '(props: AbstractChartProps & BarChartProps, context: any): BarChart', gave the following error.
+    Type '{ data: { labels: string[]; datasets: { data: number[]; }[]; }; width: number; height: number; chartConfig: { color: (opacity?: number) => string; propsForLabels: { fontSize: number; }; backgroundGradientFrom: string; ... 6 more ...; propsForDots: { ...; }; }; ... 6 more ...; segments: number; }' is not assignable to type 'IntrinsicAttributes & IntrinsicClassAttributes<BarChart> & Readonly<AbstractChartProps & BarChartProps>'.
+      Property 'formatYLabel' does not exist on type 'IntrinsicAttributes & IntrinsicClassAttributes<BarChart> & Readonly<AbstractChartProps & BarChartProps>'.
+

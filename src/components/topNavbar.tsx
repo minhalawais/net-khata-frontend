@@ -6,7 +6,7 @@ import { Menu, Bell, User, ChevronDown, Settings, LogOut } from "lucide-react"
 import { getToken, removeToken } from "../utils/auth.ts"
 import { useNavigate } from "react-router-dom"
 import axiosInstance from "../utils/axiosConfig.ts"
-import MBALogo from "../assets/mba_logo.tsx"
+import NetKhataLogo from "../assets/NetKhataLogo.tsx"
 
 interface TopbarProps {
   toggleSidebar: () => void
@@ -61,9 +61,8 @@ export const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
               <Menu className="h-5 w-5" />
             </button>
 
-            <div className="h-10 w-32 -mt-1 flex items-center" style={{ width: "193px", height: "56px" }}>
-              {/* Assuming MBALogo can handle color variants */}
-              <MBALogo variant="landscape" />
+            <div className="h-10 w-48 -mt-1 flex items-center">
+              <NetKhataLogo variant="landscape" />
             </div>
           </div>
 

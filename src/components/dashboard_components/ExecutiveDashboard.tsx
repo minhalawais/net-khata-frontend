@@ -130,20 +130,19 @@ interface KPICardProps {
 
 const KPICard: React.FC<KPICardProps> = ({ title, value, trend, isPositive, icon, color, suffix = '', invertTrend = false }) => {
   const displayPositive = invertTrend ? !isPositive : isPositive
-  
+
   return (
     <div className="bg-white rounded-xl border border-[#E5E1DA] p-5 hover:shadow-lg transition-all duration-300 group">
       <div className="flex items-start justify-between mb-3">
-        <div 
+        <div
           className="w-10 h-10 rounded-lg flex items-center justify-center text-white group-hover:scale-110 transition-transform"
           style={{ backgroundColor: color }}
         >
           {icon}
         </div>
         {trend !== 0 && (
-          <div className={`flex items-center text-xs font-semibold px-2 py-1 rounded-full ${
-            displayPositive ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'
-          }`}>
+          <div className={`flex items-center text-xs font-semibold px-2 py-1 rounded-full ${displayPositive ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'
+            }`}>
             {displayPositive ? <TrendingUp size={12} className="mr-1" /> : <TrendingDown size={12} className="mr-1" />}
             {Math.abs(trend).toFixed(1)}%
           </div>
@@ -179,10 +178,10 @@ export const ExecutiveDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'executive' | 'ledger'>('executive')
   const [showFilters, setShowFilters] = useState(false)
   const [autoRefresh, setAutoRefresh] = useState(true)
-  
+
   const today = getPakistaniDate()
   const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1)
-  
+
   const [filters, setFilters] = useState<FilterState>({
     startDate: formatDate(startOfMonth),
     endDate: formatDate(today),
@@ -198,7 +197,7 @@ export const ExecutiveDashboard: React.FC = () => {
     try {
       setLoading(true)
       setError(null)
-      
+
       const params = new URLSearchParams({
         start_date: filters.startDate,
         end_date: filters.endDate,
@@ -208,12 +207,12 @@ export const ExecutiveDashboard: React.FC = () => {
         payment_method: filters.paymentMethod,
         compare: filters.compare
       })
-      
+
       const response = await axiosInstance.get(`/dashboard/executive-advanced?${params}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         timeout: 30000
       })
-      
+
       setData(response.data)
     } catch (err: any) {
       console.error('Dashboard fetch error:', err)
@@ -237,7 +236,7 @@ export const ExecutiveDashboard: React.FC = () => {
   const handleTimeRangeChange = (range: string) => {
     const today = getPakistaniDate()
     let startDate: Date
-    
+
     switch (range) {
       case 'today':
         startDate = today
@@ -259,7 +258,7 @@ export const ExecutiveDashboard: React.FC = () => {
       default:
         startDate = new Date(today.getFullYear(), today.getMonth(), 1)
     }
-    
+
     setFilters(prev => ({
       ...prev,
       timeRange: range,
@@ -310,35 +309,32 @@ export const ExecutiveDashboard: React.FC = () => {
           <BarChart3 className="w-8 h-8" style={{ color: COLORS.primary }} />
           <h1 className="text-2xl font-bold text-slate-800">Executive Dashboard</h1>
         </div>
-        
+
         <div className="flex flex-wrap items-center gap-3">
           {/* Tab Toggle */}
           <div className="flex bg-slate-100 rounded-lg p-1">
             <button
               onClick={() => setActiveTab('executive')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
-                activeTab === 'executive' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500'
-              }`}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'executive' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500'
+                }`}
             >
               Executive Summary
             </button>
             <button
               onClick={() => setActiveTab('ledger')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
-                activeTab === 'ledger' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500'
-              }`}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'ledger' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500'
+                }`}
             >
               Ledger
             </button>
           </div>
-          
+
           {activeTab === 'executive' && (
             <>
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors ${
-                  showFilters ? 'bg-slate-800 text-white border-slate-800' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
-                }`}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors ${showFilters ? 'bg-slate-800 text-white border-slate-800' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                  }`}
               >
                 <Filter size={16} />
                 Filters
@@ -382,7 +378,7 @@ export const ExecutiveDashboard: React.FC = () => {
                 <option value="custom">Custom</option>
               </select>
             </div>
-            
+
             {/* Start Date */}
             <div>
               <label className="block text-xs font-medium text-slate-500 mb-1">Start Date</label>
@@ -393,7 +389,7 @@ export const ExecutiveDashboard: React.FC = () => {
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
-            
+
             {/* End Date */}
             <div>
               <label className="block text-xs font-medium text-slate-500 mb-1">End Date</label>
@@ -404,7 +400,7 @@ export const ExecutiveDashboard: React.FC = () => {
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
-            
+
             {/* Area Filter */}
             <div>
               <label className="block text-xs font-medium text-slate-500 mb-1">Area</label>
@@ -419,7 +415,7 @@ export const ExecutiveDashboard: React.FC = () => {
                 ))}
               </select>
             </div>
-            
+
             {/* ISP Filter */}
             <div>
               <label className="block text-xs font-medium text-slate-500 mb-1">ISP</label>
@@ -434,7 +430,7 @@ export const ExecutiveDashboard: React.FC = () => {
                 ))}
               </select>
             </div>
-            
+
             {/* Payment Method Filter */}
             <div>
               <label className="block text-xs font-medium text-slate-500 mb-1">Payment Method</label>
@@ -449,7 +445,7 @@ export const ExecutiveDashboard: React.FC = () => {
                 <option value="online">Online</option>
               </select>
             </div>
-            
+
             {/* Compare Period */}
             <div>
               <label className="block text-xs font-medium text-slate-500 mb-1">Compare To</label>
@@ -591,17 +587,17 @@ export const ExecutiveDashboard: React.FC = () => {
                 <AreaChart data={charts.revenue_trend}>
                   <defs>
                     <linearGradient id="colorExpected" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor={COLORS.secondary} stopOpacity={0.8}/>
-                      <stop offset="95%" stopColor={COLORS.secondary} stopOpacity={0.1}/>
+                      <stop offset="5%" stopColor={COLORS.secondary} stopOpacity={0.8} />
+                      <stop offset="95%" stopColor={COLORS.secondary} stopOpacity={0.1} />
                     </linearGradient>
                     <linearGradient id="colorCollected" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor={COLORS.success} stopOpacity={0.8}/>
-                      <stop offset="95%" stopColor={COLORS.success} stopOpacity={0.1}/>
+                      <stop offset="5%" stopColor={COLORS.success} stopOpacity={0.8} />
+                      <stop offset="95%" stopColor={COLORS.success} stopOpacity={0.1} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
                   <XAxis dataKey="month_short" tick={{ fontSize: 12 }} />
-                  <YAxis tickFormatter={(v) => `${(v/1000).toFixed(0)}K`} tick={{ fontSize: 12 }} />
+                  <YAxis tickFormatter={(v) => `${(v / 1000).toFixed(0)}K`} tick={{ fontSize: 12 }} />
                   <Tooltip formatter={(v: number) => formatCurrency(v)} />
                   <Legend />
                   <Area type="monotone" dataKey="expected" name="Expected" stroke={COLORS.secondary} fillOpacity={1} fill="url(#colorExpected)" />
@@ -663,7 +659,7 @@ export const ExecutiveDashboard: React.FC = () => {
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart data={charts.top_areas} layout="vertical">
                   <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-                  <XAxis type="number" tickFormatter={(v) => `${(v/1000).toFixed(0)}K`} tick={{ fontSize: 12 }} />
+                  <XAxis type="number" tickFormatter={(v) => `${(v / 1000).toFixed(0)}K`} tick={{ fontSize: 12 }} />
                   <YAxis dataKey="name" type="category" width={100} tick={{ fontSize: 12 }} />
                   <Tooltip formatter={(v: number) => formatCurrency(v)} />
                   <Bar dataKey="mrr" fill={COLORS.primary} radius={[0, 4, 4, 0]} />
@@ -678,7 +674,7 @@ export const ExecutiveDashboard: React.FC = () => {
                 <BarChart data={charts.isp_analysis}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
                   <XAxis dataKey="isp" tick={{ fontSize: 10 }} />
-                  <YAxis tickFormatter={(v) => `${(v/1000).toFixed(0)}K`} tick={{ fontSize: 12 }} />
+                  <YAxis tickFormatter={(v) => `${(v / 1000).toFixed(0)}K`} tick={{ fontSize: 12 }} />
                   <Tooltip formatter={(v: number) => formatCurrency(v)} />
                   <Legend />
                   <Bar dataKey="revenue" name="Revenue" fill={COLORS.success} radius={[4, 4, 0, 0]} />
@@ -712,9 +708,8 @@ export const ExecutiveDashboard: React.FC = () => {
                         <td className="py-3 px-2 text-right text-slate-600">{plan.subscribers}</td>
                         <td className="py-3 px-2 text-right text-slate-600">{formatCurrency(plan.mrr)}</td>
                         <td className="py-3 px-2 text-right">
-                          <span className={`inline-flex items-center gap-1 text-xs font-medium ${
-                            plan.growth >= 0 ? 'text-green-600' : 'text-red-600'
-                          }`}>
+                          <span className={`inline-flex items-center gap-1 text-xs font-medium ${plan.growth >= 0 ? 'text-green-600' : 'text-red-600'
+                            }`}>
                             {plan.growth >= 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
                             {Math.abs(plan.growth).toFixed(1)}%
                           </span>
@@ -738,7 +733,7 @@ export const ExecutiveDashboard: React.FC = () => {
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-slate-200">
-                      <th className="text-left py-3 px-2 text-slate-500 font-medium">Customer</th>
+                      <th className="text-left py-3 px-2 text-slate-500 font-medium" tyle={{ width: "150px", minWidth: "150px", maxWidth: "150px" }}>Customer</th>
                       <th className="text-left py-3 px-2 text-slate-500 font-medium">Invoice</th>
                       <th className="text-right py-3 px-2 text-slate-500 font-medium">Amount</th>
                       <th className="text-right py-3 px-2 text-slate-500 font-medium">Days</th>
@@ -747,18 +742,17 @@ export const ExecutiveDashboard: React.FC = () => {
                   <tbody>
                     {tables.overdue_invoices.slice(0, 5).map((inv) => (
                       <tr key={inv.id} className="border-b border-slate-100 hover:bg-slate-50">
-                        <td className="py-3 px-2">
+                        <td className="py-3 px-2" style={{ width: "150px", minWidth: "150px", maxWidth: "150px" }}>
                           <div className="font-medium text-slate-800">{inv.customer_name}</div>
                           <div className="text-xs text-slate-500">{inv.internet_id}</div>
                         </td>
                         <td className="py-3 px-2 text-slate-600">{inv.invoice_number}</td>
                         <td className="py-3 px-2 text-right font-medium text-slate-800">{formatCurrency(inv.amount)}</td>
                         <td className="py-3 px-2 text-right">
-                          <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
-                            inv.days_overdue > 30 ? 'bg-red-100 text-red-600' :
+                          <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${inv.days_overdue > 30 ? 'bg-red-100 text-red-600' :
                             inv.days_overdue > 14 ? 'bg-orange-100 text-orange-600' :
-                            'bg-yellow-100 text-yellow-600'
-                          }`}>
+                              'bg-yellow-100 text-yellow-600'
+                            }`}>
                             {inv.days_overdue}d
                           </span>
                         </td>

@@ -3,7 +3,7 @@
 import type React from "react"
 import { useState } from "react"
 import axiosInstance from "../utils/axiosConfig.ts"
-import MBALogo from "../assets/mba_logo.tsx"
+import NetKhataLogo from "../assets/NetKhataLogo.tsx"
 import {
   User,
   CreditCard,
@@ -129,7 +129,7 @@ export default function CustomerPortalPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
-    
+
     if (cnic.length !== 13) {
       setError("CNIC must be exactly 13 digits")
       return
@@ -236,8 +236,8 @@ export default function CustomerPortalPage() {
 
           {/* Footer */}
           <div className="text-center mt-6">
-            <div className="inline-block scale-75 opacity-60">
-              <MBALogo variant="landscape" />
+            <div className="inline-block scale-90 opacity-80">
+              <NetKhataLogo variant="landscape" />
             </div>
           </div>
         </div>
@@ -259,8 +259,8 @@ export default function CustomerPortalPage() {
       {/* White Top Navbar with Logo */}
       <nav className="bg-white shadow-sm border-b border-gray-100">
         <div className="max-w-6xl mx-auto px-4 py-2 flex items-center justify-between">
-          <div className="scale-75 origin-left">
-            <MBALogo variant="landscape" />
+          <div className="h-10 w-48 flex items-center">
+            <NetKhataLogo variant="landscape" />
           </div>
           <div className="flex items-center gap-2 text-xs text-gray-500">
             <User className="w-3.5 h-3.5" />
@@ -356,11 +356,10 @@ export default function CustomerPortalPage() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all whitespace-nowrap ${
-                  isActive
+                className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all whitespace-nowrap ${isActive
                     ? "text-white"
                     : "text-gray-600 hover:bg-gray-50"
-                }`}
+                  }`}
                 style={isActive ? { backgroundColor: '#89A8B2' } : {}}
               >
                 <Icon className="w-4 h-4" />
@@ -475,8 +474,8 @@ export default function CustomerPortalPage() {
                   ) : (
                     <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                       {data.packages.map((pkg, idx) => (
-                        <div 
-                          key={idx} 
+                        <div
+                          key={idx}
                           className="p-4 rounded-xl border"
                           style={{ backgroundColor: '#E5E1DA30', borderColor: '#B3C8CF50' }}
                         >
@@ -568,8 +567,8 @@ export default function CustomerPortalPage() {
                     const status = statusConfig[payment.status] || statusConfig.pending
                     const StatusIcon = status.icon
                     return (
-                      <div 
-                        key={payment.id} 
+                      <div
+                        key={payment.id}
                         className="p-4 hover:bg-gray-50/50 transition-colors cursor-pointer"
                         onClick={() => setSelectedPayment(payment)}
                       >
@@ -748,9 +747,9 @@ export default function CustomerPortalPage() {
                     Payment Proof
                   </p>
                   <div className="rounded-xl overflow-hidden border border-gray-200">
-                    <img 
-                      src={selectedPayment.payment_proof} 
-                      alt="Payment Proof" 
+                    <img
+                      src={selectedPayment.payment_proof}
+                      alt="Payment Proof"
                       className="w-full max-h-64 object-contain bg-gray-50"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement

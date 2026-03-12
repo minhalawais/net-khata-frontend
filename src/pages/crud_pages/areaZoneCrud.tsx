@@ -17,7 +17,7 @@ const AreaZoneManagement: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    document.title = "MBA NET - Area Management";
+    document.title = "Net Khata - Area Management";
   }, []);
 
   const columns = useMemo<ColumnDef<AreaZone>[]>(

@@ -39,7 +39,7 @@ const WhatsAppSettings: React.FC = () => {
 
     useEffect(() => {
         console.log('Page is loaded');
-        document.title = 'WhatsApp Settings - MBA NET';
+        document.title = 'WhatsApp Settings - Net Khata';
         fetchConfig();
     }, []);
 

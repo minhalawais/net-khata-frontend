@@ -319,7 +319,7 @@ const EmployeeDetailPage: React.FC = () => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    document.title = "MBA NET - Employee Profile"
+    document.title = "Net Khata - Customer Profile"
     fetchEmployeeData()
   }, [id])
 
@@ -972,8 +972,8 @@ const EmployeeDetailPage: React.FC = () => {
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
                     className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors duration-200 whitespace-nowrap ${activeTab === tab.id
-                        ? "bg-[#2A5C8A] text-white"
-                        : "text-[#4A5568] hover:bg-[#F8F7F2]"
+                      ? "bg-[#2A5C8A] text-white"
+                      : "text-[#4A5568] hover:bg-[#F8F7F2]"
                       }`}
                   >
                     <tab.icon className="w-4 h-4" />

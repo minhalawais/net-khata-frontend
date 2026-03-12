@@ -1,4 +1,4 @@
-import React, { useMemo,useEffect } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { CRUDPage } from '../../components/crudPage.tsx';
 import { ServicePlanForm } from '../../components/forms/servicePlanForm.tsx';
@@ -18,7 +18,7 @@ interface ServicePlan {
 
 const ServicePlanManagement: React.FC = () => {
   useEffect(() => {
-    document.title = "MBA NET - Service Plan Management";
+    document.title = "Net Khata - Service Plan Management";
   }, []);
   const columns = useMemo<ColumnDef<ServicePlan>[]>(
     () => [

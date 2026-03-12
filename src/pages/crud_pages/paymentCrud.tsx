@@ -26,27 +26,27 @@ interface Payment {
 }
 
 const PaymentManagement: React.FC = () => {
-    const imageViewer = useImageViewer();
-    const [refreshTrigger, setRefreshTrigger] = useState(0);
-    const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
-    const [isVerificationModalOpen, setIsVerificationModalOpen] = useState(false);
+  const imageViewer = useImageViewer();
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
+  const [isVerificationModalOpen, setIsVerificationModalOpen] = useState(false);
 
-    const handleVerificationComplete = () => {
-        setRefreshTrigger(prev => prev + 1);
-        setSelectedPayment(null);
-    };
+  const handleVerificationComplete = () => {
+    setRefreshTrigger(prev => prev + 1);
+    setSelectedPayment(null);
+  };
 
-    const handleStatusClick = (payment: Payment) => {
-        if (payment.status === 'pending') {
-            setSelectedPayment(payment);
-            setIsVerificationModalOpen(true);
-        }
-    };
+  const handleStatusClick = (payment: Payment) => {
+    if (payment.status === 'pending') {
+      setSelectedPayment(payment);
+      setIsVerificationModalOpen(true);
+    }
+  };
 
   useEffect(() => {
-    document.title = "MBA NET - Payment Management";
+    document.title = "Net Khata - Payment Management";
   }, []);
-  
+
   const columns = React.useMemo<ColumnDef<Payment>[]>(
     () => [
       {
@@ -76,54 +76,54 @@ const PaymentManagement: React.FC = () => {
         header: 'Status',
         accessorKey: 'status',
         cell: (info: any) => {
-            const status = info.getValue() as string;
-            const isPending = status === 'pending';
-            
-            let bgColor = "";
-            let textColor = "";
-            let borderColor = "";
+          const status = info.getValue() as string;
+          const isPending = status === 'pending';
 
-            switch (status) {
-                case "paid":
-                    bgColor = "bg-gradient-to-br from-emerald-50 to-emerald-100";
-                    textColor = "text-emerald-700";
-                    borderColor = "border-emerald-200";
-                    break;
-                case "pending":
-                    bgColor = "bg-gradient-to-br from-amber-50 to-amber-100";
-                    textColor = "text-amber-700";
-                    borderColor = "border-amber-200";
-                    break;
-                case "failed": // specific to payment
-                case "overdue":
-                    bgColor = "bg-gradient-to-br from-red-50 to-red-100";
-                    textColor = "text-red-700";
-                    borderColor = "border-red-200";
-                    break;
-                default:
-                    bgColor = "bg-gradient-to-br from-blue-50 to-blue-100";
-                    textColor = "text-blue-700";
-                    borderColor = "border-blue-200";
-            }
+          let bgColor = "";
+          let textColor = "";
+          let borderColor = "";
 
-            return (
-                <button
-                    onClick={isPending ? () => handleStatusClick(info.row.original) : undefined}
-                    disabled={!isPending}
-                    className={`
+          switch (status) {
+            case "paid":
+              bgColor = "bg-gradient-to-br from-emerald-50 to-emerald-100";
+              textColor = "text-emerald-700";
+              borderColor = "border-emerald-200";
+              break;
+            case "pending":
+              bgColor = "bg-gradient-to-br from-amber-50 to-amber-100";
+              textColor = "text-amber-700";
+              borderColor = "border-amber-200";
+              break;
+            case "failed": // specific to payment
+            case "overdue":
+              bgColor = "bg-gradient-to-br from-red-50 to-red-100";
+              textColor = "text-red-700";
+              borderColor = "border-red-200";
+              break;
+            default:
+              bgColor = "bg-gradient-to-br from-blue-50 to-blue-100";
+              textColor = "text-blue-700";
+              borderColor = "border-blue-200";
+          }
+
+          return (
+            <button
+              onClick={isPending ? () => handleStatusClick(info.row.original) : undefined}
+              disabled={!isPending}
+              className={`
                         px-4 py-2 text-xs font-semibold border uppercase rounded-md
                         ${bgColor} ${textColor} ${borderColor}
                         transition-all duration-200 ease-out
                         ${isPending
-                            ? 'cursor-pointer shadow-sm hover:shadow-md hover:scale-105 active:scale-95 animate-pulse'
-                            : 'cursor-default opacity-90'
-                        }
+                  ? 'cursor-pointer shadow-sm hover:shadow-md hover:scale-105 active:scale-95 animate-pulse'
+                  : 'cursor-default opacity-90'
+                }
                     `}
-                    title={isPending ? "Click to verify payment" : status}
-                >
-                    {status === 'pending' ? 'Pending Validation' : status}
-                </button>
-            );
+              title={isPending ? "Click to verify payment" : status}
+            >
+              {status === 'pending' ? 'Pending Validation' : status}
+            </button>
+          );
         }
       },
       {
@@ -135,13 +135,13 @@ const PaymentManagement: React.FC = () => {
         accessorKey: 'payment_proof',
         cell: (info: any) => {
           const paymentProof = info.getValue();
-          
+
           if (!paymentProof) {
             return (
               <span className="text-slate-gray text-sm">No Image</span>
             );
           }
-          
+
           return (
             <button
               onClick={() => imageViewer.openViewer(
@@ -179,12 +179,12 @@ const PaymentManagement: React.FC = () => {
         isLoading={imageViewer.isLoading}
       />
       {selectedPayment && (
-          <PaymentVerificationModal
-              isOpen={isVerificationModalOpen}
-              onClose={() => setIsVerificationModalOpen(false)}
-              payment={selectedPayment}
-              onVerify={handleVerificationComplete}
-          />
+        <PaymentVerificationModal
+          isOpen={isVerificationModalOpen}
+          onClose={() => setIsVerificationModalOpen(false)}
+          payment={selectedPayment}
+          onVerify={handleVerificationComplete}
+        />
       )}
     </>
   );

@@ -40,7 +40,7 @@ const InventoryManagement: React.FC = () => {
       } catch (error) {
         console.error("Failed to fetch suppliers", error)
       }
-      document.title = "MBA NET - Inventory Management"
+      document.title = "Net Khata - Inventory Management"
     }
 
     fetchSuppliers()
@@ -57,7 +57,7 @@ const InventoryManagement: React.FC = () => {
         cell: ({ row }) => {
           const item = row.original
           const attributes = item.attributes || {}
-          
+
           switch (item.item_type) {
             case "Fiber Cable":
               return "Fiber Cable"
@@ -166,24 +166,24 @@ const InventoryManagement: React.FC = () => {
     if (formData.quantity == null || formData.quantity < 1) {
       return "Quantity must be at least 1"
     }
-    
+
     // Validate type-specific required fields
     const attributes = formData.attributes || {}
-    
+
     if (formData.item_type === 'EtherNet Cable' && !attributes.type) {
       return "Cable type is required"
     }
-    
+
     if (['ONT', 'ONU', 'Router', 'STB'].includes(formData.item_type || '')) {
       if (!attributes.serial_number) {
         return "Serial number is required"
       }
     }
-    
+
     if (formData.item_type === 'Dish' && !attributes.mac_address) {
       return "MAC address is required"
     }
-    
+
     return null
   }
 
