@@ -3,7 +3,7 @@ import { useState } from "react"
 import { Link } from "react-router-dom"
 import { Mail } from "lucide-react"
 import axiosInstance from "../utils/axiosConfig.ts"
-import SEOHead from "../components/SEOHead"
+import SEOHead from "../components/SEOHead.tsx"
 
 const ForgotPasswordPage: React.FC = () => {
   const [email, setEmail] = useState("")
@@ -16,7 +16,7 @@ const ForgotPasswordPage: React.FC = () => {
     setIsLoading(true);
     setMessage("");
     setError("");
-  
+
     try {
       const response = await axiosInstance.post("/auth/forgot-password", { email });
       setMessage(response.data.message);
@@ -29,8 +29,8 @@ const ForgotPasswordPage: React.FC = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-indigo-100">
-      <SEOHead 
-        title="Forgot Password" 
+      <SEOHead
+        title="Forgot Password"
         description="Reset your Net Khata account password. Enter your email to receive a password reset link."
         canonical="/forgot-password"
       />

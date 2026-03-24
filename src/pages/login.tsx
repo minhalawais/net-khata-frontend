@@ -1,8 +1,8 @@
-```
+
 import React, { useState } from "react"
 import { useNavigate, Link } from "react-router-dom"
 import { Eye, EyeOff, Lock, User, LogIn, Zap, Shield, LineChart, Send, ArrowRight } from "lucide-react"
-import SEOHead from "../components/SEOHead"
+import SEOHead from "../components/SEOHead.tsx"
 import NetKhataLogo from "../assets/NetKhataLogo.tsx"
 import axiosInstance from "../utils/axiosConfig.ts"
 
@@ -328,11 +328,11 @@ const Login = () => {
       </div>
 
       <style>{`
-        @keyframes loginFadeIn {
+@keyframes loginFadeIn {
           from { opacity: 0; transform: translateY(10px); }
           to { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
+}
+`}</style>
     </div>
   )
 }

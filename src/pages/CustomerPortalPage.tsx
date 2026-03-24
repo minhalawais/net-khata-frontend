@@ -4,7 +4,7 @@ import type React from "react"
 import { useState } from "react"
 import axiosInstance from "../utils/axiosConfig.ts"
 import NetKhataLogo from "../assets/NetKhataLogo.tsx"
-import SEOHead from "../components/SEOHead"
+import SEOHead from "../components/SEOHead.tsx"
 import {
   User,
   CreditCard,
@@ -163,8 +163,8 @@ export default function CustomerPortalPage() {
   if (!data) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4">
-        <SEOHead 
-          title="Customer Portal" 
+        <SEOHead
+          title="Customer Portal"
           description="Access the Net Khata customer portal to view your invoices, payments, and account status using your CNIC."
           canonical="/customer-portal"
         />
@@ -260,8 +260,8 @@ export default function CustomerPortalPage() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <SEOHead 
-        title={`Portal: ${customer.name}`} 
+      <SEOHead
+        title={`Portal: ${customer.name}`}
         description={`Customer portal for ${customer.name} - ${customer.internet_id}. View billings and account details.`}
         noIndex={true}
       />
@@ -366,8 +366,8 @@ export default function CustomerPortalPage() {
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-md font-medium text-[12px] transition-all whitespace-nowrap ${isActive
-                    ? "text-blue-700 bg-blue-50"
-                    : "text-slate-500 hover:bg-slate-50"
+                  ? "text-blue-700 bg-blue-50"
+                  : "text-slate-500 hover:bg-slate-50"
                   }`}
               >
                 <Icon className="w-4 h-4" />
