@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import {
   Area,
   AreaChart,
@@ -839,8 +839,15 @@ const FinancialIntelligenceV2: React.FC<{
   const [response,      setResponse]      = useState<V2Response | null>(null)
   const [activeSection, setActiveSection] = useState<Section>("revenue")
 
+  // Ref to track when a state change originates from the parent prop,
+  // so we don't notify the parent back (which would create a loop).
+  const fromPropRef = useRef(false);
+  const onDateRangeChangeRef = useRef(onDateRangeChange);
+  onDateRangeChangeRef.current = onDateRangeChange;
+
   useEffect(() => {
     if (!dateRange) return
+    fromPropRef.current = true;
     setFilters((prev) => {
       if (prev.startDate === dateRange.startDate && prev.endDate === dateRange.endDate) return prev
       return {
@@ -852,8 +859,12 @@ const FinancialIntelligenceV2: React.FC<{
   }, [dateRange])
 
   useEffect(() => {
-    onDateRangeChange?.({ startDate: filters.startDate, endDate: filters.endDate })
-  }, [filters.startDate, filters.endDate, onDateRangeChange])
+    if (fromPropRef.current) {
+      fromPropRef.current = false;
+      return;
+    }
+    onDateRangeChangeRef.current?.({ startDate: filters.startDate, endDate: filters.endDate })
+  }, [filters.startDate, filters.endDate])
 
   const bankOptions = useMemo<BankOption[]>(() => {
     const accounts = response?.data?.bank_positions?.accounts ?? []

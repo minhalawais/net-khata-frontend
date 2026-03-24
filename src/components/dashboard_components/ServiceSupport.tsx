@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import {
   BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
@@ -383,15 +383,26 @@ export default function ServiceSupport({ dateRange, onDateRangeChange }: Service
   const [endDate,   setEndDate]   = useState(dateRange?.endDate || defaultEnd)
   const [timeRange, setTimeRange] = useState('mtd')
 
-  useEffect(() => {
-    if (!dateRange) return
-    if (dateRange.startDate !== startDate) setStartDate(dateRange.startDate)
-    if (dateRange.endDate !== endDate) setEndDate(dateRange.endDate)
-  }, [dateRange, startDate, endDate])
+  // Ref to track when a state change originates from the parent prop,
+  // so we don't notify the parent back (which would create a loop).
+  const fromPropRef = useRef(false);
+  const onDateRangeChangeRef = useRef(onDateRangeChange);
+  onDateRangeChangeRef.current = onDateRangeChange;
 
   useEffect(() => {
-    onDateRangeChange?.({ startDate, endDate })
-  }, [startDate, endDate, onDateRangeChange])
+    if (!dateRange) return
+    fromPropRef.current = true;
+    setStartDate(prev => dateRange.startDate !== prev ? dateRange.startDate : prev)
+    setEndDate(prev => dateRange.endDate !== prev ? dateRange.endDate : prev)
+  }, [dateRange])
+
+  useEffect(() => {
+    if (fromPropRef.current) {
+      fromPropRef.current = false;
+      return;
+    }
+    onDateRangeChangeRef.current?.({ startDate, endDate })
+  }, [startDate, endDate])
 
   const fetchData = useCallback(async () => {
     setLoading(true)

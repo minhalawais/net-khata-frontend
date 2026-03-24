@@ -154,6 +154,10 @@ const ReportingPage = () => {
     })
   }, [])
 
+  const onExecutiveDateChange = useCallback((range: DashboardDateRange) => updateSectionDateRange("executive", range), [updateSectionDateRange])
+  const onFinancialDateChange = useCallback((range: DashboardDateRange) => updateSectionDateRange("financial", range), [updateSectionDateRange])
+  const onServiceDateChange   = useCallback((range: DashboardDateRange) => updateSectionDateRange("service", range), [updateSectionDateRange])
+
   // Update document title when section changes — preserved exactly
   useEffect(() => {
     document.title = `NetDaftar — ${currentSection.name}`
@@ -387,19 +391,19 @@ const ReportingPage = () => {
             {normalizedSection === "executive" && (
               <ExecutiveDashboard
                 dateRange={activeDateRange}
-                onDateRangeChange={(range) => updateSectionDateRange("executive", range)}
+                onDateRangeChange={onExecutiveDateChange}
               />
             )}
             {normalizedSection === "financial" && (
               <UnifiedDashboard
                 dateRange={activeDateRange}
-                onDateRangeChange={(range) => updateSectionDateRange("financial", range)}
+                onDateRangeChange={onFinancialDateChange}
               />
             )}
             {normalizedSection === "service" && (
               <ServiceSupport
                 dateRange={activeDateRange}
-                onDateRangeChange={(range) => updateSectionDateRange("service", range)}
+                onDateRangeChange={onServiceDateChange}
               />
             )}
             {normalizedSection === "operations" && (

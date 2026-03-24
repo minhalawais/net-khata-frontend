@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   AreaChart, Area, BarChart, Bar, ComposedChart, Line,
   PieChart, Pie, Cell,
@@ -466,15 +466,26 @@ const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({ dateRange, onDa
   const [ispId, setIspId] = useState('all');
   const [timeRange, setTimeRange] = useState('mtd');
 
-  useEffect(() => {
-    if (!dateRange) return;
-    if (dateRange.startDate !== startDate) setStartDate(dateRange.startDate);
-    if (dateRange.endDate !== endDate) setEndDate(dateRange.endDate);
-  }, [dateRange, startDate, endDate]);
+  // Ref to track when a state change originates from the parent prop,
+  // so we don't notify the parent back (which would create a loop).
+  const fromPropRef = useRef(false);
+  const onDateRangeChangeRef = useRef(onDateRangeChange);
+  onDateRangeChangeRef.current = onDateRangeChange;
 
   useEffect(() => {
-    onDateRangeChange?.({ startDate, endDate });
-  }, [startDate, endDate, onDateRangeChange]);
+    if (!dateRange) return;
+    fromPropRef.current = true;
+    setStartDate(prev => dateRange.startDate !== prev ? dateRange.startDate : prev);
+    setEndDate(prev => dateRange.endDate !== prev ? dateRange.endDate : prev);
+  }, [dateRange]);
+
+  useEffect(() => {
+    if (fromPropRef.current) {
+      fromPropRef.current = false;
+      return;
+    }
+    onDateRangeChangeRef.current?.({ startDate, endDate });
+  }, [startDate, endDate]);
 
   // Fetch — preserved exactly
   const fetchData = useCallback(async () => {
