@@ -11,23 +11,19 @@ interface ImageViewerModalProps {
   isLoading?: boolean
 }
 
-export function ImageViewerModal({ isOpen, onClose, imageUrl, title, isLoading = false }: ImageViewerModalProps) {
+export function ImageViewerModal({
+  isOpen, onClose, imageUrl, title, isLoading = false,
+}: ImageViewerModalProps) {
   const [zoom, setZoom] = useState(1)
   const [rotation, setRotation] = useState(0)
 
-  // Reset zoom and rotation when modal opens
   useEffect(() => {
-    if (isOpen) {
-      setZoom(1)
-      setRotation(0)
-    }
+    if (isOpen) { setZoom(1); setRotation(0) }
   }, [isOpen])
 
-  // Close on escape key
+  /* ── ESCAPE KEY + BODY SCROLL LOCK ── */
   useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose()
-    }
+    const handleEscape = (e: KeyboardEvent) => { if (e.key === "Escape") onClose() }
     if (isOpen) {
       document.addEventListener("keydown", handleEscape)
       document.body.style.overflow = "hidden"
@@ -56,105 +52,112 @@ export function ImageViewerModal({ isOpen, onClose, imageUrl, title, isLoading =
   const handleRotate = () => setRotation((prev) => (prev + 90) % 360)
 
   return (
+    /* ── BACKDROP: rgba only, no backdrop-blur ── */
     <div
       className="fixed inset-0 z-[9999] flex items-center justify-center"
+      style={{ backgroundColor: "rgba(0, 0, 0, 0.85)" }}
       onClick={onClose}
     >
-      {/* Backdrop with blur */}
-      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
-
-      {/* Modal Container */}
+      {/* ── PANEL: rounded-xl, no shadow, no gradient ── */}
       <div
-        className="relative z-10 w-full max-w-5xl max-h-[90vh] mx-4 flex flex-col animate-in fade-in zoom-in-95 duration-200"
+        className="relative z-10 w-full max-w-5xl max-h-[90vh] mx-4 flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
-        <div className="bg-gradient-to-r from-slate-800 to-slate-900 rounded-t-2xl px-6 py-4 flex items-center justify-between shadow-lg">
-          <h3 className="text-lg font-semibold text-white truncate pr-4">{title}</h3>
-          <div className="flex items-center gap-2">
-            {/* Zoom Controls */}
-            <button
-              onClick={handleZoomOut}
-              className="p-2 text-slate-300 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-200"
+        {/* ── HEADER: flat slate-900, no gradient ── */}
+        <div className="bg-slate-900 rounded-t-xl px-5 py-3 flex items-center justify-between border-b border-white/[0.06] flex-shrink-0">
+          <h3 className="text-[15px] font-medium text-white truncate pr-4">{title}</h3>
+
+          <div className="flex items-center gap-1">
+            {/* Zoom Out */}
+            <button onClick={handleZoomOut}
+              className="p-1.5 text-slate-400 hover:text-white hover:bg-white/10 rounded-md transition-colors duration-150"
               title="Zoom Out"
             >
-              <ZoomOut className="h-5 w-5" />
+              <ZoomOut className="w-4 h-4" />
             </button>
-            <span className="text-slate-400 text-sm min-w-[50px] text-center">{Math.round(zoom * 100)}%</span>
-            <button
-              onClick={handleZoomIn}
-              className="p-2 text-slate-300 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-200"
+            <span className="text-[13px] text-slate-400 min-w-[46px] text-center tabular-nums">
+              {Math.round(zoom * 100)}%
+            </span>
+            {/* Zoom In */}
+            <button onClick={handleZoomIn}
+              className="p-1.5 text-slate-400 hover:text-white hover:bg-white/10 rounded-md transition-colors duration-150"
               title="Zoom In"
             >
-              <ZoomIn className="h-5 w-5" />
+              <ZoomIn className="w-4 h-4" />
             </button>
-            <div className="w-px h-6 bg-slate-600 mx-2" />
+
+            <div className="w-px h-4 bg-white/10 mx-1" />
+
             {/* Rotate */}
-            <button
-              onClick={handleRotate}
-              className="p-2 text-slate-300 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-200"
+            <button onClick={handleRotate}
+              className="p-1.5 text-slate-400 hover:text-white hover:bg-white/10 rounded-md transition-colors duration-150"
               title="Rotate"
             >
-              <RotateCw className="h-5 w-5" />
+              <RotateCw className="w-4 h-4" />
             </button>
-            <div className="w-px h-6 bg-slate-600 mx-2" />
-            {/* Download */}
+
+            <div className="w-px h-4 bg-white/10 mx-1" />
+
+            {/* ── DOWNLOAD: flat emerald, no gradient, no shadow ── */}
             <button
               onClick={handleDownload}
               disabled={!imageUrl || isLoading}
-              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-sm font-medium rounded-lg hover:from-emerald-600 hover:to-emerald-700 transition-all duration-200 shadow-lg shadow-emerald-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 text-white text-[13px] font-medium rounded-md hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150"
             >
-              <Download className="h-4 w-4" />
+              <Download className="w-4 h-4" />
               Download
             </button>
-            <div className="w-px h-6 bg-slate-600 mx-2" />
+
+            <div className="w-px h-4 bg-white/10 mx-1" />
+
             {/* Close */}
-            <button
-              onClick={onClose}
-              className="p-2 text-slate-300 hover:text-white hover:bg-red-500/20 rounded-lg transition-all duration-200"
+            <button onClick={onClose}
+              className="p-1.5 text-slate-400 hover:text-white hover:bg-white/10 rounded-md transition-colors duration-150"
               title="Close"
             >
-              <X className="h-5 w-5" />
+              <X className="w-4 h-4" />
             </button>
           </div>
         </div>
 
-        {/* Content */}
+        {/* ── CONTENT ── */}
         <div
-          className="flex-1 bg-slate-900/95 rounded-b-2xl p-6 min-h-[400px] max-h-[calc(90vh-80px)] flex items-center justify-center"
-          style={{ overflow: zoom > 1 ? 'auto' : 'hidden' }}
+          className="flex-1 bg-slate-950 rounded-b-xl p-6 min-h-[400px] max-h-[calc(90vh-60px)] flex items-center justify-center"
+          style={{ overflow: zoom > 1 ? "auto" : "hidden" }}
         >
           {isLoading ? (
+            /* ── LOADING: rounded-xl icon container, not rounded-full ── */
             <div className="flex flex-col items-center gap-4">
-              <div className="p-4 bg-slate-800 rounded-full">
-                <Loader className="h-10 w-10 text-blue-400 animate-spin" />
+              <div className="w-16 h-16 bg-slate-800 rounded-xl flex items-center justify-center">
+                <Loader className="w-8 h-8 text-blue-400 animate-spin" />
               </div>
-              <p className="text-slate-400 text-sm">Loading...</p>
+              <p className="text-[13px] text-slate-400">Loading...</p>
             </div>
           ) : imageUrl ? (
             <div
               className="relative flex items-center justify-center w-full h-full"
-              style={{ overflow: zoom > 1 ? 'auto' : 'visible' }}
+              style={{ overflow: zoom > 1 ? "auto" : "visible" }}
             >
               <img
                 src={imageUrl}
                 alt={title}
-                className="transition-transform duration-300 ease-out rounded-lg shadow-2xl"
+                className="rounded-lg transition-transform duration-200 ease-out"
                 style={{
-                  maxWidth: zoom === 1 ? '100%' : 'none',
-                  maxHeight: zoom === 1 ? 'calc(90vh - 160px)' : 'none',
-                  objectFit: 'contain',
+                  maxWidth: zoom === 1 ? "100%" : "none",
+                  maxHeight: zoom === 1 ? "calc(90vh - 120px)" : "none",
+                  objectFit: "contain",
                   transform: `scale(${zoom}) rotate(${rotation}deg)`,
                   transformOrigin: "center center",
                 }}
               />
             </div>
           ) : (
+            /* ── ERROR STATE: rounded-xl not rounded-full ── */
             <div className="flex flex-col items-center gap-4">
-              <div className="p-4 bg-slate-800 rounded-full">
-                <X className="h-10 w-10 text-red-400" />
+              <div className="w-16 h-16 bg-slate-800 rounded-xl flex items-center justify-center">
+                <X className="w-8 h-8 text-rose-400" />
               </div>
-              <p className="text-slate-400 text-sm">Failed to load image</p>
+              <p className="text-[13px] text-slate-400">Failed to load image</p>
             </div>
           )}
         </div>
@@ -163,7 +166,7 @@ export function ImageViewerModal({ isOpen, onClose, imageUrl, title, isLoading =
   )
 }
 
-// Hook to manage image viewer state
+/* ── HOOK: unchanged logic, same API ── */
 export function useImageViewer() {
   const [isOpen, setIsOpen] = useState(false)
   const [imageUrl, setImageUrl] = useState<string | null>(null)
@@ -175,11 +178,9 @@ export function useImageViewer() {
     setIsOpen(true)
     setIsLoading(true)
     setImageUrl(null)
-
     try {
       const response = await axiosInstance.get(fetchUrl, { responseType: "blob" })
-      const url = URL.createObjectURL(response.data)
-      setImageUrl(url)
+      setImageUrl(URL.createObjectURL(response.data))
     } catch (error) {
       console.error("Error loading image:", error)
       setImageUrl(null)
@@ -190,18 +191,8 @@ export function useImageViewer() {
 
   const closeViewer = () => {
     setIsOpen(false)
-    // Revoke URL after closing
-    if (imageUrl) {
-      setTimeout(() => URL.revokeObjectURL(imageUrl), 100)
-    }
+    if (imageUrl) setTimeout(() => URL.revokeObjectURL(imageUrl), 100)
   }
 
-  return {
-    isOpen,
-    imageUrl,
-    title,
-    isLoading,
-    openViewer,
-    closeViewer,
-  }
+  return { isOpen, imageUrl, title, isLoading, openViewer, closeViewer }
 }

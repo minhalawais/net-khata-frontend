@@ -16,15 +16,14 @@ export function PaymentInvoiceForm({ formData, handleInputChange, isEditing }: P
     pr-4 
     py-3 
     border 
-    border-[#EBF5FF] 
-    rounded-lg 
-    shadow-sm 
+    border-slate-200 
+    rounded-md 
     bg-white 
-    text-[#4A5568] 
-    placeholder-[#4A5568]/60
+    text-slate-700 
+    placeholder-slate-400
     focus:ring-2 
-    focus:ring-[#3A86FF]/30 
-    focus:border-[#3A86FF] 
+    focus:ring-blue-500/20 
+    focus:border-blue-500 
     transition-all 
     duration-200
   `
@@ -35,25 +34,24 @@ export function PaymentInvoiceForm({ formData, handleInputChange, isEditing }: P
     pr-10 
     py-3 
     border 
-    border-[#EBF5FF] 
-    rounded-lg 
-    shadow-sm 
+    border-slate-200 
+    rounded-md 
     bg-white 
-    text-[#4A5568]
+    text-slate-700
     appearance-none
     focus:ring-2 
-    focus:ring-[#3A86FF]/30 
-    focus:border-[#3A86FF] 
+    focus:ring-blue-500/20 
+    focus:border-blue-500 
     transition-all 
     duration-200
     bg-no-repeat
-    bg-[url('data:image/svg+xml;charset=US-ASCII,<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 8L10 12L14 8" stroke="%234A5568" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>')]
+    bg-[url('data:image/svg+xml;charset=US-ASCII,<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 8L10 12L14 8" stroke="%2364748B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>')]
     bg-right-4
     bg-center-y
   `
 
-  const labelClasses = "block text-sm font-medium text-[#2A5C8A] mb-1"
-  const iconClasses = "h-5 w-5 text-[#4A5568]/60"
+  const labelClasses = "block text-sm font-medium text-slate-700 mb-1"
+  const iconClasses = "h-5 w-5 text-slate-400"
 
   return (
     <div className="space-y-6">

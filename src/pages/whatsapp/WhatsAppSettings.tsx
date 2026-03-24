@@ -38,7 +38,6 @@ const WhatsAppSettings: React.FC = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     useEffect(() => {
-        console.log('Page is loaded');
         document.title = 'WhatsApp Settings - Net Khata';
         fetchConfig();
     }, []);
@@ -112,96 +111,95 @@ const WhatsAppSettings: React.FC = () => {
     };
 
     return (
-        <div className="flex h-screen bg-[#F1F0E8] ml-20">
+        <div className="flex h-screen bg-slate-50 overflow-hidden">
             <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} setIsOpen={setIsSidebarOpen} />
             <div className="flex-1 flex flex-col overflow-hidden">
                 <Topbar toggleSidebar={toggleSidebar} />
-                <main className="flex-1 overflow-y-auto p-6 mt-14">
-                    <div className="mb-8">
-                        <h1 className="text-4xl font-bold text-[#2A5C8A] flex items-center gap-3">
-                            <div className="bg-gradient-to-br from-[#89A8B2] to-[#B3C8CF] p-3 rounded-2xl shadow-lg">
-                                <Settings className="w-8 h-8 text-white" />
-                            </div>
+                <main className={`flex-1 overflow-y-auto bg-slate-50 p-0 sm:p-6 pt-20 transition-all duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-0 lg:ml-20'}`}>
+                    <div className="max-w-[1400px] mx-auto space-y-4">
+                    <div className="bg-white rounded-[10px] border border-slate-200 p-5">
+                        <h1 className="text-[15px] font-medium text-slate-900 flex items-center gap-2">
+                            <span className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
+                                <Settings className="w-4 h-4 text-blue-600" />
+                            </span>
                             WhatsApp Settings
                         </h1>
-                        <p className="text-[#656565] mt-2 text-lg">Configure your WhatsApp messaging system</p>
+                        <p className="text-[11px] text-slate-400 mt-1">Configure your WhatsApp messaging system</p>
                     </div>
 
-                    <div className="max-w-6xl space-y-6">
-                        {/* API Configuration */}
-                        <div className="bg-white p-6 rounded-2xl shadow-xl border-2 border-[#F1F0E8]">
-                            <div className="flex items-center gap-3 mb-6">
-                                <div className="bg-gradient-to-br from-[#89A8B2] to-[#B3C8CF] p-3 rounded-xl shadow-lg">
-                                    <Zap className="w-6 h-6 text-white" />
-                                </div>
+                    <div className="space-y-4">
+                        <div className="bg-white p-5 rounded-[10px] border border-slate-200">
+                            <div className="flex items-center gap-2.5 mb-4">
+                                <span className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
+                                    <Zap className="w-4 h-4 text-blue-600" />
+                                </span>
                                 <div>
-                                    <h2 className="text-2xl font-bold text-[#2A5C8A]">API Configuration</h2>
-                                    <p className="text-sm text-[#656565]">Set up your WhatsApp API credentials</p>
+                                    <h2 className="text-[13px] font-medium text-slate-900">API Configuration</h2>
+                                    <p className="text-[11px] text-slate-400 mt-0.5">Set up your WhatsApp API credentials</p>
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-semibold text-[#2A5C8A] mb-2">API Key</label>
+                                    <label className="block text-[11px] font-medium text-slate-600 mb-1.5">API Key</label>
                                     <input
                                         type="text"
                                         value={formData.api_key}
                                         onChange={(e) => setFormData({ ...formData, api_key: e.target.value })}
-                                        className="w-full px-4 py-3 border-2 border-[#E5E1DA] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#89A8B2] focus:border-transparent bg-[#F1F0E8] text-[#2A5C8A]"
+                                        className="w-full h-9 px-3 border border-slate-200 rounded-md bg-white text-[13px] text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/[0.12] focus:border-blue-500 hover:border-slate-300 transition-colors duration-150"
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-semibold text-[#2A5C8A] mb-2">Server Address</label>
+                                    <label className="block text-[11px] font-medium text-slate-600 mb-1.5">Server Address</label>
                                     <input
                                         type="text"
                                         value={formData.server_address}
                                         onChange={(e) => setFormData({ ...formData, server_address: e.target.value })}
-                                        className="w-full px-4 py-3 border-2 border-[#E5E1DA] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#89A8B2] focus:border-transparent bg-[#F1F0E8] text-[#2A5C8A]"
+                                        className="w-full h-9 px-3 border border-slate-200 rounded-md bg-white text-[13px] text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/[0.12] focus:border-blue-500 hover:border-slate-300 transition-colors duration-150"
                                     />
                                 </div>
                             </div>
 
-                            {/* Test Connection */}
-                            <div className="mt-6">
+                            <div className="mt-4">
                                 <button
                                     onClick={handleTestConnection}
                                     disabled={testing}
-                                    className="px-6 py-3 rounded-xl bg-gradient-to-r from-[#89A8B2] to-[#B3C8CF] text-white font-semibold hover:from-[#7A98A2] hover:to-[#A3B8BF] disabled:opacity-50 transition-all shadow-lg flex items-center gap-2"
+                                    className="h-9 px-4 rounded-md bg-blue-600 text-white text-[13px] font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors duration-150 flex items-center gap-1.5"
                                 >
                                     {testing ? (
                                         <>
-                                            <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent" />
+                                            <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
                                             Testing...
                                         </>
                                     ) : (
                                         <>
-                                            <TestTube className="w-5 h-5" />
+                                            <TestTube className="w-4 h-4" />
                                             Test Connection
                                         </>
                                     )}
                                 </button>
 
                                 {testResult && (
-                                    <div className={`mt-4 p-4 rounded-xl border-2 flex items-center gap-3 ${testResult.success
-                                        ? 'bg-green-50 border-green-200'
-                                        : 'bg-red-50 border-red-200'
+                                    <div className={`mt-3 p-3 rounded-md border flex items-center gap-2 ${testResult.success
+                                        ? 'bg-emerald-50 border-emerald-200'
+                                        : 'bg-rose-50 border-rose-200'
                                         }`}>
                                         {testResult.success ? (
-                                            <CheckCircle className="w-6 h-6 text-green-600" />
+                                            <CheckCircle className="w-4 h-4 text-emerald-700" />
                                         ) : (
-                                            <XCircle className="w-6 h-6 text-red-600" />
+                                            <XCircle className="w-4 h-4 text-rose-600" />
                                         )}
-                                        <p className={`font-semibold ${testResult.success ? 'text-green-700' : 'text-red-700'}`}>
+                                        <p className={`text-[13px] font-medium ${testResult.success ? 'text-emerald-700' : 'text-rose-600'}`}>
                                             {testResult.message}
                                         </p>
                                     </div>
                                 )}
 
                                 {config.connection_status && (
-                                    <div className="mt-4 text-sm text-[#656565]">
+                                    <div className="mt-3 text-[12px] text-slate-500">
                                         <p>Last Test: {config.last_connection_test ? new Date(config.last_connection_test).toLocaleString() : 'Never'}</p>
-                                        <p className={`font-semibold ${config.connection_status === 'success' ? 'text-green-600' : 'text-red-600'}`}>
+                                        <p className={`font-medium ${config.connection_status === 'success' ? 'text-emerald-700' : 'text-rose-600'}`}>
                                             Status: {config.connection_status}
                                         </p>
                                     </div>
@@ -209,23 +207,22 @@ const WhatsAppSettings: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* Automation Settings */}
-                        <div className="bg-white p-6 rounded-2xl shadow-xl border-2 border-[#F1F0E8]">
-                            <div className="flex items-center gap-3 mb-6">
-                                <div className="bg-gradient-to-br from-[#89A8B2] to-[#B3C8CF] p-3 rounded-xl shadow-lg">
-                                    <Bell className="w-6 h-6 text-white" />
-                                </div>
+                        <div className="bg-white p-5 rounded-[10px] border border-slate-200">
+                            <div className="flex items-center gap-2.5 mb-4">
+                                <span className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
+                                    <Bell className="w-4 h-4 text-blue-600" />
+                                </span>
                                 <div>
-                                    <h2 className="text-2xl font-bold text-[#2A5C8A]">Automation</h2>
-                                    <p className="text-sm text-[#656565]">Configure automatic messaging</p>
+                                    <h2 className="text-[13px] font-medium text-slate-900">Automation</h2>
+                                    <p className="text-[11px] text-slate-400 mt-0.5">Configure automatic messaging</p>
                                 </div>
                             </div>
 
                             <div className="space-y-4">
-                                <div className="flex items-center justify-between p-4 bg-[#F1F0E8] rounded-xl border-2 border-[#E5E1DA]">
+                                <div className="flex items-center justify-between p-4 bg-slate-50 rounded-[10px] border border-slate-200">
                                     <div>
-                                        <p className="font-semibold text-[#2A5C8A]">Auto-send Invoices</p>
-                                        <p className="text-sm text-[#656565]">Automatically send generated invoices to customers</p>
+                                        <p className="text-[13px] font-medium text-slate-700">Auto-send Invoices</p>
+                                        <p className="text-[11px] text-slate-400 mt-0.5">Automatically send generated invoices to customers</p>
                                     </div>
                                     <label className="relative inline-flex items-center cursor-pointer">
                                         <input
@@ -234,14 +231,14 @@ const WhatsAppSettings: React.FC = () => {
                                             onChange={(e) => setFormData({ ...formData, auto_send_invoices: e.target.checked })}
                                             className="sr-only peer"
                                         />
-                                        <div className="w-14 h-7 bg-[#E5E1DA] peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#B3C8CF] rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-[#89A8B2] peer-checked:to-[#B3C8CF]"></div>
+                                        <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-500/[0.12] rounded-full peer peer-checked:bg-blue-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-5"></div>
                                     </label>
                                 </div>
 
-                                <div className="flex items-center justify-between p-4 bg-[#F1F0E8] rounded-xl border-2 border-[#E5E1DA]">
+                                <div className="flex items-center justify-between p-4 bg-slate-50 rounded-[10px] border border-slate-200">
                                     <div>
-                                        <p className="font-semibold text-[#2A5C8A]">Auto-send Deadline Alerts</p>
-                                        <p className="text-sm text-[#656565]">Send automatic reminders before payment due dates</p>
+                                        <p className="text-[13px] font-medium text-slate-700">Auto-send Deadline Alerts</p>
+                                        <p className="text-[11px] text-slate-400 mt-0.5">Send automatic reminders before payment due dates</p>
                                     </div>
                                     <label className="relative inline-flex items-center cursor-pointer">
                                         <input
@@ -250,127 +247,125 @@ const WhatsAppSettings: React.FC = () => {
                                             onChange={(e) => setFormData({ ...formData, auto_send_deadline_alerts: e.target.checked })}
                                             className="sr-only peer"
                                         />
-                                        <div className="w-14 h-7 bg-[#E5E1DA] peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#B3C8CF] rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-[#89A8B2] peer-checked:to-[#B3C8CF]"></div>
+                                        <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-500/[0.12] rounded-full peer peer-checked:bg-blue-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-5"></div>
                                     </label>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Schedule Settings */}
-                        <div className="bg-white p-6 rounded-2xl shadow-xl border-2 border-[#F1F0E8]">
-                            <div className="flex items-center gap-3 mb-6">
-                                <div className="bg-gradient-to-br from-[#89A8B2] to-[#B3C8CF] p-3 rounded-xl shadow-lg">
-                                    <Clock className="w-6 h-6 text-white" />
-                                </div>
+                        <div className="bg-white p-5 rounded-[10px] border border-slate-200">
+                            <div className="flex items-center gap-2.5 mb-4">
+                                <span className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
+                                    <Clock className="w-4 h-4 text-blue-600" />
+                                </span>
                                 <div>
-                                    <h2 className="text-2xl font-bold text-[#2A5C8A]">Schedule Settings</h2>
-                                    <p className="text-sm text-[#656565]">Configure when messages are sent</p>
+                                    <h2 className="text-[13px] font-medium text-slate-900">Schedule Settings</h2>
+                                    <p className="text-[11px] text-slate-400 mt-0.5">Configure when messages are sent</p>
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
-                                    <label className="block text-sm font-semibold text-[#2A5C8A] mb-2">Message Send Time</label>
+                                    <label className="block text-[11px] font-medium text-slate-600 mb-1.5">Message Send Time</label>
                                     <input
                                         type="time"
                                         value={formData.message_send_time}
                                         onChange={(e) => setFormData({ ...formData, message_send_time: e.target.value })}
-                                        className="w-full px-4 py-3 border-2 border-[#E5E1DA] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#89A8B2] focus:border-transparent bg-[#F1F0E8] text-[#2A5C8A]"
+                                        className="w-full h-9 px-3 border border-slate-200 rounded-md bg-white text-[13px] text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/[0.12] focus:border-blue-500 hover:border-slate-300 transition-colors duration-150"
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-semibold text-[#2A5C8A] mb-2">Deadline Check Time</label>
+                                    <label className="block text-[11px] font-medium text-slate-600 mb-1.5">Deadline Check Time</label>
                                     <input
                                         type="time"
                                         value={formData.deadline_check_time}
                                         onChange={(e) => setFormData({ ...formData, deadline_check_time: e.target.value })}
-                                        className="w-full px-4 py-3 border-2 border-[#E5E1DA] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#89A8B2] focus:border-transparent bg-[#F1F0E8] text-[#2A5C8A]"
+                                        className="w-full h-9 px-3 border border-slate-200 rounded-md bg-white text-[13px] text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/[0.12] focus:border-blue-500 hover:border-slate-300 transition-colors duration-150"
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-semibold text-[#2A5C8A] mb-2">Alert Days Before</label>
+                                    <label className="block text-[11px] font-medium text-slate-600 mb-1.5">Alert Days Before</label>
                                     <input
                                         type="number"
                                         value={formData.deadline_alert_days_before}
                                         onChange={(e) => setFormData({ ...formData, deadline_alert_days_before: parseInt(e.target.value) })}
                                         min="1"
                                         max="7"
-                                        className="w-full px-4 py-3 border-2 border-[#E5E1DA] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#89A8B2] focus:border-transparent bg-[#F1F0E8] text-[#2A5C8A]"
+                                        className="w-full h-9 px-3 border border-slate-200 rounded-md bg-white text-[13px] text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/[0.12] focus:border-blue-500 hover:border-slate-300 transition-colors duration-150"
                                     />
                                 </div>
                             </div>
                         </div>
 
-                        {/* Quota Settings */}
-                        <div className="bg-white p-6 rounded-2xl shadow-xl border-2 border-[#F1F0E8]">
-                            <div className="flex items-center gap-3 mb-6">
-                                <div className="bg-gradient-to-br from-[#89A8B2] to-[#B3C8CF] p-3 rounded-xl shadow-lg">
-                                    <TrendingUp className="w-6 h-6 text-white" />
-                                </div>
+                        <div className="bg-white p-5 rounded-[10px] border border-slate-200">
+                            <div className="flex items-center gap-2.5 mb-4">
+                                <span className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
+                                    <TrendingUp className="w-4 h-4 text-blue-600" />
+                                </span>
                                 <div>
-                                    <h2 className="text-2xl font-bold text-[#2A5C8A]">Quota Management</h2>
-                                    <p className="text-sm text-[#656565]">Configure daily message limits</p>
+                                    <h2 className="text-[13px] font-medium text-slate-900">Quota Management</h2>
+                                    <p className="text-[11px] text-slate-400 mt-0.5">Configure daily message limits</p>
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-semibold text-[#2A5C8A] mb-2">Daily Quota Limit</label>
+                                    <label className="block text-[11px] font-medium text-slate-600 mb-1.5">Daily Quota Limit</label>
                                     <input
                                         type="number"
                                         value={formData.daily_quota_limit}
                                         onChange={(e) => setFormData({ ...formData, daily_quota_limit: parseInt(e.target.value) })}
                                         min="1"
                                         max="500"
-                                        className="w-full px-4 py-3 border-2 border-[#E5E1DA] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#89A8B2] focus:border-transparent bg-[#F1F0E8] text-[#2A5C8A]"
+                                        className="w-full h-9 px-3 border border-slate-200 rounded-md bg-white text-[13px] text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/[0.12] focus:border-blue-500 hover:border-slate-300 transition-colors duration-150"
                                     />
-                                    <p className="text-xs text-[#656565] mt-2">Maximum messages per day (recommended: 200)</p>
+                                    <p className="text-[11px] text-slate-400 mt-1.5">Maximum messages per day (recommended: 200)</p>
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-semibold text-[#2A5C8A] mb-2">Safety Buffer</label>
+                                    <label className="block text-[11px] font-medium text-slate-600 mb-1.5">Safety Buffer</label>
                                     <input
                                         type="number"
                                         value={formData.quota_buffer}
                                         onChange={(e) => setFormData({ ...formData, quota_buffer: parseInt(e.target.value) })}
                                         min="0"
                                         max="50"
-                                        className="w-full px-4 py-3 border-2 border-[#E5E1DA] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#89A8B2] focus:border-transparent bg-[#F1F0E8] text-[#2A5C8A]"
+                                        className="w-full h-9 px-3 border border-slate-200 rounded-md bg-white text-[13px] text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/[0.12] focus:border-blue-500 hover:border-slate-300 transition-colors duration-150"
                                     />
-                                    <p className="text-xs text-[#656565] mt-2">Reserved buffer to prevent quota overflow</p>
+                                    <p className="text-[11px] text-slate-400 mt-1.5">Reserved buffer to prevent quota overflow</p>
                                 </div>
                             </div>
 
-                            <div className="mt-4 p-4 bg-[#F1F0E8] rounded-xl border-2 border-[#E5E1DA]">
-                                <p className="text-sm text-[#656565]">
-                                    <span className="font-semibold text-[#2A5C8A]">Effective Limit: </span>
+                            <div className="mt-4 p-4 bg-slate-50 rounded-[10px] border border-slate-200">
+                                <p className="text-[13px] text-slate-600">
+                                    <span className="font-medium text-slate-700">Effective Limit: </span>
                                     {formData.daily_quota_limit - formData.quota_buffer} messages/day
                                 </p>
                             </div>
                         </div>
 
-                        {/* Save Button */}
                         <div className="flex justify-end">
                             <button
                                 onClick={handleSave}
                                 disabled={saving}
-                                className="px-8 py-4 rounded-xl bg-gradient-to-r from-[#89A8B2] to-[#B3C8CF] text-white font-bold text-lg hover:from-[#7A98A2] hover:to-[#A3B8BF] disabled:opacity-50 transition-all shadow-xl hover:shadow-2xl flex items-center gap-2"
+                                className="h-10 px-5 rounded-md bg-blue-600 text-white text-[13px] font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors duration-150 flex items-center gap-1.5"
                             >
                                 {saving ? (
                                     <>
-                                        <div className="animate-spin rounded-full h-6 w-6 border-2 border-white border-t-transparent" />
+                                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
                                         Saving...
                                     </>
                                 ) : (
                                     <>
-                                        <Save className="w-6 h-6" />
+                                        <Save className="w-4 h-4" />
                                         Save Configuration
                                     </>
                                 )}
                             </button>
                         </div>
+                    </div>
                     </div>
                 </main>
             </div>

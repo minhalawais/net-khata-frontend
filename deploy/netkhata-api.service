@@ -1,0 +1,18 @@
+[Unit]
+Description=Net Khata API (Uvicorn)
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/netkhata/current/api
+EnvironmentFile=-/var/www/netkhata/shared/api.env
+ExecStart=/var/www/netkhata/venv/bin/uvicorn run:asgi_app --host 127.0.0.1 --port 8000 --workers 2
+Restart=always
+RestartSec=5
+KillSignal=SIGINT
+TimeoutStopSec=30
+
+[Install]
+WantedBy=multi-user.target

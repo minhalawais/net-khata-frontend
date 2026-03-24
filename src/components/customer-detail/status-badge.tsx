@@ -7,25 +7,25 @@ interface StatusBadgeProps {
 
 export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, size = "md" }) => {
   const statusConfig = {
-    active: { bg: "bg-[#10B981]", text: "Active" },
-    inactive: { bg: "bg-[#EF4444]", text: "Inactive" },
-    pending: { bg: "bg-[#F59E0B]", text: "Pending" },
-    completed: { bg: "bg-[#10B981]", text: "Completed" },
-    failed: { bg: "bg-[#EF4444]", text: "Failed" },
-    resolved: { bg: "bg-[#10B981]", text: "Resolved" },
-    open: { bg: "bg-[#3A86FF]", text: "Open" },
-    paid: { bg: "bg-[#10B981]", text: "Paid" }, // Add this line
+    active: { tone: "bg-emerald-50 text-emerald-700 border-emerald-200", text: "Active" },
+    inactive: { tone: "bg-rose-50 text-rose-700 border-rose-200", text: "Inactive" },
+    pending: { tone: "bg-amber-50 text-amber-700 border-amber-200", text: "Pending" },
+    completed: { tone: "bg-emerald-50 text-emerald-700 border-emerald-200", text: "Completed" },
+    failed: { tone: "bg-rose-50 text-rose-700 border-rose-200", text: "Failed" },
+    resolved: { tone: "bg-emerald-50 text-emerald-700 border-emerald-200", text: "Resolved" },
+    open: { tone: "bg-blue-50 text-blue-700 border-blue-200", text: "Open" },
+    paid: { tone: "bg-emerald-50 text-emerald-700 border-emerald-200", text: "Paid" },
   }
 
-  const config = statusConfig[status] || { bg: "bg-[#6B7280]", text: status } // Fallback for unknown status
+  const config = statusConfig[status] || { tone: "bg-slate-100 text-slate-600 border-slate-200", text: status }
   const sizeClasses = {
-    sm: "px-2 py-1 text-xs",
-    md: "px-3 py-1 text-sm",
-    lg: "px-4 py-2 text-base",
+    sm: "px-2 py-0.5 text-[10px]",
+    md: "px-2 py-1 text-[11px]",
+    lg: "px-3 py-1 text-[12px]",
   }
 
   return (
-    <span className={`${config.bg} text-white font-semibold rounded-full ${sizeClasses[size]} inline-block`}>
+    <span className={`${config.tone} border font-medium rounded ${sizeClasses[size]} inline-block leading-none`}>
       {config.text}
     </span>
   )

@@ -219,23 +219,23 @@ export function UnifiedPaymentModal({ isOpen, onClose, onPaymentAdded }: Unified
     if (!isOpen) return null
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+        <div className="fixed inset-0 bg-slate-900/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+            <div className="bg-white rounded-[12px] border border-slate-200 shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
                 {/* Header */}
-                <div className="flex items-center justify-between p-6 border-b border-slate-gray/10">
-                    <h2 className="text-2xl font-bold text-deep-ocean">Add Payment</h2>
+                <div className="flex items-center justify-between p-6 border-b border-slate-200 bg-slate-50">
+                    <h2 className="text-xl font-semibold text-slate-900">Add Payment</h2>
                     <button
                         onClick={handleClose}
-                        className="p-2 hover:bg-light-sky/50 rounded-lg transition-colors"
+                        className="h-9 w-9 inline-flex items-center justify-center border border-slate-200 rounded-md text-slate-500 hover:text-slate-700 hover:bg-white transition-colors"
                         aria-label="Close modal"
                     >
-                        <X className="h-6 w-6 text-slate-gray" />
+                        <X className="h-5 w-5" />
                     </button>
                 </div>
 
-                {/* Tabs - Apple-inspired Design */}
-                <div className="px-6 py-4 bg-gradient-to-b from-light-sky/40 to-light-sky/20 border-b border-slate-gray/10">
-                    <div className="flex gap-2 bg-slate-gray/5 p-1.5 rounded-2xl backdrop-blur-sm">
+                {/* Tabs */}
+                <div className="px-6 py-4 bg-white border-b border-slate-200">
+                    <div className="flex gap-2 bg-slate-100 p-1 rounded-lg">
                         {tabs.map((tab) => {
                             const Icon = tab.icon
                             const isActive = activeTab === tab.id
@@ -243,15 +243,12 @@ export function UnifiedPaymentModal({ isOpen, onClose, onPaymentAdded }: Unified
                                 <button
                                     key={tab.id}
                                     onClick={() => handleTabSwitch(tab.id)}
-                                    className={`flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-medium transition-all duration-300 ease-out flex-1 relative overflow-hidden ${isActive
-                                        ? "bg-white text-electric-blue shadow-lg shadow-electric-blue/10 scale-[1.02]"
-                                        : "text-slate-gray hover:text-electric-blue hover:bg-white/50"
+                                    className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-md font-medium transition-all duration-150 flex-1 relative overflow-hidden ${isActive
+                                        ? "bg-white text-blue-700 border border-blue-200"
+                                        : "text-slate-600 hover:text-slate-900 hover:bg-white"
                                         }`}
                                 >
-                                    {isActive && (
-                                        <div className="absolute inset-0 bg-gradient-to-br from-electric-blue/5 to-transparent rounded-xl" />
-                                    )}
-                                    <Icon className={`h-4 w-4 transition-all duration-300 relative z-10 ${isActive ? "scale-110" : ""}`} />
+                                    <Icon className={`h-4 w-4 transition-all duration-150 relative z-10 ${isActive ? "scale-105" : ""}`} />
                                     <span className="text-sm relative z-10 whitespace-nowrap">{tab.label}</span>
                                 </button>
                             )
@@ -264,21 +261,21 @@ export function UnifiedPaymentModal({ isOpen, onClose, onPaymentAdded }: Unified
                     {showSuccess ? (
                         // Success Screen
                         <div className="flex flex-col items-center justify-center py-12">
-                            <div className="w-20 h-20 bg-emerald-green/10 rounded-full flex items-center justify-center mb-6">
-                                <Check className="h-10 w-10 text-emerald-green" />
+                            <div className="w-20 h-20 bg-emerald-50 border border-emerald-200 rounded-full flex items-center justify-center mb-6">
+                                <Check className="h-10 w-10 text-emerald-600" />
                             </div>
-                            <h3 className="text-2xl font-bold text-deep-ocean mb-2">Success!</h3>
-                            <p className="text-slate-gray mb-8">{successMessage}</p>
+                            <h3 className="text-2xl font-bold text-slate-900 mb-2">Success!</h3>
+                            <p className="text-slate-500 mb-8">{successMessage}</p>
                             <div className="flex gap-4">
                                 <button
                                     onClick={handleAddAnother}
-                                    className="px-6 py-3 bg-electric-blue text-white rounded-lg hover:bg-btn-hover transition-colors font-medium"
+                                    className="px-6 py-2.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-medium"
                                 >
                                     Add Another
                                 </button>
                                 <button
                                     onClick={handleClose}
-                                    className="px-6 py-3 border border-slate-gray/20 text-slate-gray rounded-lg hover:bg-light-sky/50 transition-colors font-medium"
+                                    className="px-6 py-2.5 border border-slate-200 text-slate-600 rounded-md hover:bg-slate-50 transition-colors font-medium"
                                 >
                                     Close
                                 </button>
@@ -306,7 +303,6 @@ export function UnifiedPaymentModal({ isOpen, onClose, onPaymentAdded }: Unified
                                 <ISPPaymentForm
                                     formData={ispPaymentFormData}
                                     handleInputChange={handleInputChange}
-                                    handleSubmit={handleSubmit}
                                     isEditing={false}
                                 />
                             )}
@@ -326,18 +322,18 @@ export function UnifiedPaymentModal({ isOpen, onClose, onPaymentAdded }: Unified
                             )}
 
                             {/* Submit Button */}
-                            <div className="mt-8 flex justify-end gap-3 pt-6 border-t border-slate-gray/10">
+                            <div className="mt-8 flex justify-end gap-3 pt-6 border-t border-slate-200">
                                 <button
                                     type="button"
                                     onClick={handleClose}
-                                    className="px-6 py-2.5 border border-slate-gray/20 text-slate-gray rounded-lg hover:bg-light-sky/50 transition-colors"
+                                    className="px-6 py-2.5 border border-slate-200 text-slate-600 rounded-md hover:bg-slate-50 transition-colors"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={isSubmitting}
-                                    className="px-6 py-2.5 bg-electric-blue text-white rounded-lg hover:bg-btn-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-electric-blue disabled:opacity-50 transition-colors flex items-center gap-2"
+                                    className="px-6 py-2.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center gap-2"
                                 >
                                     {isSubmitting ? (
                                         <>

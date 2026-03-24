@@ -7,25 +7,14 @@ import axiosInstance from "../../utils/axiosConfig.ts"
 import { toast } from "react-toastify"
 
 interface CustomerPreview {
-  id: string
-  name: string
-  internet_id: string
-  service_plan_name: string
-  service_plan_price: number
-  discount_amount: number
-  discount_percentage: number
-  total_amount: number
-  billing_start_date: string
-  billing_end_date: string
-  due_date: string
-  has_existing_invoice: boolean
-  existing_invoice_number?: string
+  id: string; name: string; internet_id: string; service_plan_name: string
+  service_plan_price: number; discount_amount: number; discount_percentage: number
+  total_amount: number; billing_start_date: string; billing_end_date: string
+  due_date: string; has_existing_invoice: boolean; existing_invoice_number?: string
 }
 
 interface BulkInvoiceModalProps {
-  isVisible: boolean
-  onClose: () => void
-  onSuccess: () => void
+  isVisible: boolean; onClose: () => void; onSuccess: () => void
 }
 
 export function BulkInvoiceModal({ isVisible, onClose, onSuccess }: BulkInvoiceModalProps) {
@@ -37,198 +26,146 @@ export function BulkInvoiceModal({ isVisible, onClose, onSuccess }: BulkInvoiceM
   const [generationResult, setGenerationResult] = useState<any>(null)
 
   const months = [
-    { value: "01", label: "January" },
-    { value: "02", label: "February" },
-    { value: "03", label: "March" },
-    { value: "04", label: "April" },
-    { value: "05", label: "May" },
-    { value: "06", label: "June" },
-    { value: "07", label: "July" },
-    { value: "08", label: "August" },
-    { value: "09", label: "September" },
-    { value: "10", label: "October" },
-    { value: "11", label: "November" },
-    { value: "12", label: "December" },
+    { value: "01", label: "January" }, { value: "02", label: "February" },
+    { value: "03", label: "March" }, { value: "04", label: "April" },
+    { value: "05", label: "May" }, { value: "06", label: "June" },
+    { value: "07", label: "July" }, { value: "08", label: "August" },
+    { value: "09", label: "September" }, { value: "10", label: "October" },
+    { value: "11", label: "November" }, { value: "12", label: "December" },
   ]
 
+  useEffect(() => { if (isVisible) resetForm() }, [isVisible])
+
+  /* ── ESCAPE + SCROLL LOCK ── */
   useEffect(() => {
-    if (isVisible) {
-      resetForm()
-    }
-  }, [isVisible])
+    const handleEscape = (e: KeyboardEvent) => { if (e.key === "Escape") onClose() }
+    if (isVisible) { document.addEventListener("keydown", handleEscape); document.body.style.overflow = "hidden" }
+    return () => { document.removeEventListener("keydown", handleEscape); document.body.style.overflow = "unset" }
+  }, [isVisible, onClose])
 
   const resetForm = () => {
-    setStep("month")
-    setSelectedMonth("")
-    setCustomers([])
-    setSelectedCustomers([])
-    setGenerationResult(null)
+    setStep("month"); setSelectedMonth(""); setCustomers([])
+    setSelectedCustomers([]); setGenerationResult(null)
   }
 
   const getMonthPreview = async () => {
-    if (!selectedMonth) {
-      toast.error("Please select a month", {
-        style: { background: "#FEE2E2", color: "#EF4444" },
-      })
-      return
-    }
-
+    if (!selectedMonth) { toast.error("Please select a month"); return }
     setIsLoading(true)
     try {
       const token = getToken()
-      const response = await axiosInstance.post(
-        "/invoices/bulk-monthly/preview",
-        {
-          target_month: selectedMonth,
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      )
-
+      const response = await axiosInstance.post("/invoices/bulk-monthly/preview", { target_month: selectedMonth }, { headers: { Authorization: `Bearer ${token}` } })
       setCustomers(response.data.customers)
-
-      const autoSelected = response.data.customers
-        .filter((customer: CustomerPreview) => !customer.has_existing_invoice)
-        .map((customer: CustomerPreview) => customer.id)
-
-      setSelectedCustomers(autoSelected)
+      setSelectedCustomers(response.data.customers.filter((c: CustomerPreview) => !c.has_existing_invoice).map((c: CustomerPreview) => c.id))
       setStep("preview")
-    } catch (error) {
-      console.error("Failed to get monthly preview", error)
-      toast.error("Failed to load customers for selected month", {
-        style: { background: "#FEE2E2", color: "#EF4444" },
-      })
-    } finally {
-      setIsLoading(false)
-    }
+    } catch {
+      toast.error("Failed to load customers for selected month")
+    } finally { setIsLoading(false) }
   }
 
   const toggleCustomerSelection = (customerId: string) => {
-    setSelectedCustomers((prev) =>
-      prev.includes(customerId) ? prev.filter((id) => id !== customerId) : [...prev, customerId],
-    )
+    setSelectedCustomers((prev) => prev.includes(customerId) ? prev.filter((id) => id !== customerId) : [...prev, customerId])
   }
 
   const toggleSelectAll = () => {
-    const selectableCustomers = customers.filter((c) => !c.has_existing_invoice)
-
-    if (selectedCustomers.length === selectableCustomers.length) {
-      setSelectedCustomers([])
-    } else {
-      setSelectedCustomers(selectableCustomers.map((c) => c.id))
-    }
+    const selectable = customers.filter((c) => !c.has_existing_invoice)
+    setSelectedCustomers(selectedCustomers.length === selectable.length ? [] : selectable.map((c) => c.id))
   }
 
   const generateInvoices = async () => {
-    if (selectedCustomers.length === 0) {
-      toast.error("Please select at least one customer", {
-        style: { background: "#FEE2E2", color: "#EF4444" },
-      })
-      return
-    }
-
-    setIsLoading(true)
-    setStep("generating")
-
+    if (selectedCustomers.length === 0) { toast.error("Please select at least one customer"); return }
+    setIsLoading(true); setStep("generating")
     try {
       const token = getToken()
-      const response = await axiosInstance.post(
-        "/invoices/bulk-monthly/generate",
-        {
-          customer_ids: selectedCustomers,
-          target_month: selectedMonth,
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      )
-
-      setGenerationResult(response.data)
-      setStep("results")
-
-      if (response.data.total_generated > 0) {
-        toast.success(`Generated ${response.data.total_generated} invoices successfully`, {
-          style: { background: "#D1FAE5", color: "#10B981" },
-        })
-        onSuccess()
-      }
-
-      if (response.data.total_failed > 0) {
-        toast.warning(`${response.data.total_failed} invoices failed to generate`, {
-          style: { background: "#FEF3C7", color: "#D97706" },
-        })
-      }
-    } catch (error) {
-      console.error("Failed to generate invoices", error)
-      toast.error("Failed to generate invoices", {
-        style: { background: "#FEE2E2", color: "#EF4444" },
-      })
-      setStep("preview")
-    } finally {
-      setIsLoading(false)
-    }
+      const response = await axiosInstance.post("/invoices/bulk-monthly/generate",
+        { customer_ids: selectedCustomers, target_month: selectedMonth },
+        { headers: { Authorization: `Bearer ${token}` } })
+      setGenerationResult(response.data); setStep("results")
+      if (response.data.total_generated > 0) { toast.success(`Generated ${response.data.total_generated} invoices successfully`); onSuccess() }
+      if (response.data.total_failed > 0) toast.warning(`${response.data.total_failed} invoices failed to generate`)
+    } catch {
+      toast.error("Failed to generate invoices"); setStep("preview")
+    } finally { setIsLoading(false) }
   }
 
   if (!isVisible) return null
 
   return (
-    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-300">
-        <div className="flex items-center justify-between p-6 sm:p-8 bg-gradient-to-r from-[#89A8B2] to-[#B3C8CF] border-b border-[#B3C8CF]/20">
-          <div>
-            <h2 className="text-2xl sm:text-3xl font-bold text-white">Generate Monthly Invoices</h2>
-            <p className="text-white/80 text-sm mt-1">Bulk invoice generation with customer preview</p>
+    /* ── BACKDROP: rgba only, no backdrop-blur ── */
+    <div
+      className="fixed inset-0 flex items-center justify-center z-50 p-4"
+      style={{ backgroundColor: "rgba(15, 23, 42, 0.50)" }}
+      onClick={onClose}
+    >
+      {/* ── PANEL: rounded-xl, border only, no shadow-2xl, no entrance animation ── */}
+      <div
+        className="bg-white rounded-xl border border-slate-200 w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col"
+        onClick={(e) => e.stopPropagation()}
+      >
+
+        {/* ── HEADER: bg-white border-b, no gradient ── */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 flex-shrink-0">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0">
+              <FileText className="w-4 h-4 text-blue-600" />
+            </div>
+            <div>
+              <h2 className="text-[15px] font-medium text-slate-900">Generate Monthly Invoices</h2>
+              <p className="text-[11px] text-slate-400 mt-0.5">Bulk invoice generation with customer preview</p>
+            </div>
           </div>
-          <button
-            onClick={onClose}
-            className="text-white/80 hover:text-white transition-all duration-200 p-2 rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/30"
-          >
-            <X className="h-6 w-6" />
+          {/* ── CLOSE: rounded-md not rounded-full ── */}
+          <button onClick={onClose}
+            className="p-1.5 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors duration-150">
+            <X className="w-4 h-4" />
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-6 sm:p-8 bg-[#F1F0E8]">
+        {/* ── BODY ── */}
+        <div className="flex-1 overflow-y-auto px-6 py-5">
+
+          {/* STEP: Month Selection */}
           {step === "month" && (
-            <div className="space-y-6 animate-in fade-in duration-300">
-              <div className="bg-white rounded-xl p-6 border-l-4 border-[#89A8B2] shadow-sm">
-                <div className="flex items-start gap-4">
-                  <AlertCircle className="h-6 w-6 text-[#89A8B2] flex-shrink-0 mt-0.5" />
+            <div className="space-y-5">
+              {/* Info card */}
+              <div className="bg-slate-50 rounded-[10px] border border-slate-200 p-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <AlertCircle className="w-4 h-4 text-blue-600" />
+                  </div>
                   <div>
-                    <h3 className="font-semibold text-[#2C3E50] mb-3">Monthly Invoice Generation</h3>
-                    <ul className="text-sm text-[#5A6C7D] space-y-2">
-                      <li className="flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 bg-[#89A8B2] rounded-full" />
-                        Select the month for which you want to generate invoices
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 bg-[#89A8B2] rounded-full" />
-                        System will auto-deselect customers who already have invoices
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 bg-[#89A8B2] rounded-full" />
-                        You can manually select/deselect customers as needed
-                      </li>
+                    <p className="text-[13px] font-medium text-slate-900 mb-2">Monthly Invoice Generation</p>
+                    <ul className="space-y-1.5">
+                      {[
+                        "Select the month for which you want to generate invoices",
+                        "System will auto-deselect customers who already have invoices",
+                        "You can manually select/deselect customers as needed",
+                      ].map((item) => (
+                        <li key={item} className="flex items-center gap-2 text-[13px] text-slate-600">
+                          {/* ── BULLET: small slate dot ── */}
+                          <span className="w-1.5 h-1.5 rounded-full bg-slate-400 flex-shrink-0" />
+                          {item}
+                        </li>
+                      ))}
                     </ul>
                   </div>
                 </div>
               </div>
 
-              <div className="space-y-4">
-                <label className="block text-lg font-semibold text-[#2C3E50]">Select Month</label>
+              {/* Month grid */}
+              <div>
+                <p className="text-[11px] font-medium text-slate-600 uppercase tracking-[0.06em] mb-3">Select Month</p>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                   {months.map((month) => (
-                    <button
-                      key={month.value}
+                    <button key={month.value} type="button"
                       onClick={() => setSelectedMonth(month.value)}
-                      className={`p-4 rounded-xl border-2 text-center transition-all duration-200 font-medium ${
+                      className={`py-3 px-4 rounded-[10px] border text-center transition-colors duration-150 ${
                         selectedMonth === month.value
-                          ? "border-[#89A8B2] bg-[#89A8B2]/10 text-[#89A8B2] shadow-md"
-                          : "border-[#B3C8CF]/30 bg-white text-[#2C3E50] hover:border-[#89A8B2]/50 hover:shadow-md"
+                          ? "border-blue-200 bg-blue-50 text-blue-700"
+                          : "border-slate-200 bg-white text-slate-700 hover:border-blue-200 hover:bg-blue-50/20"
                       }`}
                     >
-                      <Calendar className="h-5 w-5 mx-auto mb-2" />
-                      <span className="text-sm">{month.label}</span>
+                      <Calendar className="w-4 h-4 mx-auto mb-1.5 opacity-60" />
+                      <span className="text-[13px] font-medium">{month.label}</span>
                     </button>
                   ))}
                 </div>
@@ -236,96 +173,90 @@ export function BulkInvoiceModal({ isVisible, onClose, onSuccess }: BulkInvoiceM
             </div>
           )}
 
+          {/* STEP: Preview */}
           {step === "preview" && (
-            <div className="space-y-6 animate-in fade-in duration-300">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <h3 className="text-lg font-semibold text-[#2C3E50]">
-                  Preview - {months.find((m) => m.value === selectedMonth)?.label} {new Date().getFullYear()}
+            <div className="space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <h3 className="text-[15px] font-medium text-slate-900">
+                  Preview — {months.find((m) => m.value === selectedMonth)?.label} {new Date().getFullYear()}
                 </h3>
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
-                  <span className="text-sm text-[#5A6C7D] bg-white px-4 py-2 rounded-lg">
+                <div className="flex items-center gap-3">
+                  <span className="text-[13px] text-slate-400 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-md">
                     {selectedCustomers.length} of {customers.filter((c) => !c.has_existing_invoice).length} selected
                   </span>
-                  <button
-                    onClick={toggleSelectAll}
-                    className="px-4 py-2 text-sm bg-[#89A8B2]/10 text-[#89A8B2] rounded-lg hover:bg-[#89A8B2]/20 transition-all duration-200 font-medium"
-                  >
-                    {selectedCustomers.length === customers.filter((c) => !c.has_existing_invoice).length
-                      ? "Deselect All"
-                      : "Select All"}
+                  {/* ── SELECT ALL: ghost button ── */}
+                  <button type="button" onClick={toggleSelectAll}
+                    className="px-3 py-1.5 text-[13px] font-medium text-slate-600 border border-slate-200 rounded-md hover:bg-slate-50 transition-colors duration-150">
+                    {selectedCustomers.length === customers.filter((c) => !c.has_existing_invoice).length ? "Deselect All" : "Select All"}
                   </button>
                 </div>
               </div>
 
-              <div className="bg-white rounded-xl overflow-hidden shadow-sm border border-[#B3C8CF]/20">
+              {/* Preview table */}
+              <div className="bg-white rounded-[10px] border border-slate-200 overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full">
-                    <thead>
-                      <tr className="bg-gradient-to-r from-[#89A8B2]/10 to-[#B3C8CF]/10 border-b border-[#B3C8CF]/20">
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-[#2C3E50] uppercase tracking-wider">
-                          Select
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-[#2C3E50] uppercase tracking-wider">
-                          Customer
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-[#2C3E50] uppercase tracking-wider">
-                          Service Plan
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-[#2C3E50] uppercase tracking-wider">
-                          Amount
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-[#2C3E50] uppercase tracking-wider">
-                          Due Date
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-[#2C3E50] uppercase tracking-wider">
-                          Status
-                        </th>
+                    <thead className="bg-slate-50 border-b border-slate-200">
+                      <tr>
+                        {["Select", "Customer", "Service Plan", "Amount", "Due Date", "Status"].map((col) => (
+                          <th key={col}
+                            className="px-4 py-2.5 text-left text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em]">
+                            {col}
+                          </th>
+                        ))}
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#B3C8CF]/20">
+                    <tbody className="divide-y divide-slate-100">
                       {customers.map((customer) => (
-                        <tr
-                          key={customer.id}
-                          className={`transition-colors duration-200 ${
-                            customer.has_existing_invoice ? "bg-yellow-50" : "hover:bg-[#F1F0E8]"
-                          }`}
-                        >
+                        <tr key={customer.id}
+                          className={`transition-colors ${customer.has_existing_invoice ? "bg-amber-50/40" : "hover:bg-blue-50/30"}`}>
                           <td className="px-4 py-3">
                             {!customer.has_existing_invoice && (
-                              <input
-                                type="checkbox"
+                              <input type="checkbox"
                                 checked={selectedCustomers.includes(customer.id)}
                                 onChange={() => toggleCustomerSelection(customer.id)}
-                                className="h-4 w-4 text-[#89A8B2] focus:ring-[#89A8B2] border-[#B3C8CF] rounded cursor-pointer"
+                                className="h-4 w-4 text-blue-600 focus:ring-blue-500/[0.12] border-slate-300 rounded cursor-pointer"
                               />
                             )}
                           </td>
                           <td className="px-4 py-3">
-                            <div className="font-medium text-[#2C3E50]">{customer.name}</div>
-                            <div className="text-xs text-[#5A6C7D]">{customer.internet_id}</div>
+                            <div className="text-[13px] font-medium text-slate-700">{customer.name}</div>
+                            <div className="text-[11px] text-slate-400 font-mono">{customer.internet_id}</div>
                           </td>
                           <td className="px-4 py-3">
-                            <div className="text-[#2C3E50]">{customer.service_plan_name}</div>
-                            <div className="text-xs text-[#5A6C7D]">PKR {customer.service_plan_price.toFixed(2)}</div>
+                            <div className="text-[13px] text-slate-700">{customer.service_plan_name}</div>
+                            <div className="text-[11px] text-slate-400 tabular-nums">
+                              <span className="text-[10px] mr-0.5">PKR</span>
+                              {customer.service_plan_price.toFixed(2)}
+                            </div>
                           </td>
                           <td className="px-4 py-3">
-                            <div className="font-medium text-[#2C3E50]">PKR {customer.total_amount.toFixed(2)}</div>
+                            <div className="text-[13px] font-medium text-slate-900 tabular-nums">
+                              <span className="text-[11px] text-slate-400 mr-0.5">PKR</span>
+                              {customer.total_amount.toFixed(2)}
+                            </div>
                             {customer.discount_amount > 0 && (
-                              <div className="text-xs text-red-600">-PKR {customer.discount_amount.toFixed(2)}</div>
+                              <div className="text-[11px] text-rose-500 tabular-nums">
+                                −PKR {customer.discount_amount.toFixed(2)}
+                              </div>
                             )}
                           </td>
-                          <td className="px-4 py-3 text-sm text-[#5A6C7D]">
-                            {new Date(customer.due_date).toLocaleDateString()}
+                          <td className="px-4 py-3">
+                            <span className="text-[13px] text-slate-600">
+                              {new Date(customer.due_date).toLocaleDateString()}
+                            </span>
                           </td>
                           <td className="px-4 py-3">
                             {customer.has_existing_invoice ? (
-                              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                <FileText className="h-3 w-3 mr-1" />
+                              /* ── ALREADY GENERATED: amber badge ── */
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200 text-[10px] font-medium">
+                                <FileText className="w-3 h-3" />
                                 Already Generated
                               </span>
                             ) : (
-                              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                <CheckCircle className="h-3 w-3 mr-1" />
+                              /* ── READY: emerald badge ── */
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-medium">
+                                <CheckCircle className="w-3 h-3" />
                                 Ready
                               </span>
                             )}
@@ -337,88 +268,84 @@ export function BulkInvoiceModal({ isVisible, onClose, onSuccess }: BulkInvoiceM
                 </div>
               </div>
 
+              {/* Auto-deselected notice */}
               {customers.filter((c) => c.has_existing_invoice).length > 0 && (
-                <div className="bg-yellow-50 rounded-xl p-4 border border-yellow-200">
-                  <div className="flex items-start gap-3">
-                    <AlertCircle className="h-5 w-5 text-yellow-600 flex-shrink-0 mt-0.5" />
-                    <div>
-                      <h4 className="font-semibold text-yellow-900">Auto-deselected Customers</h4>
-                      <p className="text-sm text-yellow-800 mt-1">
-                        {customers.filter((c) => c.has_existing_invoice).length} customers already have invoices for
-                        this month.
-                      </p>
-                    </div>
+                <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-[10px] p-4">
+                  <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-[13px] font-medium text-amber-900">Auto-deselected Customers</p>
+                    <p className="text-[13px] text-amber-800 mt-0.5">
+                      {customers.filter((c) => c.has_existing_invoice).length} customers already have invoices for this month.
+                    </p>
                   </div>
                 </div>
               )}
             </div>
           )}
 
+          {/* STEP: Generating */}
           {step === "generating" && (
-            <div className="flex flex-col items-center justify-center py-16 animate-in fade-in duration-300">
-              <div className="bg-[#89A8B2]/10 p-6 rounded-full mb-6">
-                <Loader className="animate-spin h-12 w-12 text-[#89A8B2]" />
+            <div className="flex flex-col items-center justify-center py-16">
+              <div className="w-14 h-14 bg-blue-50 rounded-xl flex items-center justify-center mb-5">
+                <Loader className="w-7 h-7 animate-spin text-blue-600" />
               </div>
-              <h3 className="text-xl font-semibold text-[#2C3E50] mb-2">Generating Invoices</h3>
-              <p className="text-sm text-[#5A6C7D] text-center max-w-md">
+              <h3 className="text-[15px] font-medium text-slate-900 mb-1">Generating Invoices</h3>
+              <p className="text-[13px] text-slate-400 text-center max-w-md">
                 Please wait while we generate invoices for {selectedCustomers.length} customers...
               </p>
             </div>
           )}
 
+          {/* STEP: Results */}
           {step === "results" && generationResult && (
-            <div className="space-y-6 animate-in fade-in duration-300">
-              <div
-                className={`rounded-xl p-6 border-l-4 ${
-                  generationResult.total_failed === 0
-                    ? "bg-green-50 border-green-500"
-                    : "bg-yellow-50 border-yellow-500"
-                }`}
-              >
-                <div className="flex items-start gap-4">
-                  {generationResult.total_failed === 0 ? (
-                    <CheckCircle className="h-6 w-6 text-green-600 flex-shrink-0 mt-0.5" />
-                  ) : (
-                    <AlertCircle className="h-6 w-6 text-yellow-600 flex-shrink-0 mt-0.5" />
-                  )}
-                  <div>
-                    <h3 className="font-semibold text-[#2C3E50]">Generation Complete</h3>
-                    <p className="mt-1 text-sm text-[#5A6C7D]">
-                      Successfully generated {generationResult.total_generated} invoices.
-                      {generationResult.total_failed > 0 &&
-                        ` ${generationResult.total_failed} invoices failed to generate.`}
-                    </p>
-                  </div>
+            <div className="space-y-4">
+              {/* Result summary banner */}
+              <div className={`flex items-start gap-3 rounded-[10px] p-4 border ${
+                generationResult.total_failed === 0
+                  ? "bg-emerald-50 border-emerald-200"
+                  : "bg-amber-50 border-amber-200"
+              }`}>
+                {generationResult.total_failed === 0
+                  ? <CheckCircle className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+                  : <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />}
+                <div>
+                  <p className="text-[13px] font-medium text-slate-900">Generation Complete</p>
+                  <p className="text-[13px] text-slate-600 mt-0.5">
+                    Successfully generated {generationResult.total_generated} invoices.
+                    {generationResult.total_failed > 0 && ` ${generationResult.total_failed} invoices failed.`}
+                  </p>
                 </div>
               </div>
 
-              {generationResult.failed.length > 0 && (
-                <div className="bg-white rounded-xl overflow-hidden shadow-sm border border-[#B3C8CF]/20">
-                  <div className="bg-red-50 px-6 py-4 border-b border-red-200">
-                    <h4 className="font-semibold text-red-900">Failed Invoices</h4>
+              {/* Failed invoices */}
+              {generationResult.failed?.length > 0 && (
+                <div className="bg-white rounded-[10px] border border-slate-200 overflow-hidden">
+                  <div className="bg-rose-50 px-5 py-3 border-b border-rose-200">
+                    <p className="text-[13px] font-medium text-rose-900">Failed Invoices</p>
                   </div>
-                  <div className="max-h-64 overflow-y-auto p-4 space-y-3">
+                  <div className="max-h-64 overflow-y-auto p-4 space-y-2">
                     {generationResult.failed.map((failed: any, index: number) => (
-                      <div key={index} className="bg-red-50 p-4 rounded-lg border border-red-200">
-                        <div className="font-medium text-[#2C3E50]">{failed.customer_name}</div>
-                        <div className="text-sm text-red-600 mt-1">{failed.error}</div>
+                      <div key={index} className="bg-rose-50 rounded-md border border-rose-200 px-3 py-2.5">
+                        <div className="text-[13px] font-medium text-slate-700">{failed.customer_name}</div>
+                        <div className="text-[11px] text-rose-600 mt-0.5">{failed.error}</div>
                       </div>
                     ))}
                   </div>
                 </div>
               )}
 
-              {generationResult.generated.length > 0 && (
-                <div className="bg-white rounded-xl overflow-hidden shadow-sm border border-[#B3C8CF]/20">
-                  <div className="bg-green-50 px-6 py-4 border-b border-green-200">
-                    <h4 className="font-semibold text-green-900">Generated Invoices</h4>
+              {/* Generated invoices */}
+              {generationResult.generated?.length > 0 && (
+                <div className="bg-white rounded-[10px] border border-slate-200 overflow-hidden">
+                  <div className="bg-emerald-50 px-5 py-3 border-b border-emerald-200">
+                    <p className="text-[13px] font-medium text-emerald-900">Generated Invoices</p>
                   </div>
-                  <div className="max-h-64 overflow-y-auto p-4 space-y-3">
+                  <div className="max-h-64 overflow-y-auto p-4 space-y-2">
                     {generationResult.generated.map((invoice: any, index: number) => (
-                      <div key={index} className="bg-green-50 p-4 rounded-lg border border-green-200">
-                        <div className="font-medium text-[#2C3E50]">{invoice.customer_name}</div>
-                        <div className="text-sm text-[#5A6C7D] mt-1">
-                          Invoice: {invoice.invoice_number} • Amount: PKR {invoice.amount.toFixed(2)}
+                      <div key={index} className="bg-emerald-50 rounded-md border border-emerald-200 px-3 py-2.5">
+                        <div className="text-[13px] font-medium text-slate-700">{invoice.customer_name}</div>
+                        <div className="text-[11px] text-slate-500 mt-0.5 tabular-nums">
+                          Invoice: {invoice.invoice_number} · PKR {invoice.amount.toFixed(2)}
                         </div>
                       </div>
                     ))}
@@ -429,65 +356,48 @@ export function BulkInvoiceModal({ isVisible, onClose, onSuccess }: BulkInvoiceM
           )}
         </div>
 
-        <div className="p-6 sm:p-8 border-t border-[#B3C8CF]/20 bg-white flex flex-col-reverse sm:flex-row justify-between gap-3">
+        {/* ── FOOTER: bg-slate-50 border-t ── */}
+        <div className="px-6 py-3 bg-slate-50 border-t border-slate-200 flex flex-col-reverse sm:flex-row justify-between gap-3 flex-shrink-0">
           {step === "month" && (
             <>
-              <button
-                onClick={onClose}
-                className="px-6 py-3 border-2 border-[#B3C8CF] text-[#89A8B2] rounded-lg hover:bg-[#F1F0E8] transition-all duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-[#89A8B2]/30"
-              >
+              <button onClick={onClose}
+                className="px-4 py-2 text-[13px] font-medium text-slate-600 border border-slate-200 rounded-md hover:bg-slate-100 transition-colors duration-150">
                 Cancel
               </button>
-              <button
-                onClick={getMonthPreview}
-                disabled={!selectedMonth || isLoading}
-                className="px-6 py-3 bg-gradient-to-r from-[#89A8B2] to-[#7A96A3] text-white rounded-lg hover:shadow-lg hover:shadow-[#89A8B2]/30 transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-[#89A8B2]/50 flex items-center justify-center gap-2"
-              >
-                {isLoading ? <Loader className="animate-spin h-5 w-5" /> : <Users className="h-5 w-5" />}
-                Continue to Preview
+              <button onClick={getMonthPreview} disabled={!selectedMonth || isLoading}
+                className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white text-[13px] font-medium rounded-md hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors duration-150">
+                {isLoading ? <><Loader className="w-4 h-4 animate-spin" /> Loading...</> : <><Users className="w-4 h-4" /> Continue to Preview</>}
               </button>
             </>
           )}
 
           {step === "preview" && (
             <>
-              <button
-                onClick={() => setStep("month")}
-                className="px-6 py-3 border-2 border-[#B3C8CF] text-[#89A8B2] rounded-lg hover:bg-[#F1F0E8] transition-all duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-[#89A8B2]/30"
-              >
+              <button onClick={() => setStep("month")}
+                className="px-4 py-2 text-[13px] font-medium text-slate-600 border border-slate-200 rounded-md hover:bg-slate-100 transition-colors duration-150">
                 Back
               </button>
-              <div className="flex flex-col-reverse sm:flex-row gap-3">
-                <button
-                  onClick={onClose}
-                  className="px-6 py-3 border-2 border-[#B3C8CF] text-[#89A8B2] rounded-lg hover:bg-[#F1F0E8] transition-all duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-[#89A8B2]/30"
-                >
+              <div className="flex flex-col-reverse sm:flex-row gap-2">
+                <button onClick={onClose}
+                  className="px-4 py-2 text-[13px] font-medium text-slate-600 border border-slate-200 rounded-md hover:bg-slate-100 transition-colors duration-150">
                   Cancel
                 </button>
-                <button
-                  onClick={generateInvoices}
-                  disabled={selectedCustomers.length === 0 || isLoading}
-                  className="px-6 py-3 bg-gradient-to-r from-[#89A8B2] to-[#7A96A3] text-white rounded-lg hover:shadow-lg hover:shadow-[#89A8B2]/30 transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-[#89A8B2]/50 flex items-center justify-center gap-2"
-                >
-                  {isLoading ? <Loader className="animate-spin h-5 w-5" /> : <FileText className="h-5 w-5" />}
-                  Generate {selectedCustomers.length} Invoices
+                <button onClick={generateInvoices} disabled={selectedCustomers.length === 0 || isLoading}
+                  className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white text-[13px] font-medium rounded-md hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors duration-150">
+                  {isLoading ? <><Loader className="w-4 h-4 animate-spin" /> Generating...</> : <><FileText className="w-4 h-4" /> Generate {selectedCustomers.length} Invoices</>}
                 </button>
               </div>
             </>
           )}
 
           {step === "results" && (
-            <div className="flex flex-col-reverse sm:flex-row w-full justify-end gap-3">
-              <button
-                onClick={() => resetForm()}
-                className="px-6 py-3 border-2 border-[#B3C8CF] text-[#89A8B2] rounded-lg hover:bg-[#F1F0E8] transition-all duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-[#89A8B2]/30"
-              >
+            <div className="flex flex-col-reverse sm:flex-row w-full justify-end gap-2">
+              <button onClick={resetForm}
+                className="px-4 py-2 text-[13px] font-medium text-slate-600 border border-slate-200 rounded-md hover:bg-slate-100 transition-colors duration-150">
                 Generate More
               </button>
-              <button
-                onClick={onClose}
-                className="px-6 py-3 bg-gradient-to-r from-[#89A8B2] to-[#7A96A3] text-white rounded-lg hover:shadow-lg hover:shadow-[#89A8B2]/30 transition-all duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-[#89A8B2]/50"
-              >
+              <button onClick={onClose}
+                className="px-4 py-2 bg-blue-600 text-white text-[13px] font-medium rounded-md hover:bg-blue-700 transition-colors duration-150">
                 Close
               </button>
             </div>

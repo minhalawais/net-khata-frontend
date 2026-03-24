@@ -25,13 +25,14 @@ const AreaZoneManagement: React.FC = () => {
       {
         header: 'Name',
         accessorKey: 'name',
+        cell: (info) => <span className="text-[13px] font-medium text-slate-800">{info.getValue() as string}</span>,
       },
       {
         header: 'Description',
         accessorKey: 'description',
         cell: info => (
-          <div className="max-w-xs overflow-hidden overflow-ellipsis whitespace-nowrap" title={info.getValue() as string}>
-            {info.getValue() as string}
+          <div className="max-w-xs overflow-hidden overflow-ellipsis whitespace-nowrap text-[13px] text-slate-500" title={info.getValue() as string}>
+            {(info.getValue() as string) || 'No description'}
           </div>
         ),
       },
@@ -41,10 +42,10 @@ const AreaZoneManagement: React.FC = () => {
         cell: info => (
           <button
             onClick={() => navigate(`/areas/${info.row.original.id}/sub-zones`)}
-            className="flex items-center gap-1 px-2 py-1 bg-electric-blue/10 text-electric-blue rounded-md hover:bg-electric-blue/20 transition-colors text-sm"
+            className="inline-flex items-center gap-1.5 h-8 px-3 text-[12px] font-medium text-slate-600 border border-slate-200 rounded-md hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700 transition-colors duration-150"
           >
-            <MapPin className="h-3 w-3" />
-            {(info.getValue() as number) || 0} sub-zones
+            <MapPin className="h-3.5 w-3.5" />
+            <span className="tabular-nums">{(info.getValue() as number) || 0}</span> sub-zones
           </button>
         ),
       }

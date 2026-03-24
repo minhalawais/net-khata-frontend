@@ -3,62 +3,37 @@
 import type React from "react"
 import { useState, useEffect } from "react"
 import {
-  Download,
-  Upload,
-  AlertCircle,
-  CheckCircle,
-  X,
-  FileText,
-  Loader,
-  Edit3,
-  Save,
-  RotateCcw,
-  ChevronLeft,
-  ChevronRight,
-  FileSpreadsheet,
-  Database,
-  Settings,
-  AlertTriangle,
-  XCircle,
+  Download, Upload, AlertCircle, CheckCircle, X, FileText, Loader,
+  Edit3, Save, RotateCcw, ChevronLeft, ChevronRight, FileSpreadsheet,
+  Database, Settings, AlertTriangle, XCircle,
 } from "lucide-react"
 import { getToken } from "../../utils/auth.ts"
 import axiosInstance from "../../utils/axiosConfig.ts"
 import { toast } from "react-toastify"
 
 interface EnhancedBulkAddModalProps {
-  isVisible: boolean
-  onClose: () => void
-  endpoint: string
-  entityName: string
-  onSuccess: () => void
+  isVisible: boolean; onClose: () => void; endpoint: string
+  entityName: string; onSuccess: () => void
 }
-
 interface ValidationResult {
-  success: boolean
-  totalRecords: number
-  successCount: number
-  failedCount: number
+  success: boolean; totalRecords: number; successCount: number; failedCount: number
   validRows: Array<Record<string, any>>
-  errors: Array<{
-    row: number
-    errors: string[]
-    fieldErrors: Record<string, string>
-    data: Record<string, any>
-  }>
+  errors: Array<{ row: number; errors: string[]; fieldErrors: Record<string, string>; data: Record<string, any> }>
 }
-
 interface DropdownData {
   areas: Array<{ id: string; name: string }>
   servicePlans: Array<{ id: string; name: string }>
   isps: Array<{ id: string; name: string }>
 }
 
+/* ── SHARED CLASSES ── */
+const inputBase =
+  "w-full px-2 py-1 text-[12px] border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-blue-500/[0.12] focus:border-blue-500 bg-white text-slate-900 placeholder:text-slate-400"
+const inputError =
+  "border-rose-400 focus:ring-rose-500/[0.12] focus:border-rose-500"
+
 export function EnhancedBulkAddModal({
-  isVisible,
-  onClose,
-  endpoint,
-  entityName,
-  onSuccess,
+  isVisible, onClose, endpoint, entityName, onSuccess,
 }: EnhancedBulkAddModalProps) {
   const [file, setFile] = useState<File | null>(null)
   const [isUploading, setIsUploading] = useState(false)
@@ -74,35 +49,22 @@ export function EnhancedBulkAddModal({
   const [isProcessing, setIsProcessing] = useState(false)
 
   useEffect(() => {
-    if (isVisible) {
-      fetchDropdownData()
-    }
+    if (isVisible) fetchDropdownData()
   }, [isVisible])
 
   const fetchDropdownData = async () => {
     try {
       const token = getToken()
-      const res = await axiosInstance.get("/customers/reference-data", {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      const res = await axiosInstance.get("/customers/reference-data", { headers: { Authorization: `Bearer ${token}` } })
       const payload = typeof res.data === "string" ? JSON.parse(res.data) : res.data
-
-      setDropdownData({
-        areas: payload.areas || [],
-        servicePlans: payload.servicePlans || [],
-        isps: payload.isps || [],
-      })
-    } catch (error) {
-      console.error("Failed to fetch dropdown data:", error)
-    }
+      setDropdownData({ areas: payload.areas || [], servicePlans: payload.servicePlans || [], isps: payload.isps || [] })
+    } catch (error) { console.error("Failed to fetch dropdown data:", error) }
   }
 
   const getFieldErrors = (rowIndex: number, field: string): string[] => {
     if (showValidRowsOnly) return []
-
-    const errorRow = validationResult?.errors.find((error) => error.row === rowIndex)
-    if (!errorRow || !errorRow.fieldErrors) return []
-
+    const errorRow = validationResult?.errors.find((e) => e.row === rowIndex)
+    if (!errorRow?.fieldErrors) return []
     const fieldError = errorRow.fieldErrors[field]
     return fieldError ? [fieldError] : []
   }
@@ -110,21 +72,12 @@ export function EnhancedBulkAddModal({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const selectedFile = e.target.files[0]
-      if (
-        selectedFile.type === "text/csv" ||
-        selectedFile.type === "application/vnd.ms-excel" ||
-        selectedFile.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-      ) {
-        setFile(selectedFile)
-        setValidationResult(null)
-        setStep("initial")
-        setEditingRows(new Set())
-        setEditedData({})
-        setCurrentPage(1)
+      const validTypes = ["text/csv", "application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"]
+      if (validTypes.includes(selectedFile.type)) {
+        setFile(selectedFile); setValidationResult(null); setStep("initial")
+        setEditingRows(new Set()); setEditedData({}); setCurrentPage(1)
       } else {
-        toast.error("Please select a CSV or Excel file", {
-          style: { background: "#FEE2E2", color: "#EF4444" },
-        })
+        toast.error("Please select a CSV or Excel file")
       }
     }
   }
@@ -133,82 +86,41 @@ export function EnhancedBulkAddModal({
     try {
       const token = getToken()
       const response = await axiosInstance.get(`/${endpoint}/template`, {
-        headers: { Authorization: `Bearer ${token}` },
-        responseType: "blob",
+        headers: { Authorization: `Bearer ${token}` }, responseType: "blob",
       })
-
       const url = window.URL.createObjectURL(new Blob([response.data]))
       const link = document.createElement("a")
-      link.href = url
-      link.setAttribute("download", `${entityName.toLowerCase()}_template.xlsx`)
-      document.body.appendChild(link)
-      link.click()
-      link.remove()
+      link.href = url; link.setAttribute("download", `${entityName.toLowerCase()}_template.xlsx`)
+      document.body.appendChild(link); link.click(); link.remove()
       window.URL.revokeObjectURL(url)
-
-      toast.success(`${entityName} template downloaded successfully`, {
-        style: { background: "#D1FAE5", color: "#10B981" },
-      })
+      toast.success(`${entityName} template downloaded successfully`)
     } catch (error) {
-      console.error("Failed to download template", error)
-      toast.error("Failed to download template", {
-        style: { background: "#FEE2E2", color: "#EF4444" },
-      })
+      toast.error("Failed to download template")
     }
   }
 
   const validateFile = async () => {
     if (!file) return
-
-    setIsUploading(true)
-    setStep("uploading")
-    setUploadProgress(0)
-
+    setIsUploading(true); setStep("uploading"); setUploadProgress(0)
     const formData = new FormData()
     formData.append("file", file)
-
     try {
       const token = getToken()
       const response = await axiosInstance.post(`/${endpoint}/validate-bulk`, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" },
         onUploadProgress: (progressEvent) => {
-          const percentCompleted = Math.round((progressEvent.loaded * 100) / (progressEvent.total || 1))
-          setUploadProgress(percentCompleted)
+          setUploadProgress(Math.round((progressEvent.loaded * 100) / (progressEvent.total || 1)))
         },
       })
       const responseData = typeof response.data === "string" ? JSON.parse(response.data) : response.data
-
-      setValidationResult(responseData)
-      setStep("validation")
-
+      setValidationResult(responseData); setStep("validation")
       if (responseData.failedCount > 0) {
-        toast.warning(
-          `Validation complete: ${responseData.successCount} valid, ${responseData.failedCount} errors found`,
-          {
-            style: { background: "#FEF3C7", color: "#D97706" },
-          },
-        )
+        toast.warning(`Validation complete: ${responseData.successCount} valid, ${responseData.failedCount} errors found`)
       } else {
-        toast.success(`All ${responseData.totalRecords} records are valid and ready for import`, {
-          style: { background: "#D1FAE5", color: "#10B981" },
-        })
+        toast.success(`All ${responseData.totalRecords} records are valid and ready for import`)
       }
     } catch (error: any) {
-      console.error("Failed to validate file", error)
-
-      if (error.response?.data?.error) {
-        toast.error(error.response.data.error, {
-          style: { background: "#FEE2E2", color: "#EF4444" },
-        })
-      } else {
-        toast.error("Failed to validate file", {
-          style: { background: "#FEE2E2", color: "#EF4444" },
-        })
-      }
-
+      toast.error(error.response?.data?.error || "Failed to validate file")
       setStep("initial")
     } finally {
       setIsUploading(false)
@@ -217,52 +129,23 @@ export function EnhancedBulkAddModal({
 
   const processValidatedData = async () => {
     if (!validationResult) return
-
-    setIsProcessing(true)
-    setStep("processing")
-
+    setIsProcessing(true); setStep("processing")
     try {
       const token = getToken()
-
-      const validRowsToProcess = validationResult.validRows.map((row, index) => {
-        return editedData[index] ? { ...row, ...editedData[index] } : row
-      })
-
-      const requestData = {
-        validatedData: validRowsToProcess,
-      }
-
-      const response = await axiosInstance.post(`/${endpoint}/bulk-add`, requestData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      })
-      const responseData = typeof response.data === "string" ? JSON.parse(response.data) : response.data
-
-      setValidationResult(responseData)
-      setStep("complete")
-
-      toast.success(
-        `Successfully processed ${responseData.successCount} out of ${validRowsToProcess.length} ${entityName.toLowerCase()}s`,
-        {
-          style: { background: "#D1FAE5", color: "#10B981" },
-        },
+      const validRowsToProcess = validationResult.validRows.map((row, index) =>
+        editedData[index] ? { ...row, ...editedData[index] } : row,
       )
+      const response = await axiosInstance.post(
+        `/${endpoint}/bulk-add`,
+        { validatedData: validRowsToProcess },
+        { headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" } },
+      )
+      const responseData = typeof response.data === "string" ? JSON.parse(response.data) : response.data
+      setValidationResult(responseData); setStep("complete")
+      toast.success(`Successfully processed ${responseData.successCount} out of ${validRowsToProcess.length} ${entityName.toLowerCase()}s`)
       onSuccess()
     } catch (error: any) {
-      console.error("Failed to process data", error)
-
-      if (error.response?.data?.error) {
-        toast.error(error.response.data.error, {
-          style: { background: "#FEE2E2", color: "#EF4444" },
-        })
-      } else {
-        toast.error("Failed to process validated data", {
-          style: { background: "#FEE2E2", color: "#EF4444" },
-        })
-      }
-
+      toast.error(error.response?.data?.error || "Failed to process validated data")
       setStep("validation")
     } finally {
       setIsProcessing(false)
@@ -270,315 +153,145 @@ export function EnhancedBulkAddModal({
   }
 
   const handleEditRow = (rowIndex: number) => {
-    const newEditingRows = new Set(editingRows)
-    if (newEditingRows.has(rowIndex)) {
-      newEditingRows.delete(rowIndex)
-    } else {
-      newEditingRows.add(rowIndex)
-    }
-    setEditingRows(newEditingRows)
+    const newSet = new Set(editingRows)
+    newSet.has(rowIndex) ? newSet.delete(rowIndex) : newSet.add(rowIndex)
+    setEditingRows(newSet)
   }
 
   const handleFieldChange = (rowIndex: number, field: string, value: string) => {
-    setEditedData((prev) => ({
-      ...prev,
-      [rowIndex]: {
-        ...prev[rowIndex],
-        [field]: value,
-      },
-    }))
+    setEditedData((prev) => ({ ...prev, [rowIndex]: { ...prev[rowIndex], [field]: value } }))
   }
 
   const validateRowClientSide = (rowData: Record<string, any>): string[] => {
     const errors: string[] = []
-
-    const requiredFields = [
-      "internet_id",
-      "first_name",
-      "last_name",
-      "email",
-      "phone_1",
-      "area_id",
-      "installation_address",
-      "service_plan_id",
-      "isp_id",
-      "connection_type",
-      "cnic",
-      "installation_date",
-    ]
-
-    requiredFields.forEach((field) => {
-      if (!rowData[field] || String(rowData[field]).trim() === "") {
-        errors.push(`Missing required field: ${field}`)
-      }
-    })
-
-    if (rowData.email) {
-      const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-      if (!emailPattern.test(rowData.email)) {
-        errors.push("Invalid email format")
-      }
-    }
-
+    const required = ["internet_id","first_name","last_name","email","phone_1","area_id","installation_address","service_plan_id","isp_id","connection_type","cnic","installation_date"]
+    required.forEach((f) => { if (!rowData[f] || String(rowData[f]).trim() === "") errors.push(`Missing required field: ${f}`) })
+    if (rowData.email && !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(rowData.email)) errors.push("Invalid email format")
     const validatePhone = (label: string, value?: string) => {
       if (!value) return
       const digits = String(value).replace(/\D/g, "")
       const normalized = digits.startsWith("92") ? digits : `92${digits}`
-      if (normalized.length < 10 || normalized.length > 13) {
-        errors.push(`Invalid phone number format for ${label}`)
-      }
+      if (normalized.length < 10 || normalized.length > 13) errors.push(`Invalid phone number format for ${label}`)
     }
     validatePhone("phone_1", rowData.phone_1)
     if (rowData.phone_2) validatePhone("phone_2", rowData.phone_2)
-
-    if (rowData.cnic) {
-      const cnicClean = String(rowData.cnic).replace(/\D/g, "")
-      if (cnicClean.length !== 13) {
-        errors.push("CNIC must be exactly 13 digits")
-      }
-    }
-
-    if (rowData.installation_date) {
-      const datePattern = /^\d{4}-\d{2}-\d{2}$/
-      if (!datePattern.test(String(rowData.installation_date))) {
-        errors.push("installation_date must be in YYYY-MM-DD format")
-      }
-    }
-
-    if (rowData.connection_type) {
-      const validConnectionTypes = ["internet", "tv_cable", "both"]
-      if (!validConnectionTypes.includes(String(rowData.connection_type).toLowerCase())) {
-        errors.push("connection_type must be one of: internet, tv_cable, both")
-      }
-    }
-    if (rowData.connection_type && ["internet", "both"].includes(String(rowData.connection_type).toLowerCase())) {
-      if (!rowData.internet_connection_type)
-        errors.push("internet_connection_type is required when connection_type is internet or both")
-    }
-    if (rowData.connection_type && ["tv_cable", "both"].includes(String(rowData.connection_type).toLowerCase())) {
-      if (!rowData.tv_cable_connection_type)
-        errors.push("tv_cable_connection_type is required when connection_type is tv_cable or both")
-    }
-
+    if (rowData.cnic && String(rowData.cnic).replace(/\D/g, "").length !== 13) errors.push("CNIC must be exactly 13 digits")
+    if (rowData.installation_date && !/^\d{4}-\d{2}-\d{2}$/.test(String(rowData.installation_date))) errors.push("installation_date must be in YYYY-MM-DD format")
+    if (rowData.connection_type && !["internet","tv_cable","both"].includes(String(rowData.connection_type).toLowerCase())) errors.push("connection_type must be one of: internet, tv_cable, both")
     const isIdIn = (id: string, list: Array<{ id: string }>) => !!list.find((x) => x.id === id)
-    if (rowData.area_id && !isIdIn(rowData.area_id, dropdownData.areas)) {
-      errors.push("Invalid area_id selection")
-    }
-    if (rowData.service_plan_id && !isIdIn(rowData.service_plan_id, dropdownData.servicePlans)) {
-      errors.push("Invalid service_plan_id selection")
-    }
-    if (rowData.isp_id && !isIdIn(rowData.isp_id, dropdownData.isps)) {
-      errors.push("Invalid isp_id selection")
-    }
-
+    if (rowData.area_id && !isIdIn(rowData.area_id, dropdownData.areas)) errors.push("Invalid area_id selection")
+    if (rowData.service_plan_id && !isIdIn(rowData.service_plan_id, dropdownData.servicePlans)) errors.push("Invalid service_plan_id selection")
+    if (rowData.isp_id && !isIdIn(rowData.isp_id, dropdownData.isps)) errors.push("Invalid isp_id selection")
     return errors
   }
 
-  const updateValidationResultAfterEdit = (
-    rowIndex: number,
-    rowData: Record<string, any>,
-    isValid: boolean,
-    errors: string[] = [],
-    fieldErrors: Record<string, string> = {},
-  ) => {
+  const updateValidationResultAfterEdit = (rowIndex: number, rowData: Record<string, any>, isValid: boolean, errors: string[] = [], fieldErrors: Record<string, string> = {}) => {
     if (!validationResult) return
-
     setValidationResult((prev) => {
       if (!prev) return prev
-
-      const newValidationResult = JSON.parse(JSON.stringify(prev))
-
+      const next = JSON.parse(JSON.stringify(prev))
       if (isValid) {
-        const errorIndex = newValidationResult.errors.findIndex((error: any) => error.row === rowIndex)
+        const errorIndex = next.errors.findIndex((e: any) => e.row === rowIndex)
         if (errorIndex !== -1) {
-          const [movedRow] = newValidationResult.errors.splice(errorIndex, 1)
-
-          newValidationResult.validRows.push({
-            ...movedRow.data,
-            ...rowData,
-          })
-
-          newValidationResult.successCount += 1
-          newValidationResult.failedCount -= 1
+          const [movedRow] = next.errors.splice(errorIndex, 1)
+          next.validRows.push({ ...movedRow.data, ...rowData })
+          next.successCount += 1; next.failedCount -= 1
         }
       } else {
-        const errorIndex = newValidationResult.errors.findIndex((error: any) => error.row === rowIndex)
+        const errorIndex = next.errors.findIndex((e: any) => e.row === rowIndex)
         if (errorIndex !== -1) {
-          newValidationResult.errors[errorIndex] = {
-            ...newValidationResult.errors[errorIndex],
-            errors: errors,
-            fieldErrors: fieldErrors,
-            data: {
-              ...newValidationResult.errors[errorIndex].data,
-              ...rowData,
-            },
-          }
+          next.errors[errorIndex] = { ...next.errors[errorIndex], errors, fieldErrors, data: { ...next.errors[errorIndex].data, ...rowData } }
         } else {
-          const validIndex = newValidationResult.validRows.findIndex((row: any, index: number) => index === rowIndex)
+          const validIndex = next.validRows.findIndex((_: any, i: number) => i === rowIndex)
           if (validIndex !== -1) {
-            const [movedRow] = newValidationResult.validRows.splice(validIndex, 1)
-            newValidationResult.errors.push({
-              row: rowIndex,
-              errors: errors,
-              fieldErrors: fieldErrors,
-              data: {
-                ...movedRow,
-                ...rowData,
-              },
-            })
-            newValidationResult.successCount -= 1
-            newValidationResult.failedCount += 1
+            next.validRows.splice(validIndex, 1)
+            next.errors.push({ row: rowIndex, errors, fieldErrors, data: rowData })
+            next.successCount -= 1; next.failedCount += 1
           }
         }
       }
-
-      return newValidationResult
-    })
-
-    setEditingRows((prev) => {
-      const newSet = new Set(prev)
-      newSet.delete(rowIndex)
-      return newSet
+      return next
     })
   }
 
   const saveRowChanges = async (rowIndex: number) => {
-    const rowData = editedData[rowIndex]
-    if (!rowData || !validationResult) return
-
-    try {
-      const originalRow = validationResult.errors.find((error) => error.row === rowIndex)
-      if (!originalRow) return
-
-      const completeRowData = {
-        ...originalRow.data,
-        ...rowData,
-      }
-
-      const clientErrors = validateRowClientSide(completeRowData)
-
-      if (clientErrors.length === 0) {
-        setIsUploading(true)
+    if (!validationResult) return
+    const errorRow = validationResult.errors.find((e) => e.row === rowIndex)
+    if (!errorRow) return
+    const completeRowData = { ...errorRow.data, ...editedData[rowIndex] }
+    const clientErrors = validateRowClientSide(completeRowData)
+    if (clientErrors.length === 0) {
+      setIsUploading(true)
+      try {
         const token = getToken()
-
-        const response = await axiosInstance.post(
-          `/${endpoint}/validate-single-row`,
-          {
-            rowData: completeRowData,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          },
-        )
-
+        const formData = new FormData()
+        formData.append("file", new Blob([JSON.stringify([completeRowData])], { type: "application/json" }))
+        const response = await axiosInstance.post(`/${endpoint}/validate-bulk`, formData, {
+          headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" },
+        })
         const responseData = typeof response.data === "string" ? JSON.parse(response.data) : response.data
-
         if (responseData.successCount === 1) {
           updateValidationResultAfterEdit(rowIndex, completeRowData, true)
-          toast.success("Row validation passed", {
-            style: { background: "#D1FAE5", color: "#10B981" },
-          })
+          toast.success("Row validation passed")
         } else {
-          const rowErrors = responseData.errors.find((error: any) => error.row === 0)
-          if (rowErrors && rowErrors.fieldErrors) {
-            const errorMessages = Object.values(rowErrors.fieldErrors) as string[]
-            updateValidationResultAfterEdit(rowIndex, completeRowData, false, errorMessages, rowErrors.fieldErrors)
+          const rowErrors = responseData.errors.find((e: any) => e.row === 0)
+          if (rowErrors?.fieldErrors) {
+            updateValidationResultAfterEdit(rowIndex, completeRowData, false, Object.values(rowErrors.fieldErrors) as string[], rowErrors.fieldErrors)
           } else {
             updateValidationResultAfterEdit(rowIndex, completeRowData, false, rowErrors?.errors || [])
           }
-          toast.warning("Row still has validation errors", {
-            style: { background: "#FEF3C7", color: "#D97706" },
-          })
+          toast.warning("Row still has validation errors")
         }
         setIsUploading(false)
-      } else {
-        updateValidationResultAfterEdit(rowIndex, completeRowData, false, clientErrors)
-        toast.warning("Please fix validation errors", {
-          style: { background: "#FEF3C7", color: "#D97706" },
-        })
+      } catch {
+        toast.error("Failed to save changes"); setIsUploading(false)
       }
-    } catch (error) {
-      console.error("Error saving row changes:", error)
-      toast.error("Failed to save changes", {
-        style: { background: "#FEE2E2", color: "#EF4444" },
-      })
-      setIsUploading(false)
+    } else {
+      updateValidationResultAfterEdit(rowIndex, completeRowData, false, clientErrors)
+      toast.warning("Please fix validation errors")
     }
   }
 
   const resetRowChanges = (rowIndex: number) => {
-    setEditedData((prev) => {
-      const newData = { ...prev }
-      delete newData[rowIndex]
-      return newData
-    })
-    setEditingRows((prev) => {
-      const newSet = new Set(prev)
-      newSet.delete(rowIndex)
-      return newSet
-    })
+    setEditedData((prev) => { const n = { ...prev }; delete n[rowIndex]; return n })
+    setEditingRows((prev) => { const n = new Set(prev); n.delete(rowIndex); return n })
   }
 
   const resetForm = () => {
-    setFile(null)
-    setValidationResult(null)
-    setUploadProgress(0)
-    setStep("initial")
-    setEditingRows(new Set())
-    setEditedData({})
-    setCurrentPage(1)
-    setShowValidRowsOnly(false)
+    setFile(null); setValidationResult(null); setUploadProgress(0); setStep("initial")
+    setEditingRows(new Set()); setEditedData({}); setCurrentPage(1); setShowValidRowsOnly(false)
   }
 
-  const renderDropdownField = (
-    rowIndex: number,
-    field: string,
-    value: string,
-    options: Array<{ id: string; name: string }>,
-    label: string,
-  ) => {
+  /* ── EDITABLE FIELD RENDERERS ── */
+  const renderDropdownField = (rowIndex: number, field: string, value: string, options: Array<{ id: string; name: string }>, label: string) => {
     const isEditing = editingRows.has(rowIndex)
     const currentValue = editedData[rowIndex]?.[field] || value
     const fieldErrors = getFieldErrors(rowIndex, field)
-
     if (!isEditing) {
-      const option = options.find((opt) => opt.id === currentValue)
+      const option = options.find((o) => o.id === currentValue)
       return (
-        <div className="flex flex-col gap-1">
-          <span className="text-sm text-[#2C3E50]">{option?.name || currentValue || "-"}</span>
+        <div className="flex flex-col gap-0.5">
+          <span className="text-[12px] text-slate-700">{option?.name || currentValue || "—"}</span>
           {fieldErrors.length > 0 && (
             <div className="flex items-start gap-1">
-              <AlertCircle className="h-3 w-3 text-red-600 mt-0.5 flex-shrink-0" />
-              <span className="text-xs text-red-600">{fieldErrors[0]}</span>
+              <AlertCircle className="w-3 h-3 text-rose-500 mt-0.5 flex-shrink-0" />
+              <span className="text-[11px] text-rose-500">{fieldErrors[0]}</span>
             </div>
           )}
         </div>
       )
     }
-
     return (
-      <div className="flex flex-col gap-1">
-        <select
-          value={currentValue}
-          onChange={(e) => handleFieldChange(rowIndex, field, e.target.value)}
-          className={`w-full px-2 py-1 text-xs border rounded focus:outline-none focus:ring-2 ${
-            fieldErrors.length > 0 ? "border-red-600 focus:ring-red-600" : "border-[#B3C8CF] focus:ring-[#89A8B2]"
-          }`}
-        >
+      <div className="flex flex-col gap-0.5">
+        <select value={currentValue} onChange={(e) => handleFieldChange(rowIndex, field, e.target.value)}
+          className={`${inputBase} ${fieldErrors.length > 0 ? inputError : ""}`}>
           <option value="">Select {label}</option>
-          {options.map((option) => (
-            <option key={option.id} value={option.id}>
-              {option.name}
-            </option>
-          ))}
+          {options.map((o) => <option key={o.id} value={o.id}>{o.name}</option>)}
         </select>
         {fieldErrors.length > 0 && (
           <div className="flex items-start gap-1">
-            <AlertCircle className="h-3 w-3 text-red-600 mt-0.5 flex-shrink-0" />
-            <span className="text-xs text-red-600">{fieldErrors[0]}</span>
+            <AlertCircle className="w-3 h-3 text-rose-500 mt-0.5 flex-shrink-0" />
+            <span className="text-[11px] text-rose-500">{fieldErrors[0]}</span>
           </div>
         )}
       </div>
@@ -589,109 +302,49 @@ export function EnhancedBulkAddModal({
     const isEditing = editingRows.has(rowIndex)
     const currentValue = editedData[rowIndex]?.[field] || value
     const fieldErrors = getFieldErrors(rowIndex, field)
-
+    const selectOptions: Record<string, { value: string; label: string }[]> = {
+      connection_type: [{ value: "internet", label: "Internet" }, { value: "tv_cable", label: "TV Cable" }, { value: "both", label: "Both" }],
+      internet_connection_type: [{ value: "wire", label: "Wire" }, { value: "wireless", label: "Wireless" }],
+      tv_cable_connection_type: [{ value: "analog", label: "Analog" }, { value: "digital", label: "Digital" }],
+    }
     if (!isEditing) {
       return (
-        <div className="flex flex-col gap-1">
-          <span className="text-sm text-[#2C3E50] break-words">{currentValue || "-"}</span>
+        <div className="flex flex-col gap-0.5">
+          <span className="text-[12px] text-slate-700 break-words">{currentValue || "—"}</span>
           {fieldErrors.length > 0 && (
             <div className="flex items-start gap-1">
-              <AlertCircle className="h-3 w-3 text-red-600 mt-0.5 flex-shrink-0" />
-              <span className="text-xs text-red-600 leading-tight">{fieldErrors[0]}</span>
+              <AlertCircle className="w-3 h-3 text-rose-500 mt-0.5 flex-shrink-0" />
+              <span className="text-[11px] text-rose-500 leading-tight">{fieldErrors[0]}</span>
             </div>
           )}
         </div>
       )
     }
-
-    if (field === "connection_type") {
+    if (selectOptions[field]) {
       return (
-        <div className="flex flex-col gap-1">
-          <select
-            value={currentValue}
-            onChange={(e) => handleFieldChange(rowIndex, field, e.target.value)}
-            className={`w-full px-2 py-1 text-xs border rounded focus:outline-none focus:ring-2 ${
-              fieldErrors.length > 0 ? "border-red-600 focus:ring-red-600" : "border-[#B3C8CF] focus:ring-[#89A8B2]"
-            }`}
-          >
+        <div className="flex flex-col gap-0.5">
+          <select value={currentValue} onChange={(e) => handleFieldChange(rowIndex, field, e.target.value)}
+            className={`${inputBase} ${fieldErrors.length > 0 ? inputError : ""}`}>
             <option value="">Select...</option>
-            <option value="internet">Internet</option>
-            <option value="tv_cable">TV Cable</option>
-            <option value="both">Both</option>
+            {selectOptions[field].map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
           </select>
           {fieldErrors.length > 0 && (
             <div className="flex items-start gap-1">
-              <AlertCircle className="h-3 w-3 text-red-600 mt-0.5 flex-shrink-0" />
-              <span className="text-xs text-red-600">{fieldErrors[0]}</span>
+              <AlertCircle className="w-3 h-3 text-rose-500 mt-0.5 flex-shrink-0" />
+              <span className="text-[11px] text-rose-500">{fieldErrors[0]}</span>
             </div>
           )}
         </div>
       )
     }
-
-    if (field === "internet_connection_type") {
-      return (
-        <div className="flex flex-col gap-1">
-          <select
-            value={currentValue}
-            onChange={(e) => handleFieldChange(rowIndex, field, e.target.value)}
-            className={`w-full px-2 py-1 text-xs border rounded focus:outline-none focus:ring-2 ${
-              fieldErrors.length > 0 ? "border-red-600 focus:ring-red-600" : "border-[#B3C8CF] focus:ring-[#89A8B2]"
-            }`}
-          >
-            <option value="">Select...</option>
-            <option value="wire">Wire</option>
-            <option value="wireless">Wireless</option>
-          </select>
-          {fieldErrors.length > 0 && (
-            <div className="flex items-start gap-1">
-              <AlertCircle className="h-3 w-3 text-red-600 mt-0.5 flex-shrink-0" />
-              <span className="text-xs text-red-600">{fieldErrors[0]}</span>
-            </div>
-          )}
-        </div>
-      )
-    }
-
-    if (field === "tv_cable_connection_type") {
-      return (
-        <div className="flex flex-col gap-1">
-          <select
-            value={currentValue}
-            onChange={(e) => handleFieldChange(rowIndex, field, e.target.value)}
-            className={`w-full px-2 py-1 text-xs border rounded focus:outline-none focus:ring-2 ${
-              fieldErrors.length > 0 ? "border-red-600 focus:ring-red-600" : "border-[#B3C8CF] focus:ring-[#89A8B2]"
-            }`}
-          >
-            <option value="">Select...</option>
-            <option value="analog">Analog</option>
-            <option value="digital">Digital</option>
-          </select>
-          {fieldErrors.length > 0 && (
-            <div className="flex items-start gap-1">
-              <AlertCircle className="h-3 w-3 text-red-600 mt-0.5 flex-shrink-0" />
-              <span className="text-xs text-red-600">{fieldErrors[0]}</span>
-            </div>
-          )}
-        </div>
-      )
-    }
-
     return (
-      <div className="flex flex-col gap-1">
-        <input
-          type={type}
-          value={currentValue}
-          onChange={(e) => handleFieldChange(rowIndex, field, e.target.value)}
-          className={`w-full px-2 py-1 text-xs border rounded focus:outline-none focus:ring-2 ${
-            fieldErrors.length > 0 ? "border-red-600 focus:ring-red-600" : "border-[#B3C8CF] focus:ring-[#89A8B2]"
-          }`}
-          placeholder={label}
-        />
+      <div className="flex flex-col gap-0.5">
+        <input type={type} value={currentValue} onChange={(e) => handleFieldChange(rowIndex, field, e.target.value)}
+          className={`${inputBase} ${fieldErrors.length > 0 ? inputError : ""}`} placeholder={label} />
         {fieldErrors.length > 0 && (
           <div className="flex items-start gap-1">
-            <AlertCircle className="h-3 w-3 text-red-600 mt-0.5 flex-shrink-0" />
-            <span className="text-xs text-red-600">{fieldErrors[0]}</span>
+            <AlertCircle className="w-3 h-3 text-rose-500 mt-0.5 flex-shrink-0" />
+            <span className="text-[11px] text-rose-500">{fieldErrors[0]}</span>
           </div>
         )}
       </div>
@@ -700,26 +353,13 @@ export function EnhancedBulkAddModal({
 
   const getDisplayData = () => {
     if (!validationResult) return []
-
-    const validRows = validationResult.validRows || []
-    const errors = validationResult.errors || []
-
     if (showValidRowsOnly) {
-      return validRows.map((row, index) => ({
-        ...row,
-        _isValid: true,
-        _originalIndex: index,
-        _displayIndex: index + 1,
-      }))
-    } else {
-      return errors.map((errorItem, index) => ({
-        ...errorItem.data,
-        _isValid: false,
-        _originalIndex: errorItem.row,
-        _displayIndex: errorItem.row + 1,
-        _errors: errorItem.errors,
-      }))
+      return validationResult.validRows.map((row, i) => ({ ...row, _isValid: true, _originalIndex: i, _displayIndex: i + 1 }))
     }
+    return validationResult.errors.map((errorItem, i) => ({
+      ...errorItem.data, _isValid: false, _originalIndex: errorItem.row,
+      _displayIndex: errorItem.row + 1, _errors: errorItem.errors,
+    }))
   }
 
   const displayRows = getDisplayData()
@@ -730,134 +370,139 @@ export function EnhancedBulkAddModal({
 
   if (!isVisible) return null
 
+  /* ── STEP INDICATOR CONFIG ── */
+  const steps = [
+    { num: 1, label: "Upload File", active: step === "initial", completed: step !== "initial" },
+    { num: 2, label: "Validate & Edit", active: step === "validation", completed: step === "processing" || step === "complete" },
+    { num: 3, label: "Process Data", active: step === "processing", completed: step === "complete" },
+    { num: 4, label: "Complete", active: step === "complete", completed: false },
+  ]
+
   return (
-    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-[95vw] max-h-[95vh] overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-300">
-        <div className="flex items-center justify-between p-6 sm:p-8 bg-gradient-to-r from-[#89A8B2] to-[#B3C8CF] border-b border-[#B3C8CF]/20 flex-shrink-0">
-          <div className="flex items-center gap-4">
-            <div className="bg-white/20 p-3 rounded-lg">
-              <Database className="h-6 w-6 text-white" />
+    /* ── BACKDROP: rgba only, no backdrop-blur ── */
+    <div
+      className="fixed inset-0 flex items-center justify-center z-50 p-4"
+      style={{ backgroundColor: "rgba(15, 23, 42, 0.50)" }}
+      onClick={onClose}
+    >
+      {/* ── PANEL: rounded-xl, border only, no shadow-2xl, no gradient ── */}
+      <div
+        className="bg-white rounded-xl border border-slate-200 w-full max-w-[95vw] max-h-[95vh] overflow-hidden flex flex-col"
+        onClick={(e) => e.stopPropagation()}
+      >
+
+        {/* ── HEADER: white, border-b, no gradient ── */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 flex-shrink-0">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0">
+              <Database className="w-4 h-4 text-blue-600" />
             </div>
             <div>
-              <h2 className="text-2xl sm:text-3xl font-bold text-white">Enhanced Bulk Import</h2>
-              <p className="text-white/80 text-sm mt-1">Advanced {entityName} import with validation & editing</p>
+              <h2 className="text-[15px] font-medium text-slate-900">Enhanced Bulk Import</h2>
+              <p className="text-[11px] text-slate-400 mt-0.5">Advanced {entityName} import with validation & editing</p>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="text-white/80 hover:text-white transition-all duration-200 p-2 rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/30"
-          >
-            <X className="h-6 w-6" />
+          <button onClick={onClose}
+            className="p-1.5 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors duration-150">
+            <X className="w-4 h-4" />
           </button>
         </div>
 
-        <div className="px-6 sm:px-8 py-4 bg-[#F1F0E8] border-b border-[#B3C8CF]/20 flex-shrink-0">
-          <div className="flex items-center justify-between gap-2 sm:gap-4 overflow-x-auto">
-            {[
-              { num: 1, label: "Upload File", active: step === "initial", completed: step !== "initial" },
-              {
-                num: 2,
-                label: "Validate & Edit",
-                active: step === "validation",
-                completed: step === "processing" || step === "complete",
-              },
-              { num: 3, label: "Process Data", active: step === "processing", completed: step === "complete" },
-              { num: 4, label: "Complete", active: step === "complete", completed: false },
-            ].map((item, idx) => (
-              <div key={item.num} className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-                <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all duration-200 ${
-                    item.active
-                      ? "bg-[#89A8B2] text-white shadow-md"
-                      : item.completed
-                        ? "bg-green-500 text-white"
-                        : "bg-[#B3C8CF]/30 text-[#89A8B2]"
-                  }`}
-                >
-                  {item.completed ? <CheckCircle className="h-4 w-4" /> : item.num}
+        {/* ── STEP INDICATOR: system tokens ── */}
+        <div className="px-6 py-3 bg-slate-50 border-b border-slate-200 flex-shrink-0">
+          <div className="flex items-center justify-between gap-2 overflow-x-auto">
+            {steps.map((item, idx) => (
+              <div key={item.num} className="flex items-center gap-2 flex-shrink-0">
+                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[12px] font-medium transition-colors duration-150 ${
+                  item.active ? "bg-blue-600 text-white"
+                    : item.completed ? "bg-emerald-600 text-white"
+                    : "bg-slate-200 text-slate-500"
+                }`}>
+                  {item.completed ? <CheckCircle className="w-4 h-4" /> : item.num}
                 </div>
-                <span
-                  className={`text-xs sm:text-sm font-medium whitespace-nowrap ${
-                    item.active || item.completed ? "text-[#89A8B2]" : "text-[#5A6C7D]"
-                  }`}
-                >
-                  {item.label}
-                </span>
-                {idx < 3 && <div className="w-6 sm:w-8 h-0.5 bg-[#B3C8CF]/20 flex-shrink-0" />}
+                <span className={`text-[12px] font-medium whitespace-nowrap ${
+                  item.active ? "text-blue-600" : item.completed ? "text-emerald-700" : "text-slate-400"
+                }`}>{item.label}</span>
+                {idx < 3 && <div className="w-6 h-px bg-slate-200 flex-shrink-0" />}
               </div>
             ))}
           </div>
         </div>
 
+        {/* ── BODY ── */}
         <div className="flex-1 overflow-hidden flex flex-col">
+
+          {/* STEP: Initial */}
           {step === "initial" && (
-            <div className="p-6 sm:p-8 overflow-y-auto">
-              <div className="space-y-6 animate-in fade-in duration-300">
-                <div className="bg-gradient-to-r from-[#89A8B2]/10 to-[#B3C8CF]/10 rounded-xl p-6 border border-[#89A8B2]/20">
-                  <div className="flex items-start gap-4">
-                    <div className="bg-[#89A8B2]/20 p-3 rounded-full flex-shrink-0">
-                      <Settings className="h-6 w-6 text-[#89A8B2]" />
+            <div className="p-6 overflow-y-auto">
+              <div className="space-y-5">
+
+                {/* Features info card */}
+                <div className="bg-slate-50 rounded-[10px] border border-slate-200 p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Settings className="w-4 h-4 text-blue-600" />
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-semibold text-[#2C3E50] mb-3">Advanced Import Features</h3>
-                      <ul className="text-sm text-[#5A6C7D] space-y-2">
-                        <li className="flex items-center gap-2">
-                          <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
-                          Dynamic Excel template with real-time dropdowns
-                        </li>
-                        <li className="flex items-center gap-2">
-                          <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
-                          Comprehensive validation with inline error display
-                        </li>
-                        <li className="flex items-center gap-2">
-                          <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
-                          Edit invalid rows directly in the interface
-                        </li>
-                        <li className="flex items-center gap-2">
-                          <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
-                          Real-time stats and batch processing
-                        </li>
+                      <h3 className="text-[13px] font-medium text-slate-900 mb-2">Advanced Import Features</h3>
+                      <ul className="space-y-1.5">
+                        {[
+                          "Dynamic Excel template with real-time dropdowns",
+                          "Comprehensive validation with inline error display",
+                          "Edit invalid rows directly in the interface",
+                          "Real-time stats and batch processing",
+                        ].map((feature) => (
+                          <li key={feature} className="flex items-center gap-2 text-[13px] text-slate-600">
+                            <CheckCircle className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                            {feature}
+                          </li>
+                        ))}
                       </ul>
                     </div>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="bg-white border-2 border-[#B3C8CF]/30 rounded-xl p-6 hover:border-[#89A8B2] hover:shadow-lg transition-all duration-200">
+                {/* Download + Upload cards */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Download Template */}
+                  <div className="bg-white rounded-[10px] border border-slate-200 p-5 hover:border-blue-200 transition-colors duration-150">
                     <div className="flex flex-col items-center text-center">
-                      <div className="bg-gradient-to-br from-[#89A8B2] to-[#7A96A3] p-4 rounded-full mb-4">
-                        <FileSpreadsheet className="h-8 w-8 text-white" />
+                      <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center mb-3">
+                        <FileSpreadsheet className="w-6 h-6 text-blue-600" />
                       </div>
-                      <h3 className="text-lg font-semibold text-[#2C3E50] mb-2">Download Template</h3>
-                      <p className="text-sm text-[#5A6C7D] mb-4">Get an Excel template with dropdowns and validation</p>
-                      <button
-                        onClick={downloadTemplate}
-                        className="px-6 py-3 bg-gradient-to-r from-[#89A8B2] to-[#7A96A3] text-white rounded-lg hover:shadow-lg hover:shadow-[#89A8B2]/30 transition-all duration-200 flex items-center gap-2 font-medium"
-                      >
-                        <Download className="h-4 w-4" /> Download Template
+                      <h3 className="text-[13px] font-medium text-slate-900 mb-1">Download Template</h3>
+                      <p className="text-[11px] text-slate-400 mb-4">Get an Excel template with dropdowns and validation</p>
+                      <button onClick={downloadTemplate}
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-[13px] font-medium rounded-md hover:bg-blue-700 transition-colors duration-150">
+                        <Download className="w-4 h-4" /> Download Template
                       </button>
                     </div>
                   </div>
 
-                  <div className="bg-white border-2 border-[#B3C8CF]/30 rounded-xl p-6 hover:border-[#89A8B2] hover:shadow-lg transition-all duration-200">
+                  {/* Upload File */}
+                  <div className="bg-white rounded-[10px] border border-slate-200 p-5 hover:border-blue-200 transition-colors duration-150">
                     <div className="flex flex-col items-center text-center">
-                      <div className="bg-gradient-to-br from-[#2C3E50] to-[#1A252F] p-4 rounded-full mb-4">
-                        <Upload className="h-8 w-8 text-white" />
+                      <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mb-3">
+                        <Upload className="w-6 h-6 text-slate-600" />
                       </div>
-                      <h3 className="text-lg font-semibold text-[#2C3E50] mb-2">Upload & Validate</h3>
-                      <p className="text-sm text-[#5A6C7D] mb-4">Upload your completed file for validation</p>
-                      <div className="w-full">
-                        <label className="flex flex-col items-center px-6 py-3 bg-white text-[#2C3E50] rounded-lg border-2 border-dashed border-[#89A8B2]/40 cursor-pointer hover:border-[#89A8B2] hover:bg-[#89A8B2]/5 transition-all duration-200">
-                          <div className="flex items-center gap-2">
-                            <Upload className="h-4 w-4" />
-                            <span className="font-medium">{file ? file.name : "Choose file"}</span>
-                          </div>
-                          {file && (
-                            <span className="text-xs text-[#5A6C7D] mt-1">{(file.size / 1024).toFixed(2)} KB</span>
-                          )}
-                          <input type="file" className="hidden" accept=".csv,.xls,.xlsx" onChange={handleFileChange} />
-                        </label>
-                      </div>
+                      <h3 className="text-[13px] font-medium text-slate-900 mb-1">Upload & Validate</h3>
+                      <p className="text-[11px] text-slate-400 mb-4">Upload your filled template for validation</p>
+                      <label className="flex flex-col items-center gap-2 w-full py-4 px-4 border border-dashed border-slate-200 rounded-md cursor-pointer hover:border-blue-400 hover:bg-blue-50/20 transition-colors duration-150">
+                        {file ? (
+                          <>
+                            <FileText className="w-6 h-6 text-emerald-600" />
+                            <span className="text-[13px] text-slate-700 font-medium">{file.name}</span>
+                            <span className="text-[11px] text-slate-400">{(file.size / 1024).toFixed(2)} KB</span>
+                          </>
+                        ) : (
+                          <>
+                            <Upload className="w-5 h-5 text-slate-400" />
+                            <span className="text-[13px] text-slate-500">Click to select file</span>
+                            <span className="text-[11px] text-slate-400">CSV, XLS, XLSX</span>
+                          </>
+                        )}
+                        <input type="file" className="sr-only" accept=".csv,.xls,.xlsx" onChange={handleFileChange} />
+                      </label>
                     </div>
                   </div>
                 </div>
@@ -865,401 +510,221 @@ export function EnhancedBulkAddModal({
             </div>
           )}
 
+          {/* STEP: Uploading */}
           {step === "uploading" && (
-            <div className="flex flex-col items-center justify-center py-16 animate-in fade-in duration-300">
-              <div className="bg-[#89A8B2]/10 p-6 rounded-full mb-6">
-                <Loader className="animate-spin h-12 w-12 text-[#89A8B2]" />
+            <div className="flex flex-col items-center justify-center py-16">
+              <div className="w-14 h-14 bg-blue-50 rounded-xl flex items-center justify-center mb-5">
+                <Loader className="w-7 h-7 animate-spin text-blue-600" />
               </div>
-              <h3 className="text-xl font-semibold text-[#2C3E50] mb-2">Validating Your Data</h3>
-              <p className="text-[#5A6C7D] mb-8 text-center max-w-md">
-                Please wait while we analyze your file and validate all customer data...
+              <h3 className="text-[15px] font-medium text-slate-900 mb-1">Validating Your Data</h3>
+              <p className="text-[13px] text-slate-400 mb-8 text-center max-w-md">
+                Analyzing your file and validating all customer data...
               </p>
-              <div className="w-full max-w-md bg-[#B3C8CF]/20 rounded-full h-3 mb-3">
-                <div
-                  className="bg-gradient-to-r from-[#89A8B2] to-[#7A96A3] h-3 rounded-full transition-all duration-300"
-                  style={{ width: `${uploadProgress}%` }}
-                ></div>
+              <div className="w-full max-w-md bg-slate-100 rounded-full h-2 mb-2">
+                <div className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                  style={{ width: `${uploadProgress}%` }} />
               </div>
-              <p className="text-sm text-[#5A6C7D]">{uploadProgress}% Complete</p>
+              <p className="text-[13px] text-slate-400 tabular-nums">{uploadProgress}% Complete</p>
             </div>
           )}
 
+          {/* STEP: Validation */}
           {step === "validation" && validationResult && (
             <div className="flex-1 overflow-hidden flex flex-col">
-              {/* Stats Cards */}
-              <div className="px-6 sm:px-8 py-4 bg-[#F1F0E8] border-b border-[#B3C8CF]/20 flex-shrink-0">
+
+              {/* Validation stat strip */}
+              <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex-shrink-0">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="bg-white rounded-lg p-4 border border-[#B3C8CF]/20 shadow-sm">
+                  <div className="bg-white rounded-[10px] border border-slate-200 p-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-[#5A6C7D] text-sm">Total Records</p>
-                        <h3 className="text-2xl font-bold text-[#2C3E50]">{validationResult.totalRecords}</h3>
+                        <p className="text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em]">Total Records</p>
+                        <p className="text-[22px] font-semibold text-slate-900 tabular-nums mt-1">{validationResult.totalRecords}</p>
                       </div>
-                      <FileText className="h-8 w-8 text-[#89A8B2]" />
+                      <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <FileText className="w-4 h-4 text-blue-600" />
+                      </div>
                     </div>
                   </div>
-                  <div className="bg-green-50 rounded-lg p-4 border border-green-200 shadow-sm">
+                  <div className="bg-white rounded-[10px] border border-slate-200 p-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-green-700 text-sm">Valid Records</p>
-                        <h3 className="text-2xl font-bold text-green-600">{validationResult.successCount}</h3>
+                        <p className="text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em]">Valid Records</p>
+                        <p className="text-[22px] font-semibold text-slate-900 tabular-nums mt-1">{validationResult.successCount}</p>
                       </div>
-                      <CheckCircle className="h-8 w-8 text-green-600" />
+                      <div className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <CheckCircle className="w-4 h-4 text-emerald-600" />
+                      </div>
                     </div>
                   </div>
-                  <div className="bg-red-50 rounded-lg p-4 border border-red-200 shadow-sm">
+                  <div className="bg-white rounded-[10px] border border-slate-200 p-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-red-700 text-sm">Errors Found</p>
-                        <h3 className="text-2xl font-bold text-red-600">{validationResult.failedCount}</h3>
+                        <p className="text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em]">Errors Found</p>
+                        <p className="text-[22px] font-semibold text-slate-900 tabular-nums mt-1">{validationResult.failedCount}</p>
                       </div>
-                      <AlertCircle className="h-8 w-8 text-red-600" />
+                      <div className="w-8 h-8 bg-rose-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <AlertCircle className="w-4 h-4 text-rose-500" />
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* View Toggle */}
-              <div className="px-6 sm:px-8 py-3 border-b border-[#B3C8CF]/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 flex-shrink-0">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full sm:w-auto">
+              {/* View toggle */}
+              <div className="px-6 py-3 border-b border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 flex-shrink-0">
+                <div className="flex gap-2">
                   <button
-                    onClick={() => {
-                      setShowValidRowsOnly(false)
-                      setCurrentPage(1)
-                    }}
-                    className={`px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2 ${
-                      !showValidRowsOnly
-                        ? "bg-red-600 text-white shadow-md"
-                        : "bg-red-100 text-red-600 hover:bg-red-200"
+                    onClick={() => { setShowValidRowsOnly(false); setCurrentPage(1) }}
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium rounded-md transition-colors duration-150 ${
+                      !showValidRowsOnly ? "bg-rose-600 text-white" : "bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100"
                     }`}
                   >
-                    <XCircle className="h-4 w-4" />
+                    <XCircle className="w-4 h-4" />
                     Error Rows ({validationResult.failedCount})
                   </button>
                   <button
-                    onClick={() => {
-                      setShowValidRowsOnly(true)
-                      setCurrentPage(1)
-                    }}
-                    className={`px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2 ${
-                      showValidRowsOnly
-                        ? "bg-green-600 text-white shadow-md"
-                        : "bg-green-100 text-green-600 hover:bg-green-200"
+                    onClick={() => { setShowValidRowsOnly(true); setCurrentPage(1) }}
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium rounded-md transition-colors duration-150 ${
+                      showValidRowsOnly ? "bg-emerald-600 text-white" : "bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100"
                     }`}
                   >
-                    <CheckCircle className="h-4 w-4" />
+                    <CheckCircle className="w-4 h-4" />
                     Valid Rows ({validationResult.successCount})
                   </button>
                 </div>
-                <div className="text-sm text-[#5A6C7D]">
+                <span className="text-[13px] text-slate-400">
                   {showValidRowsOnly ? "Review valid rows" : "Fix errors to proceed"}
-                </div>
+                </span>
               </div>
 
-              {/* Table Container */}
+              {/* Data table */}
               <div className="flex-1 overflow-auto">
-                <div className="min-w-full">
-                  <table className="w-full border-collapse">
-                    <thead className="bg-[#2C3E50] text-white sticky top-0 z-10 shadow-md">
-                      <tr>
-                        <th className="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider min-w-[80px]">
-                          Row
+                <table className="w-full border-collapse">
+                  <thead className="bg-slate-800 text-white sticky top-0 z-10">
+                    <tr>
+                      {["Row","Internet ID","First Name","Last Name","Email","Phone 1","Phone 2","Area","Address","Service Plan","ISP","Connection","Internet Type","TV Type","Install Date","CNIC","GPS","Actions"].map((col, i) => (
+                        <th key={col}
+                          className={`px-3 py-2.5 text-left text-[10px] font-medium uppercase tracking-[0.06em] whitespace-nowrap min-w-[${i === 0 ? "70" : i === 8 ? "180" : i === 17 ? "100" : "120"}px] ${i === 17 ? "sticky right-0 bg-slate-800" : ""}`}>
+                          {col}
                         </th>
-                        <th className="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider min-w-[120px]">
-                          Internet ID
-                        </th>
-                        <th className="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider min-w-[120px]">
-                          First Name
-                        </th>
-                        <th className="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider min-w-[120px]">
-                          Last Name
-                        </th>
-                        <th className="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider min-w-[180px]">
-                          Email
-                        </th>
-                        <th className="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider min-w-[140px]">
-                          Phone 1
-                        </th>
-                        <th className="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider min-w-[140px]">
-                          Phone 2
-                        </th>
-                        <th className="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider min-w-[150px]">
-                          Area
-                        </th>
-                        <th className="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider min-w-[200px]">
-                          Address
-                        </th>
-                        <th className="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider min-w-[150px]">
-                          Service Plan
-                        </th>
-                        <th className="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider min-w-[120px]">
-                          ISP
-                        </th>
-                        <th className="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider min-w-[140px]">
-                          Connection
-                        </th>
-                        <th className="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider min-w-[140px]">
-                          Internet Type
-                        </th>
-                        <th className="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider min-w-[140px]">
-                          TV Type
-                        </th>
-                        <th className="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider min-w-[130px]">
-                          Install Date
-                        </th>
-                        <th className="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider min-w-[140px]">
-                          CNIC
-                        </th>
-                        <th className="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider min-w-[160px]">
-                          GPS
-                        </th>
-                        <th className="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider min-w-[120px] sticky right-0 bg-[#2C3E50]">
-                          Actions
-                        </th>
-                      </tr>
-                    </thead>
-
-                    <tbody className="divide-y divide-[#B3C8CF]/20 bg-white">
-                      {currentRows.map((row) => {
-                        const actualRowIndex = row._originalIndex
-                        const isEditing = editingRows.has(actualRowIndex)
-                        const rowData = row
-                        const hasErrors = !row._isValid
-
-                        return (
-                          <tr
-                            key={actualRowIndex}
-                            className={`${
-                              isEditing
-                                ? "bg-[#89A8B2]/10 border-l-4 border-[#89A8B2]"
-                                : hasErrors
-                                  ? "bg-red-50"
-                                  : "hover:bg-[#F1F0E8]"
-                            } transition-colors`}
-                          >
-                            <td className="px-3 py-3 text-sm font-medium">
-                              <div className="flex items-center gap-2">
-                                <span className="text-[#2C3E50]">{row._displayIndex}</span>
-                                {hasErrors && <AlertTriangle className="h-4 w-4 text-red-600" />}
-                              </div>
-                            </td>
-
-                            <td className="px-3 py-3">
-                              {renderEditableField(
-                                actualRowIndex,
-                                "internet_id",
-                                rowData.internet_id || "",
-                                "text",
-                                "Internet ID",
-                              )}
-                            </td>
-                            <td className="px-3 py-3">
-                              {renderEditableField(
-                                actualRowIndex,
-                                "first_name",
-                                rowData.first_name || "",
-                                "text",
-                                "First Name",
-                              )}
-                            </td>
-                            <td className="px-3 py-3">
-                              {renderEditableField(
-                                actualRowIndex,
-                                "last_name",
-                                rowData.last_name || "",
-                                "text",
-                                "Last Name",
-                              )}
-                            </td>
-                            <td className="px-3 py-3">
-                              {renderEditableField(actualRowIndex, "email", rowData.email || "", "email", "Email")}
-                            </td>
-                            <td className="px-3 py-3">
-                              {renderEditableField(actualRowIndex, "phone_1", rowData.phone_1 || "", "tel", "Phone 1")}
-                            </td>
-                            <td className="px-3 py-3">
-                              {renderEditableField(actualRowIndex, "phone_2", rowData.phone_2 || "", "tel", "Phone 2")}
-                            </td>
-                            <td className="px-3 py-3">
-                              {renderDropdownField(
-                                actualRowIndex,
-                                "area_id",
-                                rowData.area_id || "",
-                                dropdownData.areas,
-                                "Area",
-                              )}
-                            </td>
-                            <td className="px-3 py-3">
-                              {renderEditableField(
-                                actualRowIndex,
-                                "installation_address",
-                                rowData.installation_address || "",
-                                "text",
-                                "Address",
-                              )}
-                            </td>
-                            <td className="px-3 py-3">
-                              {renderDropdownField(
-                                actualRowIndex,
-                                "service_plan_id",
-                                rowData.service_plan_id || "",
-                                dropdownData.servicePlans,
-                                "Plan",
-                              )}
-                            </td>
-                            <td className="px-3 py-3">
-                              {renderDropdownField(
-                                actualRowIndex,
-                                "isp_id",
-                                rowData.isp_id || "",
-                                dropdownData.isps,
-                                "ISP",
-                              )}
-                            </td>
-                            <td className="px-3 py-3">
-                              {renderEditableField(actualRowIndex, "connection_type", rowData.connection_type || "")}
-                            </td>
-                            <td className="px-3 py-3">
-                              {renderEditableField(
-                                actualRowIndex,
-                                "internet_connection_type",
-                                rowData.internet_connection_type || "",
-                              )}
-                            </td>
-                            <td className="px-3 py-3">
-                              {renderEditableField(
-                                actualRowIndex,
-                                "tv_cable_connection_type",
-                                rowData.tv_cable_connection_type || "",
-                              )}
-                            </td>
-                            <td className="px-3 py-3">
-                              {renderEditableField(
-                                actualRowIndex,
-                                "installation_date",
-                                rowData.installation_date || "",
-                                "date",
-                              )}
-                            </td>
-                            <td className="px-3 py-3">
-                              {renderEditableField(actualRowIndex, "cnic", rowData.cnic || "", "text", "CNIC")}
-                            </td>
-                            <td className="px-3 py-3">
-                              {renderEditableField(
-                                actualRowIndex,
-                                "gps_coordinates",
-                                rowData.gps_coordinates || "",
-                                "text",
-                                "GPS",
-                              )}
-                            </td>
-
-                            <td className="px-3 py-3 sticky right-0 bg-white">
-                              <div className="flex items-center gap-2 justify-end">
-                                {isEditing ? (
-                                  <>
-                                    <button
-                                      onClick={() => saveRowChanges(actualRowIndex)}
-                                      className="p-2 text-white bg-green-600 rounded-md hover:bg-green-700 transition-colors shadow-sm"
-                                      title="Save changes"
-                                    >
-                                      <Save className="h-4 w-4" />
-                                    </button>
-                                    <button
-                                      onClick={() => resetRowChanges(actualRowIndex)}
-                                      className="p-2 text-white bg-[#5A6C7D] rounded-md hover:bg-[#2C3E50] transition-colors shadow-sm"
-                                      title="Cancel"
-                                    >
-                                      <RotateCcw className="h-4 w-4" />
-                                    </button>
-                                  </>
-                                ) : (
-                                  <button
-                                    onClick={() => handleEditRow(actualRowIndex)}
-                                    className="p-2 text-white bg-[#89A8B2] rounded-md hover:bg-[#7A96A3] transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                                    title="Edit row"
-                                    disabled={row._isValid}
-                                  >
-                                    <Edit3 className="h-4 w-4" />
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 bg-white">
+                    {currentRows.map((row) => {
+                      const actualRowIndex = row._originalIndex
+                      const isRowEditing = editingRows.has(actualRowIndex)
+                      const hasErrors = !row._isValid
+                      return (
+                        <tr key={actualRowIndex}
+                          className={`transition-colors ${
+                            isRowEditing ? "bg-blue-50/50 border-l-2 border-blue-400"
+                              : hasErrors ? "bg-rose-50/40"
+                              : "hover:bg-blue-50/20"
+                          }`}
+                        >
+                          <td className="px-3 py-2.5">
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-[12px] font-medium text-slate-700">{row._displayIndex}</span>
+                              {hasErrors && <AlertTriangle className="w-3.5 h-3.5 text-rose-500" />}
+                            </div>
+                          </td>
+                          <td className="px-3 py-2.5">{renderEditableField(actualRowIndex, "internet_id", row.internet_id || "", "text", "Internet ID")}</td>
+                          <td className="px-3 py-2.5">{renderEditableField(actualRowIndex, "first_name", row.first_name || "", "text", "First Name")}</td>
+                          <td className="px-3 py-2.5">{renderEditableField(actualRowIndex, "last_name", row.last_name || "", "text", "Last Name")}</td>
+                          <td className="px-3 py-2.5">{renderEditableField(actualRowIndex, "email", row.email || "", "email", "Email")}</td>
+                          <td className="px-3 py-2.5">{renderEditableField(actualRowIndex, "phone_1", row.phone_1 || "", "tel", "Phone 1")}</td>
+                          <td className="px-3 py-2.5">{renderEditableField(actualRowIndex, "phone_2", row.phone_2 || "", "tel", "Phone 2")}</td>
+                          <td className="px-3 py-2.5">{renderDropdownField(actualRowIndex, "area_id", row.area_id || "", dropdownData.areas, "Area")}</td>
+                          <td className="px-3 py-2.5">{renderEditableField(actualRowIndex, "installation_address", row.installation_address || "", "text", "Address")}</td>
+                          <td className="px-3 py-2.5">{renderDropdownField(actualRowIndex, "service_plan_id", row.service_plan_id || "", dropdownData.servicePlans, "Plan")}</td>
+                          <td className="px-3 py-2.5">{renderDropdownField(actualRowIndex, "isp_id", row.isp_id || "", dropdownData.isps, "ISP")}</td>
+                          <td className="px-3 py-2.5">{renderEditableField(actualRowIndex, "connection_type", row.connection_type || "")}</td>
+                          <td className="px-3 py-2.5">{renderEditableField(actualRowIndex, "internet_connection_type", row.internet_connection_type || "")}</td>
+                          <td className="px-3 py-2.5">{renderEditableField(actualRowIndex, "tv_cable_connection_type", row.tv_cable_connection_type || "")}</td>
+                          <td className="px-3 py-2.5">{renderEditableField(actualRowIndex, "installation_date", row.installation_date || "", "date")}</td>
+                          <td className="px-3 py-2.5">{renderEditableField(actualRowIndex, "cnic", row.cnic || "", "text", "CNIC")}</td>
+                          <td className="px-3 py-2.5">{renderEditableField(actualRowIndex, "gps_coordinates", row.gps_coordinates || "", "text", "GPS")}</td>
+                          <td className="px-3 py-2.5 sticky right-0 bg-white">
+                            <div className="flex items-center gap-1 justify-end">
+                              {isRowEditing ? (
+                                <>
+                                  <button onClick={() => saveRowChanges(actualRowIndex)}
+                                    className="p-1.5 text-white bg-emerald-600 rounded-md hover:bg-emerald-700 transition-colors duration-150" title="Save">
+                                    <Save className="w-4 h-4" />
                                   </button>
-                                )}
-                              </div>
-                            </td>
-                          </tr>
-                        )
-                      })}
-                    </tbody>
-                  </table>
+                                  <button onClick={() => resetRowChanges(actualRowIndex)}
+                                    className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-md transition-colors duration-150" title="Cancel">
+                                    <RotateCcw className="w-4 h-4" />
+                                  </button>
+                                </>
+                              ) : (
+                                <button onClick={() => handleEditRow(actualRowIndex)}
+                                  disabled={row._isValid}
+                                  className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-md disabled:opacity-40 disabled:cursor-not-allowed transition-colors duration-150" title="Edit row">
+                                  <Edit3 className="w-4 h-4" />
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
 
-                  {displayRows.length === 0 && (
-                    <div className="p-12 text-center">
-                      <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#B3C8CF]/10 mb-4">
-                        {showValidRowsOnly ? (
-                          <CheckCircle className="h-8 w-8 text-[#89A8B2]/50" />
-                        ) : (
-                          <AlertCircle className="h-8 w-8 text-[#89A8B2]/50" />
-                        )}
-                      </div>
-                      <p className="text-lg font-medium text-[#2C3E50] mb-2">
-                        {showValidRowsOnly ? "No Valid Rows Found" : "No Error Rows"}
-                      </p>
-                      <p className="text-sm text-[#5A6C7D]">
-                        {showValidRowsOnly
-                          ? "All rows contain validation errors. Switch to Error Rows to fix them."
-                          : "All rows are valid and ready for processing!"}
-                      </p>
+                {displayRows.length === 0 && (
+                  <div className="p-12 text-center">
+                    <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                      {showValidRowsOnly
+                        ? <CheckCircle className="w-6 h-6 text-slate-400" />
+                        : <AlertCircle className="w-6 h-6 text-slate-400" />}
                     </div>
-                  )}
-                </div>
+                    <p className="text-[15px] font-medium text-slate-700 mb-1">
+                      {showValidRowsOnly ? "No Valid Rows Found" : "No Error Rows"}
+                    </p>
+                    <p className="text-[13px] text-slate-400">
+                      {showValidRowsOnly
+                        ? "All rows contain validation errors. Switch to Error Rows to fix them."
+                        : "All rows are valid and ready for processing!"}
+                    </p>
+                  </div>
+                )}
               </div>
 
               {/* Pagination */}
               {totalPages > 1 && (
-                <div className="px-6 sm:px-8 py-3 bg-[#F1F0E8] border-t border-[#B3C8CF]/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 flex-shrink-0">
-                  <div className="text-sm text-[#5A6C7D]">
-                    Showing {startIndex + 1} to {Math.min(endIndex, displayRows.length)} of {displayRows.length} rows
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
-                      disabled={currentPage === 1}
-                      className="p-2 text-[#5A6C7D] hover:text-[#2C3E50] disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded-md hover:bg-[#B3C8CF]/20"
-                    >
-                      <ChevronLeft className="h-5 w-5" />
+                <div className="px-6 py-3 bg-white border-t border-slate-200 flex items-center justify-between flex-shrink-0">
+                  <span className="text-[13px] text-slate-400">
+                    Showing {startIndex + 1}–{Math.min(endIndex, displayRows.length)} of {displayRows.length} rows
+                  </span>
+                  <div className="flex items-center gap-1">
+                    <button onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1}
+                      className="p-1.5 text-slate-400 hover:text-slate-700 disabled:opacity-40 disabled:cursor-not-allowed rounded-md hover:bg-slate-100 transition-colors duration-150">
+                      <ChevronLeft className="w-4 h-4" />
                     </button>
-                    <div className="flex items-center gap-1">
-                      {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                        let pageNum
-                        if (totalPages <= 5) {
-                          pageNum = i + 1
-                        } else if (currentPage <= 3) {
-                          pageNum = i + 1
-                        } else if (currentPage >= totalPages - 2) {
-                          pageNum = totalPages - 4 + i
-                        } else {
-                          pageNum = currentPage - 2 + i
-                        }
-                        return (
-                          <button
-                            key={pageNum}
-                            onClick={() => setCurrentPage(pageNum)}
-                            className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
-                              currentPage === pageNum
-                                ? "bg-[#89A8B2] text-white"
-                                : "bg-[#B3C8CF]/20 text-[#5A6C7D] hover:bg-[#B3C8CF]/40"
-                            }`}
-                          >
-                            {pageNum}
-                          </button>
-                        )
-                      })}
-                    </div>
-                    <button
-                      onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
-                      disabled={currentPage === totalPages}
-                      className="p-2 text-[#5A6C7D] hover:text-[#2C3E50] disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded-md hover:bg-[#B3C8CF]/20"
-                    >
-                      <ChevronRight className="h-5 w-5" />
+                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                      let pageNum = i + 1
+                      if (totalPages > 5) {
+                        if (currentPage <= 3) pageNum = i + 1
+                        else if (currentPage >= totalPages - 2) pageNum = totalPages - 4 + i
+                        else pageNum = currentPage - 2 + i
+                      }
+                      return (
+                        <button key={pageNum} onClick={() => setCurrentPage(pageNum)}
+                          className={`w-7 h-7 rounded-md text-[12px] font-medium transition-colors duration-150 ${
+                            currentPage === pageNum
+                              ? "bg-blue-600 text-white"
+                              : "text-slate-600 hover:bg-slate-100"
+                          }`}>
+                          {pageNum}
+                        </button>
+                      )
+                    })}
+                    <button onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}
+                      className="p-1.5 text-slate-400 hover:text-slate-700 disabled:opacity-40 disabled:cursor-not-allowed rounded-md hover:bg-slate-100 transition-colors duration-150">
+                      <ChevronRight className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
@@ -1267,39 +732,37 @@ export function EnhancedBulkAddModal({
             </div>
           )}
 
+          {/* STEP: Processing */}
           {step === "processing" && (
-            <div className="flex flex-col items-center justify-center py-16 animate-in fade-in duration-300">
-              <div className="bg-[#89A8B2]/10 p-6 rounded-full mb-6">
-                <Loader className="animate-spin h-12 w-12 text-[#89A8B2]" />
+            <div className="flex flex-col items-center justify-center py-16">
+              <div className="w-14 h-14 bg-blue-50 rounded-xl flex items-center justify-center mb-5">
+                <Loader className="w-7 h-7 animate-spin text-blue-600" />
               </div>
-              <h3 className="text-xl font-semibold text-[#2C3E50] mb-2">Processing Validated Data</h3>
-              <p className="text-[#5A6C7D] mb-8 text-center max-w-md">
+              <h3 className="text-[15px] font-medium text-slate-900 mb-1">Processing Validated Data</h3>
+              <p className="text-[13px] text-slate-400 text-center max-w-md">
                 Saving validated customer records to the database...
               </p>
             </div>
           )}
 
+          {/* STEP: Complete */}
           {step === "complete" && validationResult && (
-            <div className="flex flex-col items-center justify-center py-16 animate-in fade-in duration-300">
-              <div className="bg-green-100 p-6 rounded-full mb-6">
-                <CheckCircle className="h-12 w-12 text-green-600" />
+            <div className="flex flex-col items-center justify-center py-16">
+              <div className="w-14 h-14 bg-emerald-100 rounded-xl flex items-center justify-center mb-5">
+                <CheckCircle className="w-7 h-7 text-emerald-600" />
               </div>
-              <h3 className="text-2xl font-semibold text-[#2C3E50] mb-2">Import Completed Successfully!</h3>
-              <p className="text-center text-[#5A6C7D] mb-8 max-w-md">
+              <h3 className="text-[15px] font-medium text-slate-900 mb-1">Import Completed Successfully!</h3>
+              <p className="text-center text-[13px] text-slate-400 mb-8 max-w-md">
                 Successfully processed {validationResult.successCount} out of {validationResult.totalRecords}{" "}
-                {entityName.toLowerCase()}s with advanced validation and error correction.
+                {entityName.toLowerCase()}s.
               </p>
-              <div className="flex flex-col sm:flex-row gap-3">
-                <button
-                  onClick={resetForm}
-                  className="px-6 py-3 border-2 border-[#B3C8CF] text-[#89A8B2] rounded-lg hover:bg-[#F1F0E8] transition-all duration-200 font-medium"
-                >
+              <div className="flex gap-3">
+                <button onClick={resetForm}
+                  className="px-4 py-2 text-[13px] font-medium text-slate-600 border border-slate-200 rounded-md hover:bg-slate-50 transition-colors duration-150">
                   Import Another File
                 </button>
-                <button
-                  onClick={onClose}
-                  className="px-6 py-3 bg-gradient-to-r from-[#89A8B2] to-[#7A96A3] text-white rounded-lg hover:shadow-lg hover:shadow-[#89A8B2]/30 transition-all duration-200 font-medium"
-                >
+                <button onClick={onClose}
+                  className="px-4 py-2 text-[13px] font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-150">
                   Close
                 </button>
               </div>
@@ -1307,79 +770,53 @@ export function EnhancedBulkAddModal({
           )}
         </div>
 
-        <div className="p-6 sm:p-8 border-t border-[#B3C8CF]/20 bg-white flex flex-col-reverse sm:flex-row justify-between gap-3 flex-shrink-0">
+        {/* ── FOOTER ── */}
+        <div className="px-6 py-3 bg-slate-50 border-t border-slate-200 flex flex-col-reverse sm:flex-row justify-between gap-3 flex-shrink-0">
           {step === "initial" && (
             <>
-              <button
-                onClick={onClose}
-                className="px-6 py-3 border-2 border-[#B3C8CF] text-[#89A8B2] rounded-lg hover:bg-[#F1F0E8] transition-all duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-[#89A8B2]/30"
-              >
+              <button onClick={onClose}
+                className="px-4 py-2 text-[13px] font-medium text-slate-600 border border-slate-200 rounded-md hover:bg-slate-100 transition-colors duration-150">
                 Cancel
               </button>
-              <button
-                onClick={validateFile}
-                disabled={!file || isUploading}
-                className="px-6 py-3 bg-gradient-to-r from-[#89A8B2] to-[#7A96A3] text-white rounded-lg hover:shadow-lg hover:shadow-[#89A8B2]/30 transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-[#89A8B2]/50 flex items-center justify-center gap-2"
-              >
-                {isUploading ? (
-                  <>
-                    <Loader className="animate-spin h-5 w-5" /> Validating...
-                  </>
-                ) : (
-                  <>
-                    <Upload className="h-5 w-5" /> Validate & Review
-                  </>
-                )}
+              <button onClick={validateFile} disabled={!file || isUploading}
+                className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white text-[13px] font-medium rounded-md hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors duration-150">
+                {isUploading ? <><Loader className="w-4 h-4 animate-spin" /> Validating...</> : <><Upload className="w-4 h-4" /> Validate & Review</>}
               </button>
             </>
           )}
 
           {step === "validation" && (
             <>
-              <div className="flex items-center gap-2 text-sm">
+              <div className="flex items-center gap-2">
                 {validationResult && validationResult.failedCount > 0 && (
-                  <div className="flex items-center gap-2 px-3 py-2 bg-yellow-50 border border-yellow-200 rounded-lg">
-                    <AlertTriangle className="h-4 w-4 text-yellow-600" />
-                    <span className="text-yellow-700">
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 border border-amber-200 rounded-md">
+                    <AlertTriangle className="w-4 h-4 text-amber-600" />
+                    <span className="text-[13px] text-amber-700">
                       Fix {validationResult.failedCount} error{validationResult.failedCount !== 1 ? "s" : ""} to proceed
                     </span>
                   </div>
                 )}
                 {validationResult && validationResult.successCount > 0 && validationResult.failedCount === 0 && (
-                  <div className="flex items-center gap-2 px-3 py-2 bg-green-50 border border-green-200 rounded-lg">
-                    <CheckCircle className="h-4 w-4 text-green-600" />
-                    <span className="text-green-700">All records validated successfully!</span>
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 border border-emerald-200 rounded-md">
+                    <CheckCircle className="w-4 h-4 text-emerald-600" />
+                    <span className="text-[13px] text-emerald-700">All records validated successfully!</span>
                   </div>
                 )}
               </div>
-
-              <div className="flex flex-col-reverse sm:flex-row gap-3">
-                <button
-                  onClick={resetForm}
-                  className="px-6 py-3 border-2 border-[#B3C8CF] text-[#89A8B2] rounded-lg hover:bg-[#F1F0E8] transition-all duration-200 font-medium"
-                >
+              <div className="flex gap-2">
+                <button onClick={resetForm}
+                  className="px-4 py-2 text-[13px] font-medium text-slate-600 border border-slate-200 rounded-md hover:bg-slate-100 transition-colors duration-150">
                   Start Over
                 </button>
-                <button
-                  onClick={onClose}
-                  className="px-6 py-3 border-2 border-[#B3C8CF] text-[#89A8B2] rounded-lg hover:bg-[#F1F0E8] transition-all duration-200 font-medium"
-                >
+                <button onClick={onClose}
+                  className="px-4 py-2 text-[13px] font-medium text-slate-600 border border-slate-200 rounded-md hover:bg-slate-100 transition-colors duration-150">
                   Cancel
                 </button>
-                <button
-                  onClick={processValidatedData}
+                <button onClick={processValidatedData}
                   disabled={isProcessing || !validationResult || validationResult.successCount === 0}
-                  className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-200 flex items-center justify-center gap-2 font-medium disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
-                >
-                  {isProcessing ? (
-                    <>
-                      <Loader className="animate-spin h-5 w-5" /> Processing...
-                    </>
-                  ) : (
-                    <>
-                      <Database className="h-5 w-5" /> Process {validationResult?.successCount || 0} Record
-                      {validationResult && validationResult.successCount !== 1 ? "s" : ""}
-                    </>
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white text-[13px] font-medium rounded-md hover:bg-emerald-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors duration-150">
+                  {isProcessing ? <><Loader className="w-4 h-4 animate-spin" /> Processing...</> : (
+                    <><Database className="w-4 h-4" /> Process {validationResult?.successCount || 0} Record{validationResult && validationResult.successCount !== 1 ? "s" : ""}</>
                   )}
                 </button>
               </div>

@@ -20,6 +20,7 @@ import {
   Image,
   FileText,
 } from "lucide-react"
+import HorizontalLogo from "../../assets/net_khata_horizontal.png"
 
 interface ProfileData {
   id: string
@@ -118,10 +119,10 @@ export function PortalProfile({ onProfileUpdate }: PortalProfileProps) {
   if (loading) {
     return (
       <div className="space-y-4 animate-pulse">
-        <div className="h-32 bg-gray-200 rounded-xl"></div>
+        <div className="h-32 bg-slate-200 rounded-[10px]"></div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="h-40 bg-gray-200 rounded-xl"></div>
+            <div key={i} className="h-40 bg-slate-200 rounded-[10px]"></div>
           ))}
         </div>
       </div>
@@ -137,80 +138,103 @@ export function PortalProfile({ onProfileUpdate }: PortalProfileProps) {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header Card */}
-      <div className="bg-gradient-to-r from-[#89A8B2] to-[#6B8A94] rounded-xl p-6 text-white">
-        <div className="flex flex-col sm:flex-row items-center gap-4">
-          <div className="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center text-3xl font-bold overflow-hidden">
-            {profile.picture ? (
-              <img
-                src={getFileUrl(profile.picture)}
-                alt="Profile"
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  // Fallback if image fails to load
-                  (e.target as HTMLImageElement).style.display = 'none';
-                  (e.target as HTMLImageElement).parentElement!.innerText = profile.first_name?.charAt(0) || "E";
-                }}
-              />
-            ) : (
-              profile.first_name?.charAt(0) || "E"
-            )}
-          </div>
-          <div className="text-center sm:text-left flex-1">
-            <h2 className="text-2xl font-bold">
-              {profile.first_name} {profile.last_name}
-            </h2>
-            <p className="text-white/80 capitalize">{profile.role?.replace("_", " ")}</p>
-            <p className="text-sm text-white/70 mt-1">@{profile.username}</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <span
-              className={`px-3 py-1 rounded-full text-sm font-medium ${profile.is_active ? "bg-green-500/20 text-green-100" : "bg-red-500/20 text-red-100"
-                }`}
-            >
-              {profile.is_active ? "Active" : "Inactive"}
-            </span>
+    <div className="space-y-6 max-w-7xl mx-auto">
+      {/* Brand Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white border border-slate-200/80 rounded-[12px] p-5 shadow-sm">
+        <div className="flex items-center gap-4">
+          <img src={HorizontalLogo} alt="Net Khata Logo" className="h-9 w-auto object-contain" />
+          <div className="h-8 w-px bg-slate-200 hidden sm:block"></div>
+          <div>
+            <h1 className="text-[18px] font-semibold text-slate-900 tracking-tight leading-none">My Profile</h1>
+            <p className="text-[12px] text-slate-500 mt-1.5">Manage your personal information and documents</p>
           </div>
         </div>
       </div>
 
-      {/* Edit Toggle */}
-      <div className="flex justify-end">
-        {isEditing ? (
-          <div className="flex gap-2">
-            <button
-              onClick={() => setIsEditing(false)}
-              className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
-            >
-              <X className="w-4 h-4" />
-              Cancel
-            </button>
-            <button
-              onClick={handleSave}
-              disabled={saving}
-              className="flex items-center gap-2 px-4 py-2 bg-[#89A8B2] text-white rounded-lg hover:bg-[#7896a0] disabled:opacity-50"
-            >
-              <Save className="w-4 h-4" />
-              {saving ? "Saving..." : "Save Changes"}
-            </button>
+      {/* Hero Banner Card */}
+      <div className="bg-white border border-slate-200/80 rounded-[12px] overflow-hidden shadow-sm">
+        {/* Abstract Cover Photo */}
+        <div className="h-32 bg-gradient-to-r from-blue-600 to-indigo-700 relative overflow-hidden">
+          <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-overlay opacity-30"></div>
+          <div className="absolute right-0 bottom-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mb-10 -mr-10 pointer-events-none"></div>
+        </div>
+        
+        <div className="px-5 pb-5 lg:px-8 lg:pb-8 relative">
+          {/* Avatar overlapping the cover */}
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 -mt-12 sm:-mt-16 mb-4">
+            <div className="flex flex-col sm:flex-row items-center sm:items-end gap-5">
+              <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-white bg-blue-50 text-blue-700 flex items-center justify-center text-4xl font-bold overflow-hidden shadow-md shrink-0">
+                {profile.picture ? (
+                  <img
+                    src={getFileUrl(profile.picture)}
+                    alt="Profile"
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).style.display = 'none';
+                      (e.target as HTMLImageElement).parentElement!.innerText = profile.first_name?.charAt(0) || "E";
+                    }}
+                  />
+                ) : (
+                  profile.first_name?.charAt(0) || "E"
+                )}
+              </div>
+              <div className="text-center sm:text-left mb-1 sm:mb-2">
+                <div className="flex items-center justify-center sm:justify-start gap-3">
+                  <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+                    {profile.first_name} {profile.last_name}
+                  </h2>
+                  <span
+                    className={`px-3 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase ${profile.is_active ? "bg-emerald-100 text-emerald-700" : "bg-rose-100 text-rose-700"}`}
+                  >
+                    {profile.is_active ? "Active" : "Inactive"}
+                  </span>
+                </div>
+                <p className="text-blue-600 font-medium text-[14px] capitalize mt-1 tracking-tight">
+                  {profile.role?.replace("_", " ")}
+                </p>
+              </div>
+            </div>
+
+            {/* Edit Toggle pushed to the right */}
+            <div className="flex justify-center sm:justify-end shrink-0 sm:mb-2">
+              {isEditing ? (
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setIsEditing(false)}
+                    className="flex items-center gap-2 px-4 py-2 border border-slate-200/80 rounded-[8px] text-[13px] font-medium text-slate-600 hover:bg-slate-50 transition-colors"
+                  >
+                    <X className="w-4 h-4" />
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleSave}
+                    disabled={saving}
+                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-[8px] text-[13px] font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors shadow-sm"
+                  >
+                    <Save className="w-4 h-4" />
+                    {saving ? "Saving..." : "Save Changes"}
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setIsEditing(true)}
+                  className="flex items-center gap-2 px-4 py-2 bg-slate-50 border border-slate-200/80 text-slate-700 rounded-[8px] text-[13px] font-medium hover:bg-slate-100 hover:text-blue-600 transition-colors"
+                >
+                  <Edit3 className="w-4 h-4" />
+                  Edit Profile
+                </button>
+              )}
+            </div>
           </div>
-        ) : (
-          <button
-            onClick={() => setIsEditing(true)}
-            className="flex items-center gap-2 px-4 py-2 border border-[#89A8B2] text-[#89A8B2] rounded-lg hover:bg-[#89A8B2]/10"
-          >
-            <Edit3 className="w-4 h-4" />
-            Edit Profile
-          </button>
-        )}
+          <p className="text-[13px] text-slate-500 text-center sm:text-left">Username: <span className="font-medium text-slate-700">@{profile.username}</span></p>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
         {/* Personal Information */}
-        <div className="bg-white rounded-xl border border-gray-200 p-4 lg:p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <User className="w-5 h-5 text-[#89A8B2]" />
+        <div className="bg-white rounded-[12px] border border-slate-200/80 p-5 lg:p-6 shadow-sm">
+          <h3 className="text-[14px] font-semibold text-slate-900 mb-5 flex items-center gap-2">
+            <User className="w-5 h-5 text-blue-600" />
             Personal Information
           </h3>
           <div className="space-y-4">
@@ -224,7 +248,7 @@ export function PortalProfile({ onProfileUpdate }: PortalProfileProps) {
                     type="text"
                     value={editData.contact_number}
                     onChange={(e) => setEditData({ ...editData, contact_number: e.target.value })}
-                    className="w-full px-3 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#89A8B2] focus:border-transparent"
+                    className="w-full px-3 py-1.5 border border-slate-200 rounded-md focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                   />
                 ) : (
                   profile.contact_number || "-"
@@ -241,7 +265,7 @@ export function PortalProfile({ onProfileUpdate }: PortalProfileProps) {
                     type="text"
                     value={editData.emergency_contact}
                     onChange={(e) => setEditData({ ...editData, emergency_contact: e.target.value })}
-                    className="w-full px-3 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#89A8B2] focus:border-transparent"
+                    className="w-full px-3 py-1.5 border border-slate-200 rounded-md focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                   />
                 ) : (
                   profile.emergency_contact || "-"
@@ -257,7 +281,7 @@ export function PortalProfile({ onProfileUpdate }: PortalProfileProps) {
                     value={editData.house_address}
                     onChange={(e) => setEditData({ ...editData, house_address: e.target.value })}
                     rows={2}
-                    className="w-full px-3 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#89A8B2] focus:border-transparent resize-none"
+                    className="w-full px-3 py-1.5 border border-slate-200 rounded-md focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none"
                   />
                 ) : (
                   profile.house_address || "-"
@@ -268,9 +292,9 @@ export function PortalProfile({ onProfileUpdate }: PortalProfileProps) {
         </div>
 
         {/* Work Information */}
-        <div className="bg-white rounded-xl border border-gray-200 p-4 lg:p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <Briefcase className="w-5 h-5 text-[#89A8B2]" />
+        <div className="bg-white rounded-[12px] border border-slate-200/80 p-5 lg:p-6 shadow-sm">
+          <h3 className="text-[14px] font-semibold text-slate-900 mb-5 flex items-center gap-2">
+            <Briefcase className="w-5 h-5 text-blue-600" />
             Work Information
           </h3>
           <div className="space-y-4">
@@ -299,9 +323,9 @@ export function PortalProfile({ onProfileUpdate }: PortalProfileProps) {
 
         {/* Reference Information */}
         {(profile.reference_name || profile.reference_contact) && (
-          <div className="bg-white rounded-xl border border-gray-200 p-4 lg:p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <User className="w-5 h-5 text-[#89A8B2]" />
+          <div className="bg-white rounded-[12px] border border-slate-200/80 p-5 lg:p-6 shadow-sm">
+            <h3 className="text-[14px] font-semibold text-slate-900 mb-5 flex items-center gap-2">
+              <User className="w-5 h-5 text-blue-600" />
               Reference
             </h3>
             <div className="space-y-4">
@@ -312,12 +336,12 @@ export function PortalProfile({ onProfileUpdate }: PortalProfileProps) {
         )}
 
         {/* Documents */}
-        <div className="bg-white rounded-xl border border-gray-200 p-4 lg:p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <FileText className="w-5 h-5 text-[#89A8B2]" />
+        <div className="bg-white rounded-[12px] border border-slate-200/80 p-5 lg:p-6 shadow-sm">
+          <h3 className="text-[14px] font-semibold text-slate-900 mb-5 flex items-center gap-2">
+            <FileText className="w-5 h-5 text-blue-600" />
             Documents
           </h3>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <DocumentCard label="CNIC" documentPath={profile.cnic_image} />
             <DocumentCard label="Utility Bill" documentPath={profile.utility_bill_image} />
             <DocumentCard label="Reference CNIC" documentPath={profile.reference_cnic_image} />
@@ -340,10 +364,10 @@ function InfoRow({
 }) {
   return (
     <div className="flex items-start gap-3">
-      <Icon className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" />
+      <Icon className="w-5 h-5 text-slate-400 mt-0.5 flex-shrink-0" />
       <div className="flex-1 min-w-0">
-        <p className="text-sm text-gray-500">{label}</p>
-        <div className="text-sm font-medium text-gray-900">{value}</div>
+        <p className="text-[11px] text-slate-500 uppercase tracking-[0.06em]">{label}</p>
+        <div className="text-[13px] font-medium text-slate-900">{value}</div>
       </div>
     </div>
   )
@@ -358,19 +382,27 @@ function DocumentCard({ label, documentPath }: { label: string; documentPath: st
       href={hasDocument ? fileUrl : undefined}
       target="_blank"
       rel="noopener noreferrer"
-      className={`block p-3 rounded-lg border transition-colors ${hasDocument
-          ? "border-green-200 bg-green-50 hover:bg-green-100 cursor-pointer"
-          : "border-gray-200 bg-gray-50 cursor-default"
-        }`}
+      className={`block p-4 rounded-[10px] border transition-all duration-300 relative overflow-hidden group ${
+        hasDocument
+          ? "border-emerald-200/60 bg-emerald-50/50 hover:bg-emerald-50 hover:border-emerald-300 hover:shadow-[0_2px_8px_-4px_rgba(16,185,129,0.3)] cursor-pointer"
+          : "border-slate-200/60 bg-slate-50/50 cursor-default"
+      }`}
       onClick={(e) => !hasDocument && e.preventDefault()}
     >
-      <div className="flex items-center gap-2">
-        <Image className={`w-5 h-5 ${hasDocument ? "text-green-600" : "text-gray-400"}`} />
-        <span className="text-sm font-medium text-gray-700">{label}</span>
+      {hasDocument && (
+        <div className="absolute right-0 top-0 bottom-0 w-1 bg-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+      )}
+      <div className="flex items-center gap-3">
+        <div className={`p-2 rounded-lg ${hasDocument ? "bg-emerald-100 text-emerald-600" : "bg-slate-200/50 text-slate-400"}`}>
+          <Image className="w-5 h-5" />
+        </div>
+        <div>
+          <span className="text-[13px] font-semibold text-slate-900 block">{label}</span>
+          <p className={`text-[11px] mt-0.5 font-medium ${hasDocument ? "text-emerald-600" : "text-slate-500"}`}>
+            {hasDocument ? "View Document" : "Not uploaded"}
+          </p>
+        </div>
       </div>
-      <p className={`text-xs mt-1 ${hasDocument ? "text-green-600" : "text-gray-500"}`}>
-        {hasDocument ? "View Document" : "Not uploaded"}
-      </p>
     </a>
   )
 }

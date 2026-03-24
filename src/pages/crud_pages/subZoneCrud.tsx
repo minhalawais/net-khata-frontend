@@ -118,12 +118,13 @@ const SubZoneManagement: React.FC = () => {
       {
         header: 'Name',
         accessorKey: 'name',
+        cell: info => <span className="text-[13px] font-medium text-slate-800">{info.getValue() as string}</span>,
       },
       {
         header: 'Description',
         accessorKey: 'description',
         cell: info => (
-          <div className="max-w-xs overflow-hidden overflow-ellipsis whitespace-nowrap" title={info.getValue() as string}>
+          <div className="max-w-xs overflow-hidden overflow-ellipsis whitespace-nowrap text-[13px] text-slate-500" title={info.getValue() as string}>
             {info.getValue() as string || 'No description'}
           </div>
         ),
@@ -132,7 +133,7 @@ const SubZoneManagement: React.FC = () => {
         header: 'Status',
         accessorKey: 'is_active',
         cell: info => (
-          <span className={`px-2 py-1 rounded-full text-xs font-medium ${info.getValue() ? 'bg-emerald-green/10 text-emerald-green' : 'bg-coral-red/10 text-coral-red'
+          <span className={`inline-flex items-center px-2 py-0.5 rounded border text-[10px] font-medium ${info.getValue() ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-slate-100 text-slate-500 border-slate-200'
             }`}>
             {info.getValue() ? 'Active' : 'Inactive'}
           </span>
@@ -148,17 +149,17 @@ const SubZoneManagement: React.FC = () => {
                 setFormData(info.row.original);
                 setIsModalVisible(true);
               }}
-              className="p-2 text-white bg-electric-blue rounded-md hover:bg-btn-hover transition-colors"
+              className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors duration-150"
               title="Edit"
             >
-              <Pencil className="h-4 w-4" />
+              <Pencil className="h-3.5 w-3.5" />
             </button>
             <button
               onClick={() => handleDelete(info.row.original.id)}
-              className="p-2 text-white bg-coral-red rounded-md hover:bg-coral-red/80 transition-colors"
+              className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-colors duration-150"
               title="Delete"
             >
-              <Trash2 className="h-4 w-4" />
+              <Trash2 className="h-3.5 w-3.5" />
             </button>
           </div>
         ),
@@ -168,49 +169,85 @@ const SubZoneManagement: React.FC = () => {
   );
 
   const toggleSidebar = () => setIsSidebarOpen(prev => !prev);
+  const totalSubZones = subZones.length;
+  const activeSubZones = subZones.filter((item) => item.is_active).length;
+  const inactiveSubZones = totalSubZones - activeSubZones;
 
   return (
-    <div className="flex h-screen bg-light-sky/50">
+    <div className="flex h-screen bg-slate-50 overflow-hidden">
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} setIsOpen={setIsSidebarOpen} />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Topbar toggleSidebar={toggleSidebar} />
-        <main className={`flex-1 overflow-x-hidden overflow-y-auto bg-light-sky/50 p-6 pt-20 transition-all duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-0 lg:ml-20'
+        <main className={`flex-1 overflow-x-hidden overflow-y-auto bg-slate-50 p-0 sm:p-6 pt-20 transition-all duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-0 lg:ml-20'
           }`}>
-          <div className="container mx-auto">
+          <div className="max-w-[1400px] mx-auto space-y-4">
             {/* Header */}
-            <div className="bg-white rounded-xl shadow-md p-6 mb-6">
-              <div className="flex items-center gap-4 mb-4">
-                <button
-                  onClick={() => navigate('/areas')}
-                  className="p-2 rounded-lg bg-light-sky hover:bg-light-sky/70 transition-colors"
-                >
-                  <ArrowLeft className="h-5 w-5 text-deep-ocean" />
-                </button>
-                <div>
-                  <h1 className="text-2xl font-bold text-deep-ocean flex items-center gap-2">
-                    <MapPin className="h-6 w-6 text-electric-blue" />
-                    Sub-Zones for {area?.name || 'Loading...'}
-                  </h1>
-                  <p className="text-slate-gray">Manage sub-zones within this area</p>
+            <div className="bg-white rounded-[10px] border border-slate-200 p-5">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div className="flex items-start gap-3">
+                  <button
+                    onClick={() => navigate('/areas')}
+                    className="h-8 w-8 inline-flex items-center justify-center rounded-md border border-slate-200 text-slate-500 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-700 transition-colors duration-150"
+                  >
+                    <ArrowLeft className="h-3.5 w-3.5" />
+                  </button>
+                  <div>
+                    <h1 className="text-[15px] font-medium text-slate-900 flex items-center gap-2">
+                      <span className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
+                        <MapPin className="h-4 w-4 text-blue-600" />
+                      </span>
+                      Sub-Zones for {area?.name || 'Loading...'}
+                    </h1>
+                    <p className="text-[11px] text-slate-400 mt-1">Manage sub-zones within this area</p>
+                  </div>
                 </div>
-              </div>
-
-              <div className="flex justify-end">
                 <button
                   onClick={() => {
                     setEditingItem(null);
                     setFormData({});
                     setIsModalVisible(true);
                   }}
-                  className="bg-electric-blue text-white px-4 py-2.5 rounded-lg hover:bg-btn-hover transition-colors flex items-center gap-2 shadow-sm"
+                  className="h-9 px-4 text-[13px] font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors duration-150 inline-flex items-center gap-1.5"
                 >
-                  <Plus className="h-5 w-5" /> Add Sub-Zone
+                  <Plus className="h-4 w-4" /> Add Sub-Zone
                 </button>
               </div>
             </div>
 
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="bg-white rounded-[10px] border border-slate-200 px-5 py-4 flex items-center justify-between">
+                <div>
+                  <p className="text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em] mb-1">Total Sub-Zones</p>
+                  <p className="text-[22px] font-semibold text-slate-900 tabular-nums leading-none">{totalSubZones}</p>
+                </div>
+                <div className="w-9 h-9 bg-blue-50 rounded-lg flex items-center justify-center">
+                  <MapPin className="w-4.5 h-4.5 text-blue-600" />
+                </div>
+              </div>
+
+              <div className="bg-white rounded-[10px] border border-slate-200 px-5 py-4 flex items-center justify-between">
+                <div>
+                  <p className="text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em] mb-1">Active</p>
+                  <p className="text-[22px] font-semibold text-slate-900 tabular-nums leading-none">{activeSubZones}</p>
+                </div>
+                <div className="w-9 h-9 bg-blue-50 rounded-lg flex items-center justify-center">
+                  <CheckCircle2 className="w-4.5 h-4.5 text-blue-600" />
+                </div>
+              </div>
+
+              <div className="bg-white rounded-[10px] border border-slate-200 px-5 py-4 flex items-center justify-between">
+                <div>
+                  <p className="text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em] mb-1">Inactive</p>
+                  <p className="text-[22px] font-semibold text-slate-900 tabular-nums leading-none">{inactiveSubZones}</p>
+                </div>
+                <div className="w-9 h-9 bg-blue-50 rounded-lg flex items-center justify-center">
+                  <XCircle className="w-4.5 h-4.5 text-blue-600" />
+                </div>
+              </div>
+            </div>
+
             {/* Table */}
-            <div className="mb-8">
+            <div className="bg-white rounded-[10px] border border-slate-200 p-4">
               <Table
                 data={subZones}
                 columns={columns}
@@ -236,12 +273,12 @@ const SubZoneManagement: React.FC = () => {
       >
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-deep-ocean mb-1">
+            <label className="block text-[11px] font-medium text-slate-600 mb-1.5">
               Sub-Zone Name *
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <MapPin className="h-5 w-5 text-slate-gray/60" />
+                <MapPin className="h-4 w-4 text-slate-400" />
               </div>
               <input
                 type="text"
@@ -249,14 +286,14 @@ const SubZoneManagement: React.FC = () => {
                 value={formData.name || ''}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="Enter sub-zone name"
-                className="w-full pl-10 pr-4 py-2.5 border border-slate-gray/20 rounded-lg focus:ring-2 focus:ring-electric-blue/30 focus:border-transparent"
+                className="w-full h-9 pl-9 pr-3 border border-slate-200 rounded-md bg-white text-[13px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/[0.12] hover:border-slate-300 transition-colors duration-150"
                 required
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-deep-ocean mb-1">
+            <label className="block text-[11px] font-medium text-slate-600 mb-1.5">
               Description
             </label>
             <textarea
@@ -265,7 +302,7 @@ const SubZoneManagement: React.FC = () => {
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               placeholder="Enter description (optional)"
               rows={3}
-              className="w-full px-4 py-2.5 border border-slate-gray/20 rounded-lg focus:ring-2 focus:ring-electric-blue/30 focus:border-transparent resize-y"
+              className="w-full px-3 py-2.5 border border-slate-200 rounded-md bg-white text-[13px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/[0.12] hover:border-slate-300 transition-colors duration-150 resize-none"
             />
           </div>
 
@@ -277,14 +314,14 @@ const SubZoneManagement: React.FC = () => {
                 setEditingItem(null);
                 setFormData({});
               }}
-              className="px-4 py-2.5 border border-slate-gray/20 text-slate-gray rounded-lg hover:bg-light-sky/50 transition-colors"
+              className="h-9 px-4 text-[13px] font-medium border border-slate-200 text-slate-600 rounded-md hover:border-slate-300 hover:bg-slate-50 transition-colors duration-150"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isLoading}
-              className="px-4 py-2.5 bg-electric-blue text-white rounded-lg hover:bg-btn-hover transition-colors flex items-center gap-2"
+              className="h-9 px-4 text-[13px] font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-60 transition-colors duration-150 flex items-center gap-2"
             >
               {isLoading ? 'Saving...' : editingItem ? 'Update Sub-Zone' : 'Add Sub-Zone'}
             </button>

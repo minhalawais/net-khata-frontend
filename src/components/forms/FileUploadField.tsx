@@ -91,7 +91,7 @@ export function FileUploadField({
             value: response.data.file_path,
             files: [file],
           },
-        } as React.ChangeEvent<HTMLInputElement>
+        } as unknown as React.ChangeEvent<HTMLInputElement>
         onChange(syntheticEvent)
 
         toast.success("File uploaded successfully", {
@@ -150,7 +150,7 @@ export function FileUploadField({
         value: "",
         files: null,
       },
-    } as React.ChangeEvent<HTMLInputElement>
+    } as unknown as React.ChangeEvent<HTMLInputElement>
     onChange(syntheticEvent)
   
     // Notify parent about file removal
@@ -190,7 +190,7 @@ export function FileUploadField({
 
   return (
     <div className="space-y-2">
-      <label className="block text-sm font-medium text-slate-gray">{label}</label>
+      <label className="block text-sm font-medium text-slate-700">{label}</label>
 
       <div className="relative">
         <input
@@ -207,32 +207,32 @@ export function FileUploadField({
             onClick={() => !disabled && !isUploading && fileInputRef.current?.click()}
             className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
               disabled || isUploading
-                ? "border-slate-gray/20 bg-slate-gray/5 cursor-not-allowed"
-                : "border-slate-gray/30 hover:border-electric-blue/50 hover:bg-light-sky/20"
+                ? "border-slate-200 bg-slate-50 cursor-not-allowed"
+                : "border-slate-300 hover:border-blue-400 hover:bg-blue-50/40"
             }`}
           >
             <Upload
               className={`mx-auto h-8 w-8 mb-2 ${
-                disabled || isUploading ? "text-slate-gray/50" : "text-slate-gray/70"
+                disabled || isUploading ? "text-slate-300" : "text-slate-500"
               }`}
             />
-            <p className={`text-sm mb-1 ${disabled || isUploading ? "text-slate-gray/50" : "text-slate-gray"}`}>
+            <p className={`text-sm mb-1 ${disabled || isUploading ? "text-slate-400" : "text-slate-600"}`}>
               {isUploading ? "Uploading..." : "Click to upload or drag and drop"}
             </p>
-            <p className="text-xs text-slate-gray/70">Max size: {maxSize}MB</p>
+            <p className="text-xs text-slate-400">Max size: {maxSize}MB</p>
           </div>
         ) : (
-          <div className="border border-slate-gray/30 rounded-lg p-4 bg-light-sky/10">
+          <div className="border border-slate-200 rounded-[10px] p-4 bg-slate-50">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 {accept.includes("image") ? (
-                  <ImageIcon className="h-8 w-8 text-electric-blue" />
+                  <ImageIcon className="h-8 w-8 text-blue-600" />
                 ) : (
-                  <FileText className="h-8 w-8 text-electric-blue" />
+                  <FileText className="h-8 w-8 text-blue-600" />
                 )}
                 <div>
-                  <p className="text-sm font-medium text-deep-ocean">File uploaded successfully</p>
-                  <p className="text-xs text-slate-gray">
+                  <p className="text-sm font-medium text-slate-900">File uploaded successfully</p>
+                  <p className="text-xs text-slate-500">
                     {uploadedFile ? "New file uploaded" : currentImage ? "Current file" : "File uploaded"}
                   </p>
                 </div>
@@ -243,7 +243,7 @@ export function FileUploadField({
                   <button
                     type="button"
                     onClick={viewFile}
-                    className="p-2 text-electric-blue hover:bg-electric-blue/10 rounded-lg transition-colors"
+                    className="p-2 text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
                     title="View file"
                   >
                     <Eye className="h-4 w-4" />
@@ -253,7 +253,7 @@ export function FileUploadField({
                   type="button"
                   onClick={removeFile}
                   disabled={disabled || isUploading}
-                  className="p-2 text-coral-red hover:bg-coral-red/10 rounded-lg transition-colors disabled:opacity-50"
+                  className="p-2 text-rose-600 hover:bg-rose-50 rounded-md transition-colors disabled:opacity-50"
                   title="Remove file"
                 >
                   <X className="h-4 w-4" />
@@ -265,8 +265,8 @@ export function FileUploadField({
       </div>
 
       {isUploading && (
-        <div className="flex items-center gap-2 text-sm text-electric-blue">
-          <div className="animate-spin rounded-full h-4 w-4 border-2 border-electric-blue border-t-transparent"></div>
+        <div className="flex items-center gap-2 text-sm text-blue-600">
+          <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-600 border-t-transparent"></div>
           Uploading file...
         </div>
       )}

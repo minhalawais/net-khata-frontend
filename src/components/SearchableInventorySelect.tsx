@@ -52,35 +52,35 @@ export function SearchableInventorySelect({
         <div className="relative">
             {/* Trigger button */}
             <div
-                className={`w-full pl-10 pr-10 py-2.5 border border-slate-gray/20 rounded-lg bg-white text-deep-ocean cursor-pointer flex items-center transition-all duration-200 hover:border-electric-blue/30 ${isLoading ? 'opacity-50' : ''}`}
+                className={`w-full pl-10 pr-10 py-2.5 border border-slate-200 rounded-md bg-white text-slate-800 cursor-pointer flex items-center transition-all duration-200 hover:border-blue-300 ${isLoading ? 'opacity-50' : ''}`}
                 onClick={() => !isLoading && setIsOpen(!isOpen)}
             >
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Package className="h-5 w-5 text-slate-gray/60" />
+                    <Package className="h-5 w-5 text-slate-400" />
                 </div>
 
-                <span className="text-slate-gray/50">
+                <span className="text-slate-400">
                     {isLoading ? "Loading inventory..." : placeholder}
                 </span>
 
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-                    <ChevronDown className={`h-5 w-5 text-slate-gray/60 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+                    <ChevronDown className={`h-5 w-5 text-slate-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
                 </div>
             </div>
 
             {/* Dropdown menu */}
             {isOpen && (
-                <div className="absolute z-50 w-full mt-1 bg-white border border-slate-gray/20 rounded-lg shadow-lg max-h-80 overflow-y-auto animate-dropdown">
+                <div className="absolute z-50 w-full mt-1 bg-white border border-slate-200 rounded-md shadow-xl max-h-80 overflow-y-auto animate-dropdown">
                     {/* Search input */}
-                    <div className="sticky top-0 bg-white p-3 border-b border-slate-gray/20">
+                    <div className="sticky top-0 bg-white p-3 border-b border-slate-200">
                         <div className="relative">
-                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-gray/60" />
+                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
                             <input
                                 type="text"
                                 placeholder="Search by item type or vendor..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-9 pr-3 py-2 border border-slate-gray/20 rounded-md focus:outline-none focus:ring-2 focus:ring-electric-blue/30 focus:border-transparent"
+                                className="w-full pl-9 pr-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                                 autoFocus
                             />
                         </div>
@@ -89,27 +89,27 @@ export function SearchableInventorySelect({
                     {/* Options list */}
                     <div className="p-2">
                         {filteredItems.length === 0 ? (
-                            <div className="p-4 text-center text-slate-gray text-sm">
-                                <Search className="h-8 w-8 mx-auto mb-2 text-slate-gray/40" />
+                            <div className="p-4 text-center text-slate-500 text-sm">
+                                <Search className="h-8 w-8 mx-auto mb-2 text-slate-300" />
                                 <p>{searchTerm ? `No items found matching "${searchTerm}"` : "No items available"}</p>
                             </div>
                         ) : (
                             filteredItems.map((item) => (
                                 <div
                                     key={item.id}
-                                    className="p-3 cursor-pointer rounded-lg mb-1 transition-all duration-200 hover:bg-light-sky/50 hover:border-electric-blue/20 border border-transparent bg-white"
+                                    className="p-3 cursor-pointer rounded-md mb-1 transition-all duration-150 hover:bg-slate-50 hover:border-blue-200 border border-transparent bg-white"
                                     onClick={() => handleItemSelect(item.id)}
                                 >
                                     <div className="flex items-center justify-between gap-3">
                                         {/* Item Type with Icon */}
                                         <div className="flex items-center gap-2 min-w-[150px]">
-                                            <Box className="h-4 w-4 text-electric-blue" />
+                                            <Box className="h-4 w-4 text-blue-600" />
                                             <div>
-                                                <span className="text-sm font-medium text-deep-ocean block">
+                                                <span className="text-sm font-medium text-slate-900 block">
                                                     {item.item_type}
                                                 </span>
                                                 {item.vendor_name && (
-                                                    <span className="text-xs text-slate-gray">
+                                                    <span className="text-xs text-slate-500">
                                                         {item.vendor_name}
                                                     </span>
                                                 )}

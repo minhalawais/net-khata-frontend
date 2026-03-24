@@ -151,12 +151,12 @@ const ComplaintDetailPage = () => {
 
       setIsEditingRemarks(false)
       toast.success("Remarks updated successfully", {
-        style: { background: "#E5E1DA", color: "#89A8B2" },
+        style: { background: "#ECFDF3", color: "#047857" },
       })
     } catch (error) {
       console.error("Failed to update remarks", error)
       toast.error("Failed to update remarks", {
-        style: { background: "#F1F0E8", color: "#B3C8CF" },
+        style: { background: "#FFF1F2", color: "#E11D48" },
       })
     } finally {
       setIsSavingRemarks(false)
@@ -166,24 +166,24 @@ const ComplaintDetailPage = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "open":
-        return "bg-yellow-100 text-yellow-800"
+        return "bg-amber-50 text-amber-700 border-amber-200"
       case "in_progress":
-        return "bg-blue-100 text-blue-800"
+        return "bg-blue-50 text-blue-700 border-blue-200"
       case "resolved":
-        return "bg-green-100 text-green-800"
+        return "bg-emerald-50 text-emerald-700 border-emerald-200"
       case "closed":
-        return "bg-gray-100 text-gray-800"
+        return "bg-slate-100 text-slate-600 border-slate-200"
       default:
-        return "bg-gray-100 text-gray-800"
+        return "bg-slate-100 text-slate-600 border-slate-200"
     }
   }
 
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-gray-100">
-        <div className="flex flex-col items-center space-y-4">
-          <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-t-2 border-[#8b5cf6]"></div>
-          <p className="text-lg font-medium text-[#8b5cf6]">Loading complaint details...</p>
+      <div className="flex h-screen items-center justify-center bg-slate-50">
+        <div className="bg-white border border-slate-200 rounded-[10px] p-6 flex flex-col items-center space-y-3">
+          <div className="h-9 w-9 animate-spin rounded-full border-2 border-slate-200 border-t-blue-600"></div>
+          <p className="text-[13px] font-medium text-slate-600">Loading complaint details...</p>
         </div>
       </div>
     )
@@ -191,17 +191,17 @@ const ComplaintDetailPage = () => {
 
   if (error) {
     return (
-      <div className="flex h-screen items-center justify-center bg-gray-100">
-        <div className="max-w-md rounded-lg bg-white p-8 shadow-lg">
+      <div className="flex h-screen items-center justify-center bg-slate-50">
+        <div className="max-w-md rounded-[10px] bg-white border border-slate-200 p-8">
           <div className="mb-4 flex justify-center">
-            <AlertCircle className="h-16 w-16 text-red-500" />
+            <AlertCircle className="h-14 w-14 text-rose-500" />
           </div>
-          <h2 className="mb-4 text-center text-2xl font-bold text-gray-800">Error</h2>
-          <p className="text-center text-gray-600">{error}</p>
+          <h2 className="mb-3 text-center text-[15px] font-medium text-slate-900">Error</h2>
+          <p className="text-center text-[13px] text-slate-500">{error}</p>
           <div className="mt-6 flex justify-center">
             <button
               onClick={() => navigate("/complaints")}
-              className="rounded-md bg-[#8b5cf6] px-4 py-2 text-white transition duration-300 hover:bg-[#7c3aed]"
+              className="h-9 px-4 rounded-md bg-blue-600 text-white text-[13px] font-medium transition-colors duration-150 hover:bg-blue-700"
             >
               Back to Complaints
             </button>
@@ -213,19 +213,19 @@ const ComplaintDetailPage = () => {
 
   if (!complaint) {
     return (
-      <div className="flex h-screen items-center justify-center bg-gray-100">
-        <div className="max-w-md rounded-lg bg-white p-8 shadow-lg">
+      <div className="flex h-screen items-center justify-center bg-slate-50">
+        <div className="max-w-md rounded-[10px] bg-white border border-slate-200 p-8">
           <div className="mb-4 flex justify-center">
-            <AlertCircle className="h-16 w-16 text-yellow-500" />
+            <AlertCircle className="h-14 w-14 text-amber-500" />
           </div>
-          <h2 className="mb-4 text-center text-2xl font-bold text-gray-800">Complaint Not Found</h2>
-          <p className="text-center text-gray-600">
+          <h2 className="mb-3 text-center text-[15px] font-medium text-slate-900">Complaint Not Found</h2>
+          <p className="text-center text-[13px] text-slate-500">
             The complaint you're looking for doesn't exist or you don't have permission to view it.
           </p>
           <div className="mt-6 flex justify-center">
             <button
               onClick={() => navigate("/complaints")}
-              className="rounded-md bg-[#8b5cf6] px-4 py-2 text-white transition duration-300 hover:bg-[#7c3aed]"
+              className="h-9 px-4 rounded-md bg-blue-600 text-white text-[13px] font-medium transition-colors duration-150 hover:bg-blue-700"
             >
               Back to Complaints
             </button>
@@ -236,40 +236,45 @@ const ComplaintDetailPage = () => {
   }
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-slate-50 overflow-hidden">
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} setIsOpen={setIsSidebarOpen} />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Topbar toggleSidebar={toggleSidebar} />
         <main
-          className={`flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6 pt-20 transition-all duration-300 ${
-            isSidebarOpen ? "ml-72" : "ml-0 md:ml-20"
+          className={`flex-1 overflow-x-hidden overflow-y-auto bg-slate-50 p-0 sm:p-6 pt-20 transition-all duration-300 ${
+            isSidebarOpen ? "ml-64" : "ml-0 lg:ml-20"
           }`}
         >
-          <div className="container mx-auto max-w-5xl">
+          <div className="max-w-[1400px] mx-auto space-y-4">
             {/* Header with back button */}
-            <div className="mb-6 flex items-center justify-between">
-              <div className="flex items-center space-x-4">
+            <div className="bg-white rounded-[10px] border border-slate-200 p-5 flex items-center justify-between">
+              <div className="flex items-center gap-3">
                 <button
                   onClick={() => navigate("/complaints")}
-                  className="flex items-center rounded-full bg-white p-2 text-gray-600 shadow-sm transition-colors hover:bg-gray-50 hover:text-[#8b5cf6]"
+                  className="h-8 w-8 inline-flex items-center justify-center rounded-md border border-slate-200 text-slate-500 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-700 transition-colors duration-150"
                 >
-                  <ArrowLeft className="h-5 w-5" />
+                  <ArrowLeft className="h-3.5 w-3.5" />
                 </button>
-                <h1 className="text-3xl font-bold text-[#8b5cf6]">Complaint Details</h1>
+                <div>
+                  <h1 className="text-[15px] font-medium text-slate-900">Complaint Details</h1>
+                  <p className="text-[11px] text-slate-400 mt-0.5">Detailed view and resolution context</p>
+                </div>
               </div>
             </div>
 
             {/* Ticket info card */}
-            <div className="mb-6 overflow-hidden rounded-xl bg-white shadow-md">
-              <div className="bg-gradient-to-r from-[#8b5cf6] to-[#9f7aea] p-4">
-                <div className="flex flex-wrap items-center justify-between">
-                  <div className="mb-2 flex items-center space-x-3 md:mb-0">
-                    <Tag className="h-6 w-6 text-white" />
-                    <h2 className="text-xl font-semibold text-white">Ticket #{complaint.ticket_number}</h2>
+            <div className="overflow-hidden rounded-[10px] bg-white border border-slate-200">
+              <div className="p-4 border-b border-slate-100">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex items-center space-x-2.5">
+                    <span className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
+                      <Tag className="h-4 w-4 text-blue-600" />
+                    </span>
+                    <h2 className="text-[13px] font-medium text-slate-900">Ticket #{complaint.ticket_number}</h2>
                   </div>
                   <div>
                     <span
-                      className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${getStatusColor(
+                      className={`inline-flex items-center rounded px-2 py-0.5 text-[10px] font-medium border ${getStatusColor(
                         complaint.status,
                       )}`}
                     >
@@ -282,47 +287,47 @@ const ComplaintDetailPage = () => {
               <div className="grid gap-6 p-6 md:grid-cols-2">
                 <div className="space-y-6">
                   <div>
-                    <h3 className="mb-2 text-sm font-medium text-gray-500">Customer Information</h3>
-                    <div className="rounded-lg bg-gray-50 p-4">
+                    <h3 className="mb-2 text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em]">Customer Information</h3>
+                    <div className="rounded-[10px] bg-slate-50 border border-slate-200 p-4">
                       <div className="mb-3 flex items-start space-x-3">
-                        <User className="mt-1 h-5 w-5 flex-shrink-0 text-[#8b5cf6]" />
+                        <User className="mt-0.5 h-4 w-4 flex-shrink-0 text-blue-600" />
                         <div>
-                          <p className="text-sm font-medium text-gray-500">Name</p>
-                          <p className="text-gray-800">{complaint.customer_name}</p>
+                          <p className="text-[11px] font-medium text-slate-500">Name</p>
+                          <p className="text-[13px] text-slate-700">{complaint.customer_name}</p>
                         </div>
                       </div>
                       <div className="mb-3 flex items-start space-x-3">
-                        <Tag className="mt-1 h-5 w-5 flex-shrink-0 text-[#8b5cf6]" />
+                        <Tag className="mt-0.5 h-4 w-4 flex-shrink-0 text-blue-600" />
                         <div>
-                          <p className="text-sm font-medium text-gray-500">Internet ID</p>
-                          <p className="text-gray-800">{complaint.internet_id}</p>
+                          <p className="text-[11px] font-medium text-slate-500">Internet ID</p>
+                          <p className="text-[13px] text-slate-700">{complaint.internet_id}</p>
                         </div>
                       </div>
                       <div className="flex items-start space-x-3">
-                        <Phone className="mt-1 h-5 w-5 flex-shrink-0 text-[#8b5cf6]" />
+                        <Phone className="mt-0.5 h-4 w-4 flex-shrink-0 text-blue-600" />
                         <div>
-                          <p className="text-sm font-medium text-gray-500">Phone Number</p>
-                          <p className="text-gray-800">{complaint.phone_number}</p>
+                          <p className="text-[11px] font-medium text-slate-500">Phone Number</p>
+                          <p className="text-[13px] text-slate-700">{complaint.phone_number}</p>
                         </div>
                       </div>
                     </div>
                   </div>
 
                   <div>
-                    <h3 className="mb-2 text-sm font-medium text-gray-500">Assignment Information</h3>
-                    <div className="rounded-lg bg-gray-50 p-4">
+                    <h3 className="mb-2 text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em]">Assignment Information</h3>
+                    <div className="rounded-[10px] bg-slate-50 border border-slate-200 p-4">
                       <div className="mb-3 flex items-start space-x-3">
-                        <User className="mt-1 h-5 w-5 flex-shrink-0 text-[#8b5cf6]" />
+                        <User className="mt-0.5 h-4 w-4 flex-shrink-0 text-blue-600" />
                         <div>
-                          <p className="text-sm font-medium text-gray-500">Assigned To</p>
-                          <p className="text-gray-800">{complaint.assigned_to_name || "Unassigned"}</p>
+                          <p className="text-[11px] font-medium text-slate-500">Assigned To</p>
+                          <p className="text-[13px] text-slate-700">{complaint.assigned_to_name || "Unassigned"}</p>
                         </div>
                       </div>
                       <div className="flex items-start space-x-3">
-                        <Clock className="mt-1 h-5 w-5 flex-shrink-0 text-[#8b5cf6]" />
+                        <Clock className="mt-0.5 h-4 w-4 flex-shrink-0 text-blue-600" />
                         <div>
-                          <p className="text-sm font-medium text-gray-500">Resolution Attempts</p>
-                          <p className="text-gray-800">{complaint.resolution_attempts}</p>
+                          <p className="text-[11px] font-medium text-slate-500">Resolution Attempts</p>
+                          <p className="text-[13px] text-slate-700 tabular-nums">{complaint.resolution_attempts}</p>
                         </div>
                       </div>
                     </div>
@@ -331,27 +336,27 @@ const ComplaintDetailPage = () => {
 
                 <div className="space-y-6">
                   <div>
-                    <h3 className="mb-2 text-sm font-medium text-gray-500">Dates</h3>
-                    <div className="rounded-lg bg-gray-50 p-4">
+                    <h3 className="mb-2 text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em]">Dates</h3>
+                    <div className="rounded-[10px] bg-slate-50 border border-slate-200 p-4">
                       <div className="mb-3 flex items-start space-x-3">
-                        <Calendar className="mt-1 h-5 w-5 flex-shrink-0 text-[#8b5cf6]" />
+                        <Calendar className="mt-0.5 h-4 w-4 flex-shrink-0 text-blue-600" />
                         <div>
-                          <p className="text-sm font-medium text-gray-500">Created At</p>
-                          <p className="text-gray-800">{new Date(complaint.created_at).toLocaleString()}</p>
+                          <p className="text-[11px] font-medium text-slate-500">Created At</p>
+                          <p className="text-[13px] text-slate-700 tabular-nums">{new Date(complaint.created_at).toLocaleString()}</p>
                         </div>
                       </div>
                       <div className="mb-3 flex items-start space-x-3">
-                        <Calendar className="mt-1 h-5 w-5 flex-shrink-0 text-[#8b5cf6]" />
+                        <Calendar className="mt-0.5 h-4 w-4 flex-shrink-0 text-blue-600" />
                         <div>
-                          <p className="text-sm font-medium text-gray-500">Updated At</p>
-                          <p className="text-gray-800">{new Date(complaint.updated_at).toLocaleString()}</p>
+                          <p className="text-[11px] font-medium text-slate-500">Updated At</p>
+                          <p className="text-[13px] text-slate-700 tabular-nums">{new Date(complaint.updated_at).toLocaleString()}</p>
                         </div>
                       </div>
                       <div className="mb-3 flex items-start space-x-3">
-                        <Calendar className="mt-1 h-5 w-5 flex-shrink-0 text-[#8b5cf6]" />
+                        <Calendar className="mt-0.5 h-4 w-4 flex-shrink-0 text-blue-600" />
                         <div>
-                          <p className="text-sm font-medium text-gray-500">Response Due Date</p>
-                          <p className="text-gray-800">
+                          <p className="text-[11px] font-medium text-slate-500">Response Due Date</p>
+                          <p className="text-[13px] text-slate-700 tabular-nums">
                             {complaint.response_due_date
                               ? new Date(complaint.response_due_date).toLocaleString()
                               : "Not specified"}
@@ -359,10 +364,10 @@ const ComplaintDetailPage = () => {
                         </div>
                       </div>
                       <div className="flex items-start space-x-3">
-                        <CheckCircle className="mt-1 h-5 w-5 flex-shrink-0 text-[#8b5cf6]" />
+                        <CheckCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-blue-600" />
                         <div>
-                          <p className="text-sm font-medium text-gray-500">Resolved At</p>
-                          <p className="text-gray-800">
+                          <p className="text-[11px] font-medium text-slate-500">Resolved At</p>
+                          <p className="text-[13px] text-slate-700 tabular-nums">
                             {complaint.resolved_at
                               ? new Date(complaint.resolved_at).toLocaleString()
                               : "Not resolved yet"}
@@ -373,12 +378,12 @@ const ComplaintDetailPage = () => {
                   </div>
 
                   <div>
-                    <h3 className="mb-2 text-sm font-medium text-gray-500">Feedback</h3>
-                    <div className="rounded-lg bg-gray-50 p-4">
+                    <h3 className="mb-2 text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em]">Feedback</h3>
+                    <div className="rounded-[10px] bg-slate-50 border border-slate-200 p-4">
                       <div className="mb-3 flex items-start space-x-3">
-                        <Star className="mt-1 h-5 w-5 flex-shrink-0 text-[#8b5cf6]" />
+                        <Star className="mt-0.5 h-4 w-4 flex-shrink-0 text-blue-600" />
                         <div>
-                          <p className="text-sm font-medium text-gray-500">Satisfaction Rating</p>
+                          <p className="text-[11px] font-medium text-slate-500">Satisfaction Rating</p>
                           <div className="flex items-center">
                             {complaint.satisfaction_rating ? (
                               <div className="flex">
@@ -392,19 +397,19 @@ const ComplaintDetailPage = () => {
                                     }`}
                                   />
                                 ))}
-                                <span className="ml-2 text-sm text-gray-600">({complaint.satisfaction_rating}/5)</span>
+                                <span className="ml-2 text-[11px] text-slate-400 tabular-nums">({complaint.satisfaction_rating}/5)</span>
                               </div>
                             ) : (
-                              <span className="text-gray-500">Not rated yet</span>
+                              <span className="text-[13px] text-slate-500">Not rated yet</span>
                             )}
                           </div>
                         </div>
                       </div>
                       <div className="flex items-start space-x-3">
-                        <MessageSquare className="mt-1 h-5 w-5 flex-shrink-0 text-[#8b5cf6]" />
+                        <MessageSquare className="mt-0.5 h-4 w-4 flex-shrink-0 text-blue-600" />
                         <div>
-                          <p className="text-sm font-medium text-gray-500">Feedback Comments</p>
-                          <p className="text-gray-800">{complaint.feedback_comments || "No feedback provided"}</p>
+                          <p className="text-[11px] font-medium text-slate-500">Feedback Comments</p>
+                          <p className="text-[13px] text-slate-700">{complaint.feedback_comments || "No feedback provided"}</p>
                         </div>
                       </div>
                     </div>
@@ -414,43 +419,43 @@ const ComplaintDetailPage = () => {
             </div>
 
             {/* Description and remarks */}
-            <div className="mb-6 grid gap-6 md:grid-cols-2">
-              <div className="overflow-hidden rounded-xl bg-white shadow-md">
-                <div className="border-b border-gray-200 bg-gray-50 p-4">
-                  <h3 className="text-lg font-medium text-gray-800">Description</h3>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="overflow-hidden rounded-[10px] bg-white border border-slate-200">
+                <div className="border-b border-slate-100 bg-slate-50 p-4">
+                  <h3 className="text-[13px] font-medium text-slate-900">Description</h3>
                 </div>
                 <div className="p-6">
-                  <p className="whitespace-pre-wrap text-gray-700">{complaint.description}</p>
+                  <p className="whitespace-pre-wrap text-[13px] text-slate-700">{complaint.description}</p>
                 </div>
               </div>
 
-              <div className="overflow-hidden rounded-xl bg-white shadow-md">
-                <div className="border-b border-gray-200 bg-gray-50 p-4 flex justify-between items-center">
-                  <h3 className="text-lg font-medium text-gray-800">Remarks</h3>
+              <div className="overflow-hidden rounded-[10px] bg-white border border-slate-200">
+                <div className="border-b border-slate-100 bg-slate-50 p-4 flex justify-between items-center">
+                  <h3 className="text-[13px] font-medium text-slate-900">Remarks</h3>
                   {!isEditingRemarks ? (
                     <button
                       onClick={handleEditRemarks}
-                      className="flex items-center text-sm text-[#8b5cf6] hover:text-[#7c3aed] transition-colors"
+                      className="h-8 px-3 inline-flex items-center rounded-md text-[12px] font-medium text-blue-600 hover:bg-blue-50 transition-colors duration-150"
                     >
-                      <Edit className="h-4 w-4 mr-1" />
+                      <Edit className="h-3.5 w-3.5 mr-1" />
                       {remarks ? "Edit" : "Add"} Remarks
                     </button>
                   ) : (
                     <div className="flex space-x-2">
                       <button
                         onClick={handleCancelEditRemarks}
-                        className="flex items-center text-sm text-gray-500 hover:text-gray-700 transition-colors"
+                        className="h-8 px-3 inline-flex items-center rounded-md text-[12px] font-medium border border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-white transition-colors duration-150"
                         disabled={isSavingRemarks}
                       >
-                        <X className="h-4 w-4 mr-1" />
+                        <X className="h-3.5 w-3.5 mr-1" />
                         Cancel
                       </button>
                       <button
                         onClick={handleSaveRemarks}
-                        className="flex items-center text-sm text-green-600 hover:text-green-700 transition-colors"
+                        className="h-8 px-3 inline-flex items-center rounded-md text-[12px] font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-150"
                         disabled={isSavingRemarks}
                       >
-                        <Save className="h-4 w-4 mr-1" />
+                        <Save className="h-3.5 w-3.5 mr-1" />
                         {isSavingRemarks ? "Saving..." : "Save"}
                       </button>
                     </div>
@@ -462,55 +467,55 @@ const ComplaintDetailPage = () => {
                       ref={textareaRef}
                       value={remarks}
                       onChange={(e) => setRemarks(e.target.value)}
-                      className="w-full min-h-[120px] p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#8b5cf6] focus:border-transparent"
+                      className="w-full min-h-[120px] p-3 border border-slate-200 rounded-md text-[13px] text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/[0.12] focus:border-blue-500 hover:border-slate-300 transition-colors duration-150 resize-none"
                       placeholder="Add your remarks here..."
                       disabled={isSavingRemarks}
                     />
                   ) : (
-                    <p className="whitespace-pre-wrap text-gray-700">{remarks || "No remarks added"}</p>
+                    <p className="whitespace-pre-wrap text-[13px] text-slate-700">{remarks || "No remarks added"}</p>
                   )}
                 </div>
               </div>
             </div>
 
             {/* Attachments and resolution proof */}
-            <div className="mb-6 grid gap-6 md:grid-cols-2">
-              <div className="overflow-hidden rounded-xl bg-white shadow-md">
-                <div className="border-b border-gray-200 bg-gray-50 p-4">
-                  <h3 className="text-lg font-medium text-gray-800">Attachment</h3>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="overflow-hidden rounded-[10px] bg-white border border-slate-200">
+                <div className="border-b border-slate-100 bg-slate-50 p-4">
+                  <h3 className="text-[13px] font-medium text-slate-900">Attachment</h3>
                 </div>
                 <div className="p-6">
                   {complaint.attachment_path ? (
-                    <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-4">
+                    <div className="flex items-center justify-between rounded-[10px] border border-slate-200 bg-slate-50 p-4">
                       <div className="flex items-center space-x-3">
-                        <Paperclip className="h-5 w-5 text-[#8b5cf6]" />
-                        <span className="text-gray-700">Complaint Attachment</span>
+                        <Paperclip className="h-4 w-4 text-blue-600" />
+                        <span className="text-[13px] text-slate-700">Complaint Attachment</span>
                       </div>
                       <button
                         onClick={handleDownloadAttachment}
-                        className="rounded-md bg-[#8b5cf6] px-3 py-1 text-sm text-white transition duration-300 hover:bg-[#7c3aed]"
+                        className="h-8 px-3 rounded-md bg-blue-600 text-white text-[12px] font-medium transition-colors duration-150 hover:bg-blue-700"
                       >
                         Download
                       </button>
                     </div>
                   ) : (
-                    <div className="flex items-center justify-center rounded-lg border border-gray-200 bg-gray-50 p-8">
-                      <p className="text-gray-500">No attachment available</p>
+                    <div className="flex items-center justify-center rounded-[10px] border border-slate-200 bg-slate-50 p-8">
+                      <p className="text-[13px] text-slate-500">No attachment available</p>
                     </div>
                   )}
                 </div>
               </div>
 
-              <div className="overflow-hidden rounded-xl bg-white shadow-md">
-                <div className="border-b border-gray-200 bg-gray-50 p-4">
-                  <h3 className="text-lg font-medium text-gray-800">Resolution Proof</h3>
+              <div className="overflow-hidden rounded-[10px] bg-white border border-slate-200">
+                <div className="border-b border-slate-100 bg-slate-50 p-4">
+                  <h3 className="text-[13px] font-medium text-slate-900">Resolution Proof</h3>
                 </div>
                 <div className="p-6">
                   {complaint.resolution_proof ? (
-                    <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-4">
+                    <div className="flex items-center justify-between rounded-[10px] border border-slate-200 bg-slate-50 p-4">
                       <div className="flex items-center space-x-3">
-                        <FileText className="h-5 w-5 text-[#8b5cf6]" />
-                        <span className="text-gray-700">Resolution Document</span>
+                        <FileText className="h-4 w-4 text-blue-600" />
+                        <span className="text-[13px] text-slate-700">Resolution Document</span>
                       </div>
                       <button
                         onClick={() => {
@@ -531,14 +536,14 @@ const ComplaintDetailPage = () => {
                             })
                             .catch((error) => console.error("Error:", error))
                         }}
-                        className="rounded-md bg-[#8b5cf6] px-3 py-1 text-sm text-white transition duration-300 hover:bg-[#7c3aed]"
+                        className="h-8 px-3 rounded-md bg-blue-600 text-white text-[12px] font-medium transition-colors duration-150 hover:bg-blue-700"
                       >
                         Download
                       </button>
                     </div>
                   ) : (
-                    <div className="flex items-center justify-center rounded-lg border border-gray-200 bg-gray-50 p-8">
-                      <p className="text-gray-500">No resolution proof available</p>
+                    <div className="flex items-center justify-center rounded-[10px] border border-slate-200 bg-slate-50 p-8">
+                      <p className="text-[13px] text-slate-500">No resolution proof available</p>
                     </div>
                   )}
                 </div>
@@ -546,10 +551,10 @@ const ComplaintDetailPage = () => {
             </div>
 
             {/* Action buttons */}
-            <div className="flex flex-wrap justify-end space-x-4">
+            <div className="flex flex-wrap justify-end">
               <button
                 onClick={() => navigate("/complaints")}
-                className="rounded-md border border-gray-300 bg-white px-4 py-2 text-gray-700 shadow-sm transition duration-300 hover:bg-gray-50"
+                className="h-9 px-4 rounded-md border border-slate-200 bg-white text-slate-600 text-[13px] font-medium transition-colors duration-150 hover:border-slate-300 hover:bg-slate-50"
               >
                 Back to List
               </button>

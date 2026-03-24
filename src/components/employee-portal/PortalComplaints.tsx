@@ -22,6 +22,7 @@ import {
   Star,
   Hash,
 } from "lucide-react"
+import HorizontalLogo from "../../assets/net_khata_horizontal.png"
 
 interface Complaint {
   id: string
@@ -47,10 +48,10 @@ interface Complaint {
 }
 
 const statusConfig: Record<string, { color: string; bg: string; icon: React.ElementType }> = {
-  open: { color: "text-red-700", bg: "bg-red-100", icon: AlertCircle },
-  in_progress: { color: "text-yellow-700", bg: "bg-yellow-100", icon: Clock },
-  resolved: { color: "text-green-700", bg: "bg-green-100", icon: CheckCircle },
-  closed: { color: "text-gray-700", bg: "bg-gray-100", icon: X },
+  open: { color: "text-rose-700", bg: "bg-rose-50 border border-rose-200", icon: AlertCircle },
+  in_progress: { color: "text-amber-700", bg: "bg-amber-50 border border-amber-200", icon: Clock },
+  resolved: { color: "text-emerald-700", bg: "bg-emerald-50 border border-emerald-200", icon: CheckCircle },
+  closed: { color: "text-slate-700", bg: "bg-slate-100 border border-slate-200", icon: X },
 }
 
 export function PortalComplaints() {
@@ -103,6 +104,7 @@ export function PortalComplaints() {
       toast.success("Complaint updated successfully!")
       setSelectedComplaint(null)
       fetchComplaints()
+      window.dispatchEvent(new Event("refresh-portal-stats"))
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Failed to update complaint")
     } finally {
@@ -123,25 +125,39 @@ export function PortalComplaints() {
     return (
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {[...Array(6)].map((_, i) => (
-          <div key={i} className="h-40 bg-gray-200 rounded-xl animate-pulse"></div>
+          <div key={i} className="h-40 bg-slate-200 rounded-[10px] animate-pulse"></div>
         ))}
       </div>
     )
   }
 
   return (
-    <>
+    <div className="space-y-6 max-w-7xl mx-auto">
+      {/* Brand Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white border border-slate-200/80 rounded-[12px] p-5 shadow-sm">
+        <div className="flex items-center gap-4">
+          <img src={HorizontalLogo} alt="Net Khata Logo" className="h-9 w-auto object-contain" />
+          <div className="h-8 w-px bg-slate-200 hidden sm:block"></div>
+          <div>
+            <h1 className="text-[18px] font-semibold text-slate-900 tracking-tight leading-none">Complaints & Tasks</h1>
+            <p className="text-[12px] text-slate-500 mt-1.5">Manage and resolve customer support tickets</p>
+          </div>
+        </div>
+      </div>
+
       {/* Filter Bar */}
-      <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2">
-        <Filter className="w-4 h-4 text-gray-500 flex-shrink-0" />
+      <div className="flex items-center gap-1.5 mb-6 overflow-x-auto pb-2 p-1.5 bg-slate-100/60 rounded-[10px] w-fit border border-slate-200/60">
+        <div className="pl-3 pr-2 border-r border-slate-200/80 py-1.5 flex-shrink-0">
+          <Filter className="w-4 h-4 text-slate-400" />
+        </div>
         {["all", "open", "in_progress", "resolved"].map((status) => (
           <button
             key={status}
             onClick={() => setFilter(status)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
+            className={`px-4 py-2 rounded-[6px] text-[13px] font-medium whitespace-nowrap transition-all duration-200 ${
               filter === status
-                ? "bg-[#89A8B2] text-white shadow-md"
-                : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
+                ? "bg-white text-blue-600 shadow-[0_2px_4px_-1px_rgba(0,0,0,0.06)] border border-slate-200/60"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-50/50 border border-transparent"
             }`}
           >
             {status === "all" ? "All Complaints" : status.replace("_", " ").replace(/\b\w/g, (l) => l.toUpperCase())}
@@ -151,7 +167,7 @@ export function PortalComplaints() {
 
       {/* Stats Summary */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
+        <div className="bg-white rounded-[10px] border border-slate-200 p-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-red-100 rounded-lg">
               <AlertCircle className="w-5 h-5 text-red-600" />
@@ -164,7 +180,7 @@ export function PortalComplaints() {
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
+        <div className="bg-white rounded-[10px] border border-slate-200 p-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-yellow-100 rounded-lg">
               <Clock className="w-5 h-5 text-yellow-600" />
@@ -177,7 +193,7 @@ export function PortalComplaints() {
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
+        <div className="bg-white rounded-[10px] border border-slate-200 p-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-green-100 rounded-lg">
               <CheckCircle className="w-5 h-5 text-green-600" />
@@ -190,7 +206,7 @@ export function PortalComplaints() {
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
+        <div className="bg-white rounded-[10px] border border-slate-200 p-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-purple-100 rounded-lg">
               <Star className="w-5 h-5 text-purple-600" />
@@ -211,7 +227,7 @@ export function PortalComplaints() {
 
       {/* Complaints Grid */}
       {complaints.length === 0 ? (
-        <div className="text-center py-12 bg-white rounded-xl border border-gray-200">
+        <div className="text-center py-12 bg-white rounded-[10px] border border-slate-200">
           <AlertCircle className="w-12 h-12 text-gray-300 mx-auto mb-4" />
           <p className="text-gray-500">No complaints found</p>
         </div>
@@ -225,15 +241,15 @@ export function PortalComplaints() {
               <div
                 key={complaint.id}
                 onClick={() => openComplaintModal(complaint)}
-                className="bg-white rounded-xl border border-gray-200 p-4 cursor-pointer hover:shadow-lg hover:scale-[1.02] transition-all duration-200"
+                className="bg-white rounded-[10px] border border-slate-200 p-4 cursor-pointer hover:shadow-md transition-all duration-150"
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-[#89A8B2] flex items-center gap-1">
+                    <span className="text-sm font-bold text-blue-600 flex items-center gap-1">
                       <Hash className="w-3 h-3" />
                       {complaint.ticket_number}
                     </span>
-                    <span className={`px-2 py-1 rounded-lg text-xs font-semibold ${status.bg} ${status.color}`}>
+                    <span className={`px-2 py-1 rounded text-[11px] font-medium ${status.bg} ${status.color}`}>
                       <StatusIcon className="w-3 h-3 inline mr-1" />
                       {complaint.status.replace("_", " ")}
                     </span>
@@ -250,7 +266,7 @@ export function PortalComplaints() {
                     <User className="w-4 h-4" />
                     <span>{complaint.customer_name}</span>
                     {complaint.customer_internet_id && (
-                      <span className="text-xs text-[#89A8B2]">({complaint.customer_internet_id})</span>
+                      <span className="text-xs text-blue-600">({complaint.customer_internet_id})</span>
                     )}
                   </div>
                 )}
@@ -284,28 +300,33 @@ export function PortalComplaints() {
       {/* Detail Modal */}
       {selectedComplaint && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-hidden">
+          <div className="bg-white rounded-[10px] border border-slate-200 shadow-xl w-full max-w-lg max-h-[90vh] overflow-hidden">
             {/* Modal Header */}
-            <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gradient-to-r from-[#89A8B2] to-[#6B8A94]">
-              <div className="flex items-center gap-3">
-                <AlertCircle className="w-6 h-6 text-white" />
+            <div className={`flex items-center justify-between p-5 border-b ${statusConfig[selectedComplaint.status]?.bg || 'bg-slate-50'} ${statusConfig[selectedComplaint.status]?.color?.replace('text-', 'border-').replace('700', '200') || 'border-slate-100'} transition-colors duration-300`}>
+              <div className="flex items-center gap-4">
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center bg-white shadow-sm border ${statusConfig[selectedComplaint.status]?.color?.replace('text-', 'border-').replace('700', '100')}`}>
+                  <AlertCircle className={`w-5 h-5 ${statusConfig[selectedComplaint.status]?.color}`} />
+                </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-white">Complaint Details</h3>
-                  <p className="text-sm text-white/80">#{selectedComplaint.ticket_number}</p>
+                  <h3 className="text-[16px] font-semibold text-slate-900 tracking-tight">Complaint Details</h3>
+                  <p className="text-[12px] font-medium text-slate-500 flex items-center gap-1 mt-0.5">
+                    <Hash className="w-3.5 h-3.5" />
+                    {selectedComplaint.ticket_number}
+                  </p>
                 </div>
               </div>
               <button
                 onClick={() => setSelectedComplaint(null)}
-                className="p-1 hover:bg-white/20 rounded-lg transition-colors"
+                className="h-8 w-8 inline-flex items-center justify-center border border-slate-200/60 rounded-md text-slate-500 bg-white hover:bg-slate-50 hover:text-slate-800 shadow-sm transition-all duration-200"
               >
-                <X className="w-6 h-6 text-white" />
+                <X className="w-4 h-4" />
               </button>
             </div>
 
             {/* Modal Body */}
             <div className="p-4 overflow-y-auto max-h-[calc(90vh-130px)] space-y-4">
               {/* Complaint Info */}
-              <div className="bg-gray-50 rounded-xl p-4">
+              <div className="bg-slate-50 border border-slate-200 rounded-[10px] p-4">
                 <div className="flex items-center gap-2 mb-3">
                   <span className={`px-3 py-1 rounded-lg text-sm font-medium ${statusConfig[selectedComplaint.status]?.bg} ${statusConfig[selectedComplaint.status]?.color}`}>
                     {selectedComplaint.status.replace("_", " ").replace(/\b\w/g, (l) => l.toUpperCase())}
@@ -366,7 +387,7 @@ export function PortalComplaints() {
               {/* Customer Info */}
               {selectedComplaint.customer_name && (
                 <div className="bg-blue-50 rounded-xl p-4">
-                  <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                  <h4 className="font-medium text-slate-900 mb-3 flex items-center gap-2">
                     <User className="w-4 h-4 text-blue-600" />
                     Customer Details
                   </h4>
@@ -430,7 +451,7 @@ export function PortalComplaints() {
 
               {/* Update Form (if not resolved) */}
               {selectedComplaint.status !== "resolved" && selectedComplaint.status !== "closed" && (
-                <div className="bg-white border border-gray-200 rounded-xl p-4 space-y-4">
+                <div className="bg-white border border-slate-200 rounded-[10px] p-4 space-y-4">
                   <h4 className="font-semibold text-gray-900">Update Complaint</h4>
                   
                   <div>
@@ -438,7 +459,7 @@ export function PortalComplaints() {
                     <select
                       value={resolutionForm.status}
                       onChange={(e) => setResolutionForm({ ...resolutionForm, status: e.target.value })}
-                      className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#89A8B2] focus:border-transparent"
+                      className="w-full mt-1 px-3 py-2 border border-slate-200 rounded-md focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                     >
                       <option value="open">Open</option>
                       <option value="in_progress">In Progress</option>
@@ -458,7 +479,7 @@ export function PortalComplaints() {
                           onChange={(e) => setResolutionForm({ ...resolutionForm, remarks: e.target.value })}
                           placeholder="Describe how the issue was resolved..."
                           rows={3}
-                          className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#89A8B2] focus:border-transparent resize-none"
+                          className="w-full mt-1 px-3 py-2 border border-slate-200 rounded-md focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none"
                         />
                       </div>
 
@@ -472,7 +493,7 @@ export function PortalComplaints() {
                           value={resolutionForm.resolution_proof}
                           onChange={(e) => setResolutionForm({ ...resolutionForm, resolution_proof: e.target.value })}
                           placeholder="https://..."
-                          className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#89A8B2] focus:border-transparent"
+                          className="w-full mt-1 px-3 py-2 border border-slate-200 rounded-md focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                         />
                       </div>
                     </>
@@ -482,10 +503,10 @@ export function PortalComplaints() {
             </div>
 
             {/* Modal Footer */}
-            <div className="flex items-center justify-end gap-2 p-4 border-t border-gray-200 bg-gray-50">
+            <div className="flex items-center justify-end gap-2 p-4 border-t border-slate-100 bg-slate-50">
               <button
                 onClick={() => setSelectedComplaint(null)}
-                className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors"
+                className="px-4 py-2 border border-slate-200 rounded-md text-sm font-medium hover:bg-white transition-colors"
               >
                 Close
               </button>
@@ -493,7 +514,7 @@ export function PortalComplaints() {
                 <button
                   onClick={handleStatusUpdate}
                   disabled={updating}
-                  className="px-4 py-2 bg-[#89A8B2] text-white rounded-lg text-sm font-medium hover:bg-[#7a9aa4] transition-colors disabled:opacity-50"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-50"
                 >
                   {updating ? "Updating..." : "Update Complaint"}
                 </button>
@@ -502,6 +523,6 @@ export function PortalComplaints() {
           </div>
         </div>
       )}
-    </>
+    </div>
   )
 }

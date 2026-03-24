@@ -256,7 +256,7 @@ const PublicInvoicePage: React.FC = () => {
   // Loading State
   if (!invoiceData && !error) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-100 via-slate-50 to-blue-50">
+      <div className="flex items-center justify-center min-h-screen bg-[radial-gradient(circle_at_top_left,_#dbeafe_0,_#f8fafc_45%,_#eef2ff_100%)]">
         <div className="text-center">
           <div className="relative w-16 h-16 mx-auto mb-6">
             <div className="absolute inset-0 border-4 border-blue-200 rounded-full animate-ping opacity-25"></div>
@@ -271,8 +271,8 @@ const PublicInvoicePage: React.FC = () => {
   // Error State
   if (error && !invoiceData) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-100 via-slate-50 to-blue-50">
-        <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md text-center border border-red-100">
+      <div className="flex items-center justify-center min-h-screen bg-[radial-gradient(circle_at_top_left,_#dbeafe_0,_#f8fafc_45%,_#eef2ff_100%)]">
+        <div className="bg-white rounded-[14px] shadow-sm p-8 max-w-md text-center border border-rose-200">
           <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
             <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -280,7 +280,7 @@ const PublicInvoicePage: React.FC = () => {
           </div>
           <h2 className="text-xl font-bold text-slate-800 mb-2">Invoice Not Found</h2>
           <p className="text-slate-600 mb-6">{error}</p>
-          <button onClick={fetchInvoiceData} className="px-6 py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-all duration-200 shadow-lg shadow-blue-500/25">
+          <button onClick={fetchInvoiceData} className="px-6 py-2.5 bg-blue-600 text-white rounded-md font-medium hover:bg-blue-700 transition-colors">
             Try Again
           </button>
         </div>
@@ -291,18 +291,19 @@ const PublicInvoicePage: React.FC = () => {
   const statusConfig = getStatusConfig(invoiceData?.status || "")
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-slate-50 to-blue-50 py-8 px-4">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_#dbeafe_0,_#f8fafc_45%,_#eef2ff_100%)] py-8 px-4">
+      <div className="max-w-5xl mx-auto space-y-4">
         {/* Top Action Bar */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+        <div className="bg-white rounded-[12px] border border-slate-200 p-4 sm:p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Invoice Details</h1>
+            <p className="text-[11px] font-semibold tracking-[0.16em] text-slate-500 uppercase">Public Billing</p>
+            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Invoice Details</h1>
             <p className="text-slate-500 text-sm mt-1">View and manage your invoice payment</p>
           </div>
           <button
             onClick={handleDownloadPDF}
             disabled={isDownloading}
-            className={`group flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-xl font-medium shadow-sm hover:shadow-md hover:border-blue-300 hover:text-blue-600 transition-all duration-200 ${isDownloading ? "opacity-50 cursor-not-allowed" : ""}`}
+            className={`group flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-md font-medium hover:bg-slate-50 transition-colors ${isDownloading ? "opacity-50 cursor-not-allowed" : ""}`}
           >
             <svg className="w-5 h-5 group-hover:text-blue-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
@@ -312,14 +313,14 @@ const PublicInvoicePage: React.FC = () => {
         </div>
 
         {/* Main Invoice Card */}
-        <div className="bg-white rounded-2xl shadow-xl shadow-slate-200/50 overflow-hidden border border-slate-100">
-          <div ref={printRef} className="p-6 sm:p-10">
+        <div className="bg-white rounded-[14px] shadow-sm overflow-hidden border border-slate-200 print:rounded-none print:shadow-none print:border-slate-300">
+          <div ref={printRef} className="bg-white p-6 sm:p-8 lg:p-10 print:p-6">
 
             {/* Header Section */}
-            <div className="relative flex flex-col sm:flex-row justify-between items-start gap-6 pb-8 border-b border-slate-100">
+            <div className="relative flex flex-col sm:flex-row justify-between items-start gap-6 pb-8 border-b border-slate-200 print:pb-5">
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-1">
-                  <span className="text-3xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">INVOICE</span>
+                  <span className="text-3xl font-bold text-slate-900 tracking-tight">INVOICE</span>
                   <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${statusConfig.bg} ${statusConfig.text} ${statusConfig.border}`}>
                     <span>{statusConfig.icon}</span>
                     {statusConfig.label}
@@ -332,11 +333,11 @@ const PublicInvoicePage: React.FC = () => {
                 </div>
                 <p className="text-slate-500 font-mono text-sm">#{invoiceData?.invoice_number}</p>
                 {invoiceData?.status === 'paid' && (
-                  <div className="absolute top-2 right-1/3 transform translate-x-12 opacity-90 z-10 pointer-events-none">
+                  <div className="absolute -top-4 right-0 opacity-90 z-10 pointer-events-none rotate-6 print:static print:rotate-0 print:mt-2 print:ml-auto">
                     <PaidStamp
                       date={invoiceData.payments?.[invoiceData.payments.length - 1]?.payment_date}
                       method={invoiceData.payments?.[invoiceData.payments.length - 1]?.payment_method}
-                      className="w-28 h-28 sm:w-32 sm:h-32 text-emerald-600 border-emerald-600"
+                      className="w-28 h-28 text-emerald-600 border-emerald-600"
                     />
                   </div>
                 )}
@@ -351,9 +352,9 @@ const PublicInvoicePage: React.FC = () => {
             </div>
 
             {/* Customer & Invoice Meta Grid */}
-            <div className="grid md:grid-cols-2 gap-6 py-8 border-b border-slate-100">
+            <div className="grid md:grid-cols-2 gap-6 py-8 border-b border-slate-200 print:py-6">
               <div className="space-y-4">
-                <div className="bg-gradient-to-br from-slate-50 to-slate-100/50 rounded-xl p-5 border border-slate-100">
+                <div className="bg-slate-50 rounded-[10px] p-5 border border-slate-200">
                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Bill To</p>
                   <p className="text-lg font-bold text-slate-800 mb-1">{invoiceData?.customer_name}</p>
                   <div className="space-y-1 text-sm text-slate-600">
@@ -364,7 +365,7 @@ const PublicInvoicePage: React.FC = () => {
                 </div>
               </div>
               <div className="space-y-4">
-                <div className="bg-gradient-to-br from-slate-50 to-slate-100/50 rounded-xl p-5 border border-slate-100">
+                <div className="bg-slate-50 rounded-[10px] p-5 border border-slate-200">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Issue Date</p>
@@ -376,7 +377,7 @@ const PublicInvoicePage: React.FC = () => {
                     </div>
                   </div>
                   {isSubscription && (
-                    <div className="mt-4 pt-4 border-t border-slate-200/50">
+                    <div className="mt-4 pt-4 border-t border-slate-200">
                       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Billing Period</p>
                       <p className="text-sm font-semibold text-slate-700">
                         {invoiceData?.billing_start_date && formatDate(invoiceData.billing_start_date)} — {invoiceData?.billing_end_date && formatDate(invoiceData.billing_end_date)}
@@ -388,11 +389,12 @@ const PublicInvoicePage: React.FC = () => {
             </div>
 
             {/* Line Items Table */}
-            <div className="py-8 border-b border-slate-100">
-              <div className="rounded-xl overflow-hidden border border-slate-200">
-                <table className="w-full table-fixed">
+            <div className="py-8 border-b border-slate-200 print:py-6">
+              <div className="rounded-[10px] overflow-hidden border border-slate-200">
+                <div className="overflow-x-auto print:overflow-visible">
+                <table className="w-full table-fixed min-w-[700px] print:min-w-0">
                   <thead>
-                    <tr className="bg-gradient-to-r from-slate-800 to-slate-700">
+                    <tr className="bg-slate-900">
                       <th className="text-left text-xs font-bold text-white/90 uppercase tracking-wider py-4 px-5 w-[70%]">Description</th>
                       {invoiceData?.invoice_type === 'equipment' && (
                         <>
@@ -478,22 +480,23 @@ const PublicInvoicePage: React.FC = () => {
                     )}
                   </tfoot>
                 </table>
+                </div>
               </div>
             </div>
 
             {/* Payment Summary Cards */}
-            <div className="py-8 border-b border-slate-100">
+            <div className="py-8 border-b border-slate-200 print:py-6">
               <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Payment Summary</p>
               <div className="grid grid-cols-3 gap-4">
-                <div className="bg-slate-50 rounded-xl p-4 text-center border border-slate-100">
+                <div className="bg-slate-50 rounded-[10px] p-4 text-center border border-slate-200">
                   <p className="text-xs text-slate-500 mb-1">Invoice Total</p>
                   <p className="text-xl font-bold text-slate-800">PKR {invoiceData?.total_amount.toLocaleString()}</p>
                 </div>
-                <div className="bg-emerald-50 rounded-xl p-4 text-center border border-emerald-100">
+                <div className="bg-emerald-50 rounded-[10px] p-4 text-center border border-emerald-200">
                   <p className="text-xs text-emerald-600 mb-1">Total Paid</p>
                   <p className="text-xl font-bold text-emerald-700">PKR {invoiceData?.total_paid.toLocaleString()}</p>
                 </div>
-                <div className={`rounded-xl p-4 text-center border ${(invoiceData?.remaining_amount || 0) > 0 ? 'bg-red-50 border-red-100' : 'bg-emerald-50 border-emerald-100'}`}>
+                <div className={`rounded-[10px] p-4 text-center border ${(invoiceData?.remaining_amount || 0) > 0 ? 'bg-rose-50 border-rose-200' : 'bg-emerald-50 border-emerald-200'}`}>
                   <p className={`text-xs mb-1 ${(invoiceData?.remaining_amount || 0) > 0 ? 'text-red-600' : 'text-emerald-600'}`}>Balance Due</p>
                   <p className={`text-xl font-bold ${(invoiceData?.remaining_amount || 0) > 0 ? 'text-red-700' : 'text-emerald-700'}`}>PKR {invoiceData?.remaining_amount.toLocaleString()}</p>
                 </div>
@@ -502,11 +505,11 @@ const PublicInvoicePage: React.FC = () => {
 
             {/* Payment History */}
             {invoiceData?.payments && invoiceData.payments.length > 0 && (
-              <div className="py-8 border-b border-slate-100">
+              <div className="py-8 border-b border-slate-200 print:py-6">
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Payment History</p>
                 <div className="space-y-3">
                   {invoiceData.payments.map((payment, index) => (
-                    <div key={payment.id} className="bg-slate-50 rounded-xl p-4 border border-slate-100 hover:border-blue-200 transition-colors">
+                    <div key={payment.id} className="bg-slate-50 rounded-[10px] p-4 border border-slate-200 hover:border-blue-200 transition-colors">
                       <div className="flex justify-between items-start">
                         <div>
                           <p className="font-semibold text-slate-800">Payment #{invoiceData.payments.length - index}</p>
@@ -531,7 +534,7 @@ const PublicInvoicePage: React.FC = () => {
 
             {/* Pending Payment Alert */}
             {(invoiceData?.remaining_amount || 0) > 0 && (
-              <div className="my-6 bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-5 border border-amber-200">
+              <div className="my-6 bg-amber-50 rounded-[10px] p-5 border border-amber-200">
                 <div className="flex items-start gap-3">
                   <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0">
                     <svg className="w-5 h-5 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
@@ -548,7 +551,7 @@ const PublicInvoicePage: React.FC = () => {
 
             {/* Other Outstanding Invoices */}
             {invoiceData?.pending_invoices && invoiceData.pending_invoices.count > 0 && (
-              <div className="my-6 bg-red-50 rounded-xl p-5 border border-red-200">
+              <div className="my-6 bg-rose-50 rounded-[10px] p-5 border border-rose-200">
                 <div className="flex justify-between items-center mb-3">
                   <p className="font-bold text-red-800 flex items-center gap-2">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
@@ -558,7 +561,7 @@ const PublicInvoicePage: React.FC = () => {
                 </div>
                 <div className="space-y-2 max-h-40 overflow-y-auto custom-scrollbar">
                   {invoiceData.pending_invoices.invoices.map((inv) => (
-                    <div key={inv.id} className="flex items-center justify-between bg-white rounded-lg px-4 py-2.5 border border-red-100">
+                    <div key={inv.id} className="flex items-center justify-between bg-white rounded-md px-4 py-2.5 border border-rose-200">
                       <div className="flex items-center gap-3">
                         <span className="font-mono font-semibold text-slate-700">#{inv.invoice_number}</span>
                         <span className="text-xs text-slate-400">{formatDate(inv.billing_start_date)}</span>
@@ -572,14 +575,14 @@ const PublicInvoicePage: React.FC = () => {
 
             {/* Bank Accounts */}
             {bankAccounts.length > 0 && (
-              <div className="py-8 border-b border-slate-100">
+              <div className="py-8 border-b border-slate-200 print:py-6">
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Payment Methods</p>
                 <div className="grid md:grid-cols-2 gap-4">
                   {bankAccounts.map((account, index) => (
-                    <div key={account.id} className="bg-gradient-to-br from-slate-800 to-slate-700 rounded-xl p-5 text-white">
-                      <p className="text-xs text-slate-300 uppercase tracking-wider mb-2">{account.bank_name}</p>
+                    <div key={account.id} className="bg-white rounded-[10px] p-5 text-slate-800 border border-slate-200">
+                      <p className="text-xs text-slate-500 uppercase tracking-wider mb-2">{account.bank_name}</p>
                       <p className="font-bold text-lg mb-3">{account.account_title}</p>
-                      <div className="space-y-1 text-sm text-slate-200">
+                      <div className="space-y-1 text-sm text-slate-600">
                         <p><span className="text-slate-400">A/C:</span> {account.account_number}</p>
                         {account.iban && <p><span className="text-slate-400">IBAN:</span> {account.iban}</p>}
                         {account.branch_code && <p><span className="text-slate-400">Branch:</span> {account.branch_code}</p>}
@@ -598,8 +601,8 @@ const PublicInvoicePage: React.FC = () => {
 
               if (showPendingMessage) {
                 return (
-                  <div className="py-8 border-b border-slate-100">
-                    <div className="bg-amber-50 rounded-xl p-6 border border-amber-200">
+                  <div className="py-8 border-b border-slate-200 print:py-6">
+                    <div className="bg-amber-50 rounded-[10px] p-6 border border-amber-200">
                       <div className="flex items-center gap-4">
                         <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0">
                           <svg className="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -618,20 +621,20 @@ const PublicInvoicePage: React.FC = () => {
 
               if (showPaymentForm) {
                 return (
-                  <div className="py-8 border-b border-slate-100">
+                  <div className="py-8 border-b border-slate-200 print:py-6">
                     <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Submit Payment Proof</p>
-                    <div className="bg-blue-50 rounded-xl p-6 border border-blue-100">
+                    <div className="bg-blue-50 rounded-[10px] p-6 border border-blue-200">
                       <form onSubmit={handlePaymentSubmit} className="space-y-5">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
                             <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">Amount (PKR)</label>
                             <input type="number" step="0.01" required value={paymentForm.amount} onChange={(e) => setPaymentForm({ ...paymentForm, amount: e.target.value })}
-                              className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" />
+                              className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all" />
                           </div>
                           <div>
                             <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">Bank Account</label>
                             <select value={paymentForm.bank_account_id} onChange={(e) => setPaymentForm({ ...paymentForm, bank_account_id: e.target.value })} required
-                              className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                              className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all">
                               <option value="">Select Bank Account</option>
                               {bankAccounts.map((account) => (
                                 <option key={account.id} value={account.id}>{account.bank_name} - {account.account_number}</option>
@@ -641,23 +644,23 @@ const PublicInvoicePage: React.FC = () => {
                           <div>
                             <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">Transaction ID</label>
                             <input type="text" required placeholder="e.g. TRX-123456789" value={paymentForm.transaction_id} onChange={(e) => setPaymentForm({ ...paymentForm, transaction_id: e.target.value })}
-                              className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" />
+                              className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all" />
                           </div>
                           <div>
                             <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">Payment Date</label>
                             <input type="date" required value={paymentForm.payment_date} onChange={(e) => setPaymentForm({ ...paymentForm, payment_date: e.target.value })}
-                              className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" />
+                              className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all" />
                           </div>
                         </div>
                         <div>
                           <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">Payment Proof (Required)</label>
                           <input type="file" required accept="image/*,application/pdf" onChange={handleFileChange}
-                            className="w-full text-sm text-slate-500 file:mr-4 file:py-2.5 file:px-5 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700 file:cursor-pointer file:transition-colors" />
+                            className="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-5 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700 file:cursor-pointer file:transition-colors" />
                         </div>
                         {error && <p className="text-sm text-red-600 bg-red-50 rounded-lg p-3 border border-red-200">{error}</p>}
                         <div className="flex justify-end">
                           <button type="submit" disabled={isSubmitting}
-                            className={`px-8 py-3 bg-blue-600 text-white rounded-xl font-semibold shadow-lg shadow-blue-500/25 hover:bg-blue-700 hover:shadow-xl hover:shadow-blue-500/30 transition-all duration-200 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                            className={`px-8 py-2.5 bg-blue-600 text-white rounded-md font-semibold hover:bg-blue-700 transition-colors ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}>
                             {isSubmitting ? 'Submitting...' : 'Submit Payment'}
                           </button>
                         </div>
@@ -672,7 +675,7 @@ const PublicInvoicePage: React.FC = () => {
 
             {/* Success Message */}
             {submissionSuccess && (
-              <div className="my-6 bg-emerald-50 rounded-xl p-6 border border-emerald-200">
+              <div className="my-6 bg-emerald-50 rounded-[10px] p-6 border border-emerald-200">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
                     <svg className="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -694,12 +697,12 @@ const PublicInvoicePage: React.FC = () => {
             {invoiceData?.notes && (
               <div className="py-6">
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Notes</p>
-                <p className="text-sm text-slate-600 bg-slate-50 rounded-xl p-4 border border-slate-100">{invoiceData.notes}</p>
+                <p className="text-sm text-slate-600 bg-slate-50 rounded-[10px] p-4 border border-slate-200">{invoiceData.notes}</p>
               </div>
             )}
 
             {/* Footer */}
-            <div className="text-center pt-8 mt-8 border-t border-slate-100">
+            <div className="text-center pt-8 mt-8 border-t border-slate-200">
               <p className="text-lg font-bold text-slate-800 mb-1">Thank you for your business!</p>
               <p className="text-sm text-slate-500 mb-2">Questions? <a href="mailto:support@netkhata.com" className="text-blue-600 hover:underline">support@netkhata.com</a> • 0323 4689090</p>
               <p className="text-xs text-slate-400">Invoice generated on {formatDate(new Date().toISOString())}</p>

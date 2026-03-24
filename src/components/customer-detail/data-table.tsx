@@ -16,10 +16,10 @@ interface DataTableProps {
 }
 
 export const DataTable: React.FC<DataTableProps> = ({ columns, data, title, icon, onRowClick }) => (
-  <div className="bg-white rounded-lg shadow-sm border border-[#E5E1DA] overflow-hidden">
+  <div className="bg-white rounded-[10px] shadow-sm border border-slate-200 overflow-hidden">
     {title && (
-      <div className="bg-gradient-to-r from-[#89A8B2] to-[#7a9aa4] px-6 py-4">
-        <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+      <div className="bg-slate-50 border-b border-slate-100 px-4 py-3">
+        <h3 className="text-[13px] font-medium text-slate-900 flex items-center gap-2">
           {icon}
           {title}
         </h3>
@@ -27,24 +27,24 @@ export const DataTable: React.FC<DataTableProps> = ({ columns, data, title, icon
     )}
     <div className="overflow-x-auto">
       <table className="w-full">
-        <thead className="bg-[#F1F0E8] border-b border-[#E5E1DA]">
+        <thead className="bg-slate-50 border-b border-slate-100">
           <tr>
             {columns.map((column) => (
-              <th key={column.key} className="px-6 py-3 text-left text-sm font-semibold text-[#2A5C8A]">
+              <th key={column.key} className="px-4 py-3 text-left text-[11px] font-medium text-slate-500 uppercase tracking-[0.06em] whitespace-nowrap">
                 {column.label}
               </th>
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-[#E5E1DA]">
+        <tbody className="divide-y divide-slate-100">
           {data.map((row, idx) => (
             <tr 
               key={idx} 
-              className={`hover:bg-[#F8FAFC] transition-colors ${onRowClick ? 'cursor-pointer' : ''}`}
+              className={`hover:bg-slate-50 transition-colors ${onRowClick ? 'cursor-pointer' : ''}`}
               onClick={() => onRowClick && onRowClick(row)}
             >
               {columns.map((column) => (
-                <td key={column.key} className={`px-6 py-3 text-sm text-[#4A5568] ${column.className || ""}`}>
+                <td key={column.key} className={`px-4 py-3 text-[13px] text-slate-700 ${column.className || ""}`}>
                   {column.render ? column.render(row[column.key], row) : row[column.key]}
                 </td>
               ))}

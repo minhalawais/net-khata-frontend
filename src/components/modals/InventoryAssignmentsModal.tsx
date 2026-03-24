@@ -146,26 +146,38 @@ export const InventoryAssignmentsModal: React.FC<InventoryAssignmentsModalProps>
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case "assigned":
-        return "bg-[#FEF3C7] text-[#F59E0B]"
+        return "bg-amber-50 text-amber-700 border-amber-200"
       case "returned":
-        return "bg-[#D1FAE5] text-[#10B981]"
+        return "bg-emerald-50 text-emerald-700 border-emerald-200"
       default:
-        return "bg-[#EBF5FF] text-[#3A86FF]"
+        return "bg-blue-50 text-blue-700 border-blue-200"
     }
   }
 
+  const footer = (
+    <button
+      type="button"
+      onClick={onClose}
+      className="h-9 px-4 text-[13px] font-medium text-slate-600 border border-slate-200 rounded-md hover:bg-slate-50 transition-colors duration-150"
+    >
+      Done
+    </button>
+  )
+
   return (
-    <Modal isVisible={isVisible} onClose={onClose} title="Inventory Assignments">
-      <div className="mb-6">
-        <h3 className="text-lg font-semibold mb-3 text-[#2A5C8A]">Add New Assignment</h3>
+    <Modal isVisible={isVisible} onClose={onClose} title="Inventory Assignments" footer={footer}>
+      <div className="mb-6 bg-slate-50 border border-slate-200 rounded-[10px] p-4">
+        <div className="flex items-center gap-2 pl-2.5 border-l-2 border-slate-300 mb-4">
+          <span className="text-[10px] font-medium text-slate-400 uppercase tracking-[0.08em]">Add New Assignment</span>
+        </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-[#4A5568] mb-1">Assign to Customer</label>
+            <label className="block text-[11px] font-medium text-slate-600 mb-1.5">Assign to Customer</label>
             <select
               name="assigned_to_customer_id"
               value={newAssignment.assigned_to_customer_id}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 rounded-lg border border-[#EBF5FF] text-[#4A5568] focus:border-[#3A86FF] focus:ring-2 focus:ring-[#3A86FF]/20 transition-colors"
+              className="w-full h-9 px-3 rounded-md border border-slate-200 text-[13px] text-slate-700 bg-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/[0.12] hover:border-slate-300 transition-colors duration-150"
             >
               <option value="">Select customer</option>
               {customers.map((customer) => (
@@ -176,12 +188,12 @@ export const InventoryAssignmentsModal: React.FC<InventoryAssignmentsModalProps>
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-[#4A5568] mb-1">Assign to Employee</label>
+            <label className="block text-[11px] font-medium text-slate-600 mb-1.5">Assign to Employee</label>
             <select
               name="assigned_to_employee_id"
               value={newAssignment.assigned_to_employee_id}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 rounded-lg border border-[#EBF5FF] text-[#4A5568] focus:border-[#3A86FF] focus:ring-2 focus:ring-[#3A86FF]/20 transition-colors"
+              className="w-full h-9 px-3 rounded-md border border-slate-200 text-[13px] text-slate-700 bg-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/[0.12] hover:border-slate-300 transition-colors duration-150"
             >
               <option value="">Select employee</option>
               {employees.map((employee) => (
@@ -193,61 +205,61 @@ export const InventoryAssignmentsModal: React.FC<InventoryAssignmentsModalProps>
           </div>
           <button
             type="submit"
-            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-[#3A86FF] hover:bg-[#2563EB] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#3A86FF] transition-colors"
+            className="inline-flex justify-center h-9 px-4 text-[13px] font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500/[0.12] transition-colors duration-150"
           >
             Add Assignment
           </button>
         </form>
       </div>
       <div>
-        <h3 className="text-lg font-semibold mb-3 text-[#2A5C8A]">Assignment History</h3>
+        <h3 className="text-[13px] font-medium mb-3 text-slate-900">Assignment History</h3>
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-[#EBF5FF]">
-            <thead className="bg-[#EBF5FF]">
+          <table className="min-w-full border-collapse">
+            <thead className="bg-slate-50 border-b border-slate-200">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-[#2A5C8A] uppercase tracking-wider">
+                <th className="px-4 py-2.5 text-left text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em]">
                   Assigned To
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-[#2A5C8A] uppercase tracking-wider">
+                <th className="px-4 py-2.5 text-left text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em]">
                   Assigned At
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-[#2A5C8A] uppercase tracking-wider">
+                <th className="px-4 py-2.5 text-left text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em]">
                   Returned At
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-[#2A5C8A] uppercase tracking-wider">
+                <th className="px-4 py-2.5 text-left text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em]">
                   Status
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-[#2A5C8A] uppercase tracking-wider">
+                <th className="px-4 py-2.5 text-left text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em]">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-[#EBF5FF]">
+            <tbody className="bg-white">
               {assignments.map((assignment) => (
-                <tr key={assignment.id} className="hover:bg-[#F8FAFC]">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4A5568]">
+                <tr key={assignment.id} className="border-b border-slate-100 hover:bg-blue-50/40 transition-colors duration-100">
+                  <td className="px-4 py-3 whitespace-nowrap text-[13px] text-slate-700">
                     {assignment.assigned_to_customer || assignment.assigned_to_employee}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4A5568]">
+                  <td className="px-4 py-3 whitespace-nowrap text-[13px] text-slate-600 tabular-nums">
                     {new Date(assignment.assigned_at).toLocaleString()}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4A5568]">
+                  <td className="px-4 py-3 whitespace-nowrap text-[13px] text-slate-600 tabular-nums">
                     {assignment.returned_at ? new Date(assignment.returned_at).toLocaleString() : "N/A"}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-4 py-3 whitespace-nowrap">
                     <span
-                      className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(
+                      className={`inline-flex items-center px-2 py-0.5 text-[10px] font-medium rounded border ${getStatusColor(
                         assignment.status,
                       )}`}
                     >
                       {assignment.status}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                  <td className="px-4 py-3 whitespace-nowrap text-[13px]">
                     {assignment.status === "assigned" && (
                       <button
                         onClick={() => handleReturn(assignment.id)}
-                        className="text-[#3A86FF] hover:text-[#2563EB] font-medium transition-colors"
+                        className="text-blue-600 hover:text-blue-700 font-medium transition-colors duration-150"
                       >
                         Return
                       </button>
@@ -257,7 +269,7 @@ export const InventoryAssignmentsModal: React.FC<InventoryAssignmentsModalProps>
               ))}
               {assignments.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-6 py-4 text-center text-sm text-[#4A5568]">
+                  <td colSpan={5} className="px-4 py-6 text-center text-[13px] text-slate-400">
                     No assignments found
                   </td>
                 </tr>

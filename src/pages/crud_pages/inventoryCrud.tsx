@@ -7,7 +7,6 @@ import { InventoryTransactionsModal } from "../../components/modals/InventoryTra
 import { InventoryAssignmentsModal } from "../../components/modals/InventoryAssignmentsModal.tsx"
 import axiosInstance from "../../utils/axiosConfig.ts"
 import { getToken } from "../../utils/auth.ts"
-import { FaExchangeAlt, FaUsersCog } from "react-icons/fa"
 
 interface InventoryItem {
   id: string
@@ -51,6 +50,11 @@ const InventoryManagement: React.FC = () => {
       {
         header: "Item Type",
         accessorKey: "item_type",
+        cell: ({ row }) => (
+          <span className="inline-flex items-center px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200 text-[10px] font-medium">
+            {row.original.item_type}
+          </span>
+        ),
       },
       {
         header: "Details",
@@ -58,71 +62,83 @@ const InventoryManagement: React.FC = () => {
           const item = row.original
           const attributes = item.attributes || {}
 
+          const wrap = (lines: string[]) => (
+            <div className="space-y-0.5">
+              {lines.map((line, idx) => (
+                <p key={idx} className={`${idx === 0 ? "text-[13px] text-slate-700" : "text-[11px] text-slate-400"}`}>
+                  {line}
+                </p>
+              ))}
+            </div>
+          )
+
           switch (item.item_type) {
             case "Fiber Cable":
-              return "Fiber Cable"
+              return <span className="text-[13px] text-slate-700">Fiber Cable</span>
             case "EtherNet Cable":
-              return `Type: ${attributes.type || 'N/A'}`
+              return wrap([`Type: ${attributes.type || "N/A"}`])
             case "Splitters":
-              return "Splitter"
+              return <span className="text-[13px] text-slate-700">Splitter</span>
             case "ONT":
             case "ONU":
             case "Router":
             case "STB":
-              return (
-                <div>
-                  <div>Serial: {attributes.serial_number || 'N/A'}</div>
-                  <div>Type: {attributes.type || 'N/A'}</div>
-                  <div>Model: {attributes.model || 'N/A'}</div>
-                </div>
-              )
+              return wrap([
+                `Serial: ${attributes.serial_number || "N/A"}`,
+                `Type: ${attributes.type || "N/A"}`,
+                `Model: ${attributes.model || "N/A"}`,
+              ])
             case "Fibe OPTIC Patch Cord":
             case "Ethernet Patch Cord":
-              return `Type: ${attributes.type || 'N/A'}`
+              return wrap([`Type: ${attributes.type || "N/A"}`])
             case "Switches":
-              return `Type: ${attributes.type || 'N/A'}`
+              return wrap([`Type: ${attributes.type || "N/A"}`])
             case "Node":
-              return `Type: ${attributes.type || 'N/A'}`
+              return wrap([`Type: ${attributes.type || "N/A"}`])
             case "Dish":
-              return (
-                <div>
-                  <div>MAC: {attributes.mac_address || 'N/A'}</div>
-                  <div>Type: {attributes.type || 'N/A'}</div>
-                </div>
-              )
+              return wrap([
+                `MAC: ${attributes.mac_address || "N/A"}`,
+                `Type: ${attributes.type || "N/A"}`,
+              ])
             case "Adopter":
-              return (
-                <div>
-                  <div>Volt: {attributes.volt || 'N/A'}</div>
-                  <div>Amp: {attributes.amp || 'N/A'}</div>
-                </div>
-              )
+              return wrap([
+                `Volt: ${attributes.volt || "N/A"}`,
+                `Amp: ${attributes.amp || "N/A"}`,
+              ])
             case "Cable Ties":
-              return (
-                <div>
-                  <div>Type: {attributes.type || 'N/A'}</div>
-                  <div>Model: {attributes.model || 'N/A'}</div>
-                </div>
-              )
+              return wrap([
+                `Type: ${attributes.type || "N/A"}`,
+                `Model: ${attributes.model || "N/A"}`,
+              ])
             case "Others":
-              return "Other Item"
+              return <span className="text-[13px] text-slate-700">Other Item</span>
             default:
-              return "N/A"
+              return <span className="text-[11px] text-slate-400">N/A</span>
           }
         },
       },
       {
         header: "Quantity",
         accessorKey: "quantity",
+        cell: ({ row }) => <span className="text-[13px] text-slate-700 tabular-nums">{row.original.quantity}</span>,
       },
       {
         header: "Vendor",
         accessorKey: "vendor_name",
+        cell: ({ row }) => <span className="text-[13px] text-slate-600">{row.original.vendor_name || "N/A"}</span>,
       },
       {
         header: "Unit Price",
         accessorKey: "unit_price",
-        cell: ({ row }) => (row.original.unit_price ? `PKR${row.original.unit_price.toFixed(2)}` : "N/A"),
+        cell: ({ row }) =>
+          row.original.unit_price ? (
+            <span className="text-[13px] font-medium text-slate-900 tabular-nums">
+              <span className="text-[11px] text-slate-400 mr-0.5">PKR</span>
+              {row.original.unit_price.toFixed(2)}
+            </span>
+          ) : (
+            <span className="text-slate-400">N/A</span>
+          ),
       },
       {
         header: "Transactions",
@@ -132,7 +148,7 @@ const InventoryManagement: React.FC = () => {
               setSelectedItemId(row.original.id);
               setShowTransactionsModal(true);
             }}
-            className="px-2 py-1 bg-[#89A8B2] text-white rounded-md hover:bg-[#6f8a9a] transition-colors duration-200 text-sm"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-[12px] font-medium text-slate-600 border border-slate-200 rounded-md hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors duration-150"
           >
             View Transactions
           </button>
@@ -146,7 +162,7 @@ const InventoryManagement: React.FC = () => {
               setSelectedItemId(row.original.id);
               setShowAssignmentsModal(true);
             }}
-            className="px-2 py-1 bg-[#89A8B2] text-white rounded-md hover:bg-[#6f8a9a] transition-colors duration-200 text-sm"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-[12px] font-medium text-slate-600 border border-slate-200 rounded-md hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors duration-150"
           >
             View Assignments
           </button>

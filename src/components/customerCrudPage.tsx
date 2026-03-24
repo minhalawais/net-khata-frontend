@@ -11,10 +11,11 @@ import {
   Eye,
   FileDown,
   LayoutDashboard,
+  ChevronLeft,
   ChevronRight,
   Users,
-  CheckCircle2,  // Make sure this is imported
-  XCircle,       // Make sure this is imported
+  CheckCircle2,
+  XCircle,
   Upload,
 } from "lucide-react"
 import { Table } from "./table/table.tsx"
@@ -35,7 +36,7 @@ interface CRUDPageProps<T> {
     formData: Partial<T>
     handleInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void
     handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-    handleFileRemove?: (fieldName: string) => void // Add this
+    handleFileRemove?: (fieldName: string) => void
     isEditing: boolean
     validateBeforeSubmit?: (formData: Partial<T>) => string | null
     supportsBulkAdd?: boolean
@@ -47,6 +48,7 @@ interface CRUDPageProps<T> {
   validateBeforeSubmit?: (formData: Partial<T>) => string | null
   supportsBulkAdd?: boolean
 }
+
 export function CRUDPage<T extends { id: string; is_active?: boolean }>({
   title,
   endpoint,
@@ -60,51 +62,61 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [editingItem, setEditingItem] = useState<T | null>(null)
   const [formData, setFormData] = useState<Partial<T>>({})
-  const [searchTerm, setSearchTerm] = useState("")
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [isSidebarHovered, setIsSidebarHovered] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [selectedRows, setSelectedRows] = useState<string[]>([])
   const [isBulkAddModalVisible, setIsBulkAddModalVisible] = useState(false)
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({})
-  const [stats, setStats] = useState({
-    total: 0,
-    active: 0,
-    inactive: 0,
-  })
-  // Add loading states for file uploads
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize] = useState(50)
+  const [totalPages, setTotalPages] = useState(1)
+  const [stats, setStats] = useState({ total: 0, active: 0, inactive: 0 })
   const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>({
     cnic_front_image: false,
     cnic_back_image: false,
     agreement_document: false,
   })
 
+  const sidebarExpanded = isSidebarOpen || isSidebarHovered
+
   useEffect(() => {
     fetchData()
-  }, [])
+  }, [currentPage])
 
   const fetchData = async () => {
     setIsLoading(true)
     try {
-      const response = await axiosInstance.get(`/${endpoint}/list`)
-      setData(response.data)
-
-      // Calculate stats
-      const total = response.data.length
-      const active = response.data.filter((item: any) => item.is_active).length
-      setStats({
-        total,
-        active,
-        inactive: total - active,
+      const response = await axiosInstance.get(`/${endpoint}/list`, {
+        params: {
+          paginate: true,
+          page: currentPage,
+          page_size: pageSize,
+        },
       })
+      const payload = response.data
+      const rows = Array.isArray(payload) ? payload : payload.items || []
+      setData(rows)
 
-      if (onDataChange) {
-        onDataChange()
+      let active = 0
+      for (const item of rows) {
+        if ((item as any).is_active) active += 1
       }
+      const total = Array.isArray(payload) ? rows.length : payload.total || rows.length
+      const resolvedTotalPages = Array.isArray(payload)
+        ? Math.max(1, Math.ceil((rows.length || 1) / pageSize))
+        : Math.max(1, payload.total_pages || Math.ceil((total || 1) / pageSize))
+
+      if (!Array.isArray(payload) && currentPage > resolvedTotalPages) {
+        setCurrentPage(resolvedTotalPages)
+        return
+      }
+      setTotalPages(resolvedTotalPages)
+      setStats({ total, active, inactive: Math.max(rows.length - active, 0) })
+      if (onDataChange) onDataChange()
     } catch (error) {
       console.error(`Failed to fetch ${title}`, error)
-      toast.error(`Failed to fetch ${title}`, {
-        style: { background: "#FEE2E2", color: "#EF4444" },
-      })
+      toast.error(`Failed to fetch ${title}`)
     } finally {
       setIsLoading(false)
     }
@@ -112,7 +124,6 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
 
   const handleBulkStatusChange = async (newStatus: boolean) => {
     if (selectedRows.length === 0) return
-
     try {
       setIsLoading(true)
       const token = getToken()
@@ -127,17 +138,11 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
       )
       toast.success(
         `${selectedRows.length} ${title.toLowerCase()}${selectedRows.length > 1 ? "s" : ""} ${newStatus ? "activated" : "deactivated"} successfully`,
-        {
-          style: { background: "#D1FAE5", color: "#10B981" },
-        },
       )
       await fetchData()
       setSelectedRows([])
     } catch (error) {
-      console.error(`Failed to update ${title} status`, error)
-      toast.error(`Failed to update ${title} status`, {
-        style: { background: "#FEE2E2", color: "#EF4444" },
-      })
+      toast.error(`Failed to update ${title} status`)
     } finally {
       setIsLoading(false)
     }
@@ -147,12 +152,7 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
     setEditingItem(item)
     setFormData(item || {})
     setValidationErrors({})
-    // Reset loading states when opening modal
-    setLoadingStates({
-      cnic_front_image: false,
-      cnic_back_image: false,
-      agreement_document: false,
-    })
+    setLoadingStates({ cnic_front_image: false, cnic_back_image: false, agreement_document: false })
     setIsModalVisible(true)
   }
 
@@ -161,12 +161,7 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
     setEditingItem(null)
     setFormData({})
     setValidationErrors({})
-    // Reset loading states when closing modal
-    setLoadingStates({
-      cnic_front_image: false,
-      cnic_back_image: false,
-      agreement_document: false,
-    })
+    setLoadingStates({ cnic_front_image: false, cnic_back_image: false, agreement_document: false })
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -178,90 +173,43 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
       const token = getToken()
       const formDataToSend = new FormData()
 
-      // Add all form data to FormData object
       Object.keys(formData).forEach((key) => {
-        const value = formData[key]
-
+        const value = (formData as Record<string, any>)[key]
         if (value != null && value !== "") {
-          // Handle array fields (like service_plan_ids)
           if (Array.isArray(value)) {
             value.forEach((item) => {
-              if (item != null && item !== "") {
-                formDataToSend.append(key, item)
-              }
+              if (item != null && item !== "") formDataToSend.append(key, item)
             })
-          }
-          // For file fields, check if it's a File object or a string path
-          else if (["cnic_front_image", "cnic_back_image", "agreement_document"].includes(key)) {
-            // If it's a File object, append it directly
-            // If it's a string (existing file path), also append it
+          } else if (["cnic_front_image", "cnic_back_image", "agreement_document"].includes(key)) {
             formDataToSend.append(key, value)
           } else {
-            // For non-file fields, append normally
             formDataToSend.append(key, value)
           }
         }
       })
 
-      // Debug: Log what's being sent
-      console.log('FormData contents:')
-      for (let [key, value] of formDataToSend.entries()) {
-        console.log(key, value)
-      }
+      const headers = { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" }
 
       if (editingItem) {
-        await axiosInstance.put(`/${endpoint}/update/${editingItem.id}`, formDataToSend, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        })
-        toast.success(`${title} updated successfully`, {
-          style: { background: "#D1FAE5", color: "#10B981" },
-        })
+        await axiosInstance.put(`/${endpoint}/update/${editingItem.id}`, formDataToSend, { headers })
+        toast.success(`${title} updated successfully`)
       } else {
-        await axiosInstance.post(`/${endpoint}/add`, formDataToSend, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        })
-        toast.success(`${title} added successfully`, {
-          style: { background: "#D1FAE5", color: "#10B981" },
-        })
+        await axiosInstance.post(`/${endpoint}/add`, formDataToSend, { headers })
+        toast.success(`${title} added successfully`)
       }
       fetchData()
       handleCancel()
     } catch (error: any) {
-      console.error("Operation failed", error)
-
       if (error.response?.data?.errors) {
-        // Field-specific validation errors
         setValidationErrors(error.response.data.errors)
-        toast.error("Please fix the validation errors", {
-          style: { background: "#FEE2E2", color: "#EF4444" },
-        })
+        toast.error("Please fix the validation errors")
       } else if (error.response?.data?.message) {
-        // General error message
-        toast.error(error.response.data.message, {
-          style: { background: "#FEE2E2", color: "#EF4444" },
-        })
+        toast.error(error.response.data.message)
       } else if (error.response?.data?.error) {
-        // Error object with message
-        if (typeof error.response.data.error === "string") {
-          toast.error(error.response.data.error, {
-            style: { background: "#FEE2E2", color: "#EF4444" },
-          })
-        } else if (error.response.data.error.message) {
-          toast.error(error.response.data.error.message, {
-            style: { background: "#FEE2E2", color: "#EF4444" },
-          })
-        }
+        const err = error.response.data.error
+        toast.error(typeof err === "string" ? err : err.message || "Operation failed")
       } else {
-        // Generic error
-        toast.error("Operation failed. Please try again.", {
-          style: { background: "#FEE2E2", color: "#EF4444" },
-        })
+        toast.error("Operation failed. Please try again.")
       }
     } finally {
       setIsLoading(false)
@@ -276,15 +224,10 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
         await axiosInstance.delete(`/${endpoint}/delete/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
-        toast.success(`${title} deleted successfully`, {
-          style: { background: "#D1FAE5", color: "#10B981" },
-        })
+        toast.success(`${title} deleted successfully`)
         fetchData()
       } catch (error) {
-        console.error("Delete operation failed", error)
-        toast.error("Delete operation failed", {
-          style: { background: "#FEE2E2", color: "#EF4444" },
-        })
+        toast.error("Delete operation failed")
       } finally {
         setIsLoading(false)
       }
@@ -298,19 +241,12 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
       await axiosInstance.patch(
         `/${endpoint}/toggle-status/${id}`,
         {},
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
+        { headers: { Authorization: `Bearer ${token}` } },
       )
-      toast.success(`${title} status updated successfully`, {
-        style: { background: "#D1FAE5", color: "#10B981" },
-      })
+      toast.success(`${title} status updated successfully`)
       fetchData()
     } catch (error) {
-      console.error("Toggle status failed", error)
-      toast.error(`Failed to update ${title} status`, {
-        style: { background: "#FEE2E2", color: "#EF4444" },
-      })
+      toast.error(`Failed to update ${title} status`)
     } finally {
       setIsLoading(false)
     }
@@ -323,25 +259,21 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, files } = e.target
-
     if (value) {
-      // This is a file path string from FileUploadField
       setFormData((prev) => ({ ...prev, [name]: value }))
     } else if (files && files.length > 0) {
-      // This is a direct file input (fallback)
       setFormData((prev) => ({ ...prev, [name]: files[0] }))
     }
   }
+
   const handleFileRemove = useCallback((fieldName: string) => {
-    // Update form data to remove the file reference
-    setFormData((prev) => ({
-      ...prev,
-      [fieldName]: ""
-    }))
+    setFormData((prev) => ({ ...prev, [fieldName]: "" }))
   }, [])
-  const toggleSidebar = () => {
-    setIsSidebarOpen((prev) => !prev)
-  }
+
+  const toggleSidebar = () => setIsSidebarOpen((prev) => !prev)
+
+  const goToPreviousPage = () => { if (currentPage > 1) setCurrentPage((prev) => prev - 1) }
+  const goToNextPage = () => { if (currentPage < totalPages) setCurrentPage((prev) => prev + 1) }
 
   const memoizedColumns = useMemo(() => {
     return [
@@ -350,14 +282,14 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
         header: "View",
         id: "view",
         cell: (info: any) => (
+          /* ── VIEW PROFILE: ghost button with label ── */
           <button
             onClick={() => (window.location.href = `/customers/${info.row.original.id}`)}
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-deep-ocean to-electric-blue text-white rounded-lg hover:shadow-lg transition-all duration-200 hover:scale-105 font-semibold"
-            style={{whiteSpace: "nowrap"}}
+            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-[12px] font-medium text-slate-600 border border-slate-200 rounded-md hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors duration-150"
             title="View Details"
           >
-            <Eye className="h-4 w-4" />
-            View Profile
+            <Eye className="w-4 h-4" />
+            Profile
           </button>
         ),
       },
@@ -365,45 +297,42 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
         header: "Status",
         accessorKey: "is_active",
         cell: (info: any) => (
-          <div className="flex items-center">
-            <button
-              onClick={() => handleToggleStatus(info.row.original.id, info.getValue())}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 transition-all ${info.getValue()
-                  ? "bg-emerald-green/10 text-emerald-green hover:bg-emerald-green/20"
-                  : "bg-coral-red/10 text-coral-red hover:bg-coral-red/20"
-                }`}
-            >
-              {info.getValue() ? (
-                <>
-                  <CheckCircle2 className="h-3.5 w-3.5" /> Active
-                </>
-              ) : (
-                <>
-                  <XCircle className="h-3.5 w-3.5" /> Inactive
-                </>
-              )}
-            </button>
-          </div>
+          /* ── STATUS BADGE: rounded not rounded-full ── */
+          <button
+            onClick={() => handleToggleStatus(info.row.original.id, info.getValue())}
+            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium transition-colors duration-150 ${
+              info.getValue()
+                ? "bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200"
+                : "bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-200"
+            }`}
+          >
+            {info.getValue() ? (
+              <><CheckCircle2 className="w-3 h-3" /> Active</>
+            ) : (
+              <><XCircle className="w-3 h-3" /> Inactive</>
+            )}
+          </button>
         ),
       },
       {
         header: "Actions",
         id: "actions",
         cell: (info: any) => (
-          <div className="flex items-center gap-2">
+          /* ── EDIT/DELETE: icon-only ghost buttons ── */
+          <div className="flex items-center gap-1">
             <button
               onClick={() => showModal(info.row.original)}
-              className="p-2.5 text-white bg-electric-blue rounded-lg hover:bg-btn-hover transition-all duration-200 hover:shadow-md"
+              className="p-1.5 rounded-md text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors duration-150"
               title="Edit"
             >
-              <Pencil className="h-4 w-4" />
+              <Pencil className="w-4 h-4" />
             </button>
             <button
               onClick={() => handleDelete(info.row.original.id)}
-              className="p-2.5 text-white bg-coral-red rounded-lg hover:bg-coral-red/80 transition-all duration-200 hover:shadow-md"
+              className="p-1.5 rounded-md text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors duration-150"
               title="Delete"
             >
-              <Trash2 className="h-4 w-4" />
+              <Trash2 className="w-4 h-4" />
             </button>
           </div>
         ),
@@ -411,209 +340,239 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
     ]
   }, [columns])
 
-  return (
-    <div className="flex h-screen bg-light-sky/50">
-      <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} setIsOpen={setIsSidebarOpen} />
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <Topbar toggleSidebar={toggleSidebar} />
-        <main
-          className={`flex-1 overflow-x-hidden overflow-y-auto bg-light-sky/50 p-0 sm:p-6 pt-20 transition-all duration-300 ${isSidebarOpen ? "ml-64" : "ml-0 lg:ml-20"
-            }`}
-        >
+  /* ── MODAL FOOTER: sticky bg-slate-50 border-t ── */
+  const modalFooter = (
+    <>
+      <button
+        type="button"
+        onClick={handleCancel}
+        className="px-4 py-2 text-[13px] font-medium text-slate-600 border border-slate-200 rounded-md hover:bg-slate-50 transition-colors duration-150"
+      >
+        Cancel
+      </button>
+      <button
+        type="submit"
+        form="customer-form"
+        disabled={isLoading}
+        className="px-4 py-2 text-[13px] font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors duration-150 flex items-center gap-2"
+      >
+        {isLoading ? "Processing..." : editingItem ? (
+          <><Pencil className="w-4 h-4" /> Update {title}</>
+        ) : (
+          <><Plus className="w-4 h-4" /> Create {title}</>
+        )}
+      </button>
+    </>
+  )
 
-          <div className="container mx-auto">
-            {/* Breadcrumb */}
-            <div className="flex items-center text-sm text-slate-gray mb-6">
-              <LayoutDashboard className="h-4 w-4 mr-1" />
+  return (
+    /* ── APP SHELL: bg-slate-100, no pt-20 hack ── */
+    <div className="flex h-screen bg-slate-100 overflow-hidden">
+      <Sidebar
+        isOpen={isSidebarOpen}
+        toggleSidebar={toggleSidebar}
+        setIsOpen={setIsSidebarOpen}
+        onHoverChange={setIsSidebarHovered}
+      />
+
+      {/* ── COLUMN: pl offset for sidebar ── */}
+      <div
+        className={`flex-1 flex flex-col min-w-0 overflow-hidden transition-all duration-200 ${
+          sidebarExpanded ? "lg:pl-[260px]" : "lg:pl-[60px]"
+        }`}
+      >
+        <div className="flex-shrink-0">
+          <Topbar toggleSidebar={toggleSidebar} sidebarExpanded={sidebarExpanded} />
+        </div>
+
+        <main className="flex-1 overflow-y-auto bg-slate-100 px-6 py-5">
+          <div className="max-w-[1400px] mx-auto">
+
+            {/* ── BREADCRUMB ── */}
+            <div className="flex items-center gap-1 text-[11px] text-slate-400 mb-5">
+              <LayoutDashboard className="w-3.5 h-3.5" />
               <span>Dashboard</span>
-              <ChevronRight className="h-4 w-4 mx-1" />
-              <span className="text-deep-ocean font-medium">{title} Management</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+              <span className="text-slate-600 font-medium">{title} Management</span>
             </div>
 
-            {/* Header Section */}
-            <div className="bg-white rounded-xl shadow-md p-6 mb-6">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-                <div>
-                  <h1 className="text-2xl md:text-3xl font-bold text-deep-ocean flex items-center gap-2">
-                    <Users className="h-7 w-7 text-electric-blue" />
-                    {title} Management
-                  </h1>
-                  <p className="text-slate-gray mt-1">Manage your {title.toLowerCase()} records efficiently</p>
+            {/* ── PAGE HEADER CARD ── */}
+            <div className="bg-white rounded-[10px] border border-slate-200 p-5 mb-5">
+
+              {/* Title + Actions row */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Users className="w-4 h-4 text-blue-600" />
+                  </div>
+                  <div>
+                    <h1 className="text-[15px] font-medium text-slate-900">{title} Management</h1>
+                    <p className="text-[11px] text-slate-400 mt-0.5">Manage your {title.toLowerCase()} records</p>
+                  </div>
                 </div>
-                <div className="flex flex-wrap gap-3">
+
+                <div className="flex flex-wrap items-center gap-2 self-start sm:self-center">
+                  {/* ── BULK ADD: secondary ghost ── */}
                   {supportsBulkAdd && (
                     <button
                       onClick={() => setIsBulkAddModalVisible(true)}
-                      className="bg-deep-ocean text-white px-4 py-2.5 rounded-lg hover:bg-deep-ocean/90 transition-colors flex items-center justify-center gap-2 shadow-sm"
+                      className="inline-flex items-center gap-2 px-4 py-2 text-[13px] font-medium text-slate-600 border border-slate-200 rounded-md hover:bg-slate-50 transition-colors duration-150"
                     >
-                      <Upload className="h-5 w-5" /> Bulk Add
+                      <Upload className="w-4 h-4" /> Bulk Add
                     </button>
                   )}
+                  {/* ── EXPORT CSV: secondary ghost ── */}
                   <CSVLink
                     data={data}
                     filename={`${title.toLowerCase()}.csv`}
-                    className="bg-golden-amber text-white px-4 py-2.5 rounded-lg hover:bg-golden-amber/90 transition-colors flex items-center gap-2 shadow-sm"
+                    className="inline-flex items-center gap-2 px-4 py-2 text-[13px] font-medium text-slate-600 border border-slate-200 rounded-md hover:bg-slate-50 transition-colors duration-150"
                   >
-                    <FileDown className="h-5 w-5" /> Export CSV
+                    <FileDown className="w-4 h-4" /> Export CSV
                   </CSVLink>
+                  {/* ── PRIMARY ACTION ── */}
                   <button
                     onClick={() => showModal(null)}
-                    className="bg-electric-blue text-white px-4 py-2.5 rounded-lg hover:bg-btn-hover transition-colors flex items-center gap-2 shadow-sm"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-[13px] font-medium rounded-md hover:bg-blue-700 transition-colors duration-150"
                   >
-                    <Plus className="h-5 w-5" /> Add New {title}
+                    <Plus className="w-4 h-4" /> Add New {title}
                   </button>
                 </div>
               </div>
 
-              {/* Stats Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <div className="bg-light-sky/50 rounded-lg p-4 border border-slate-gray/10">
+              {/* ── STAT STRIP: bg-slate-50, distinct icon colors ── */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
+                <div className="bg-slate-50 rounded-[10px] border border-slate-200 p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-slate-gray text-sm">Total {title}s</p>
-                      <h3 className="text-2xl font-bold text-deep-ocean mt-1">{stats.total}</h3>
+                      <p className="text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em]">
+                        Total {title}s
+                      </p>
+                      <p className="text-[22px] font-semibold text-slate-900 tabular-nums leading-none mt-1.5">
+                        {stats.total}
+                      </p>
                     </div>
-                    <div className="bg-deep-ocean/10 p-3 rounded-full">
-                      <Users className="h-6 w-6 text-deep-ocean" />
+                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Users className="w-4 h-4 text-blue-600" />
                     </div>
                   </div>
                 </div>
-
-                <div className="bg-emerald-green/5 rounded-lg p-4 border border-emerald-green/10">
+                <div className="bg-slate-50 rounded-[10px] border border-slate-200 p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-slate-gray text-sm">Active {title}s</p>
-                      <h3 className="text-2xl font-bold text-emerald-green mt-1">{stats.active}</h3>
+                      <p className="text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em]">
+                        Active {title}s
+                      </p>
+                      <p className="text-[22px] font-semibold text-slate-900 tabular-nums leading-none mt-1.5">
+                        {stats.active}
+                      </p>
                     </div>
-                    <div className="bg-emerald-green/10 p-3 rounded-full">
-                      <CheckCircle2 className="h-6 w-6 text-emerald-green" />
+                    <div className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                     </div>
                   </div>
                 </div>
-
-                <div className="bg-coral-red/5 rounded-lg p-4 border border-coral-red/10">
+                <div className="bg-slate-50 rounded-[10px] border border-slate-200 p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-slate-gray text-sm">Inactive {title}s</p>
-                      <h3 className="text-2xl font-bold text-coral-red mt-1">{stats.inactive}</h3>
+                      <p className="text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em]">
+                        Inactive {title}s
+                      </p>
+                      <p className="text-[22px] font-semibold text-slate-900 tabular-nums leading-none mt-1.5">
+                        {stats.inactive}
+                      </p>
                     </div>
-                    <div className="bg-coral-red/10 p-3 rounded-full">
-                      <XCircle className="h-6 w-6 text-coral-red" />
+                    <div className="w-8 h-8 bg-rose-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <XCircle className="w-4 h-4 text-rose-500" />
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-            {/* Bulk Actions */}
-            {selectedRows.length > 0 && (
-              <div className="bg-electric-blue/5 border border-electric-blue/20 rounded-lg p-4 mb-6 flex flex-wrap items-center justify-between gap-4">
-                <div className="flex items-center gap-2">
-                  <span className="text-deep-ocean font-medium">
-                    {selectedRows.length} {title.toLowerCase()}
-                    {selectedRows.length > 1 ? "s" : ""} selected
+
+              {/* ── BULK ACTIONS BAR ── */}
+              {selectedRows.length > 0 && (
+                <div className="bg-blue-50 border border-blue-200 rounded-[10px] px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+                  <span className="text-[13px] font-medium text-blue-700">
+                    {selectedRows.length} {title.toLowerCase()}{selectedRows.length > 1 ? "s" : ""} selected
                   </span>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleBulkStatusChange(true)}
+                      disabled={isLoading}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium bg-emerald-600 text-white rounded-md hover:bg-emerald-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors duration-150"
+                    >
+                      <CheckCircle2 className="w-4 h-4" /> Activate
+                    </button>
+                    <button
+                      onClick={() => handleBulkStatusChange(false)}
+                      disabled={isLoading}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium bg-rose-600 text-white rounded-md hover:bg-rose-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors duration-150"
+                    >
+                      <XCircle className="w-4 h-4" /> Deactivate
+                    </button>
+                  </div>
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  <button
-                    onClick={() => handleBulkStatusChange(true)}
-                    disabled={selectedRows.length === 0 || isLoading}
-                    className="px-4 py-2 text-sm font-medium bg-emerald-green text-white rounded-md hover:bg-emerald-green/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-green disabled:opacity-50 transition-colors flex items-center gap-1.5"
-                  >
-                    <CheckCircle2 className="h-4 w-4" /> Activate
-                  </button>
-                  <button
-                    onClick={() => handleBulkStatusChange(false)}
-                    disabled={selectedRows.length === 0 || isLoading}
-                    className="px-4 py-2 text-sm font-medium bg-coral-red text-white rounded-md hover:bg-coral-red/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-coral-red disabled:opacity-50 transition-colors flex items-center gap-1.5"
-                  >
-                    <XCircle className="h-4 w-4" /> Deactivate
-                  </button>
-                </div>
-              </div>
-            )}
-            {/* Table Section */}
-            <div className="mb-8">
-              <Table
-                data={data}
-                columns={memoizedColumns}
-                selectedRows={selectedRows}
-                setSelectedRows={setSelectedRows}
-                handleToggleStatus={handleToggleStatus}
-                isLoading={isLoading}
-              />
+              )}
             </div>
+
+            {/* ── TABLE ── */}
+            <Table
+              data={data}
+              columns={memoizedColumns}
+              selectedRows={selectedRows}
+              setSelectedRows={setSelectedRows}
+              handleToggleStatus={handleToggleStatus}
+              isLoading={isLoading}
+            />
+
+            {/* ── PAGINATION ── */}
+            <div className="mt-4 flex items-center justify-between bg-white rounded-[10px] border border-slate-200 px-4 py-3">
+              <span className="text-[13px] text-slate-400">
+                Page {currentPage} of {totalPages}
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={goToPreviousPage}
+                  disabled={currentPage <= 1 || isLoading}
+                  className="inline-flex items-center gap-1 px-3 py-1.5 text-[13px] text-slate-600 border border-slate-200 rounded-md hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150"
+                >
+                  <ChevronLeft className="w-4 h-4" /> Prev
+                </button>
+                <button
+                  onClick={goToNextPage}
+                  disabled={currentPage >= totalPages || isLoading}
+                  className="inline-flex items-center gap-1 px-3 py-1.5 text-[13px] text-slate-600 border border-slate-200 rounded-md hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150"
+                >
+                  Next <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
           </div>
         </main>
       </div>
 
-      {/* Modal */}
+      {/* ── ADD/EDIT MODAL ── */}
       <Modal
         isVisible={isModalVisible}
         onClose={handleCancel}
         title={editingItem ? `Edit ${title}` : `Add New ${title}`}
         isLoading={isLoading}
+        footer={modalFooter}
       >
-        <form onSubmit={handleSubmit}>
+        <form id="customer-form" onSubmit={handleSubmit}>
           <FormComponent
             formData={formData}
             handleInputChange={handleInputChange}
             handleFileChange={handleFileChange}
-            handleFileRemove={handleFileRemove} // Add this prop
+            handleFileRemove={handleFileRemove}
             isEditing={!!editingItem}
             validationErrors={validationErrors}
             loadingStates={loadingStates}
             setLoadingStates={setLoadingStates}
           />
-          <div className="mt-6 flex justify-end gap-3">
-            <button
-              type="button"
-              onClick={handleCancel}
-              className="px-4 py-2.5 border border-slate-gray/20 text-slate-gray rounded-lg hover:bg-light-sky/50 transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="px-4 py-2.5 bg-electric-blue text-white rounded-lg hover:bg-btn-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-electric-blue disabled:opacity-50 transition-colors flex items-center gap-2"
-            >
-              {isLoading ? (
-                <>
-                  <svg
-                    className="animate-spin h-5 w-5 text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                  Processing...
-                </>
-              ) : editingItem ? (
-                <>
-                  <Pencil className="h-5 w-5" /> Update {title}
-                </>
-              ) : (
-                <>
-                  <Plus className="h-5 w-5" /> Create {title}
-                </>
-              )}
-            </button>
-          </div>
         </form>
       </Modal>
+
       <EnhancedBulkAddModal
         isVisible={isBulkAddModalVisible}
         onClose={() => setIsBulkAddModalVisible(false)}
@@ -621,6 +580,7 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
         entityName={title}
         onSuccess={fetchData}
       />
+
       <ToastContainer
         position="top-right"
         autoClose={5000}

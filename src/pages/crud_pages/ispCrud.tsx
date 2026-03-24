@@ -1,8 +1,11 @@
+"use client"
+
 import type React from "react"
-import { useState, useEffect } from "react"
+import { useMemo, useEffect } from "react"
 import { CRUDPage } from "../../components/crudPage.tsx"
 import { ISPForm } from "../../components/forms/ispForm.tsx"
 import type { ColumnDef } from "@tanstack/react-table"
+import { Mail, Phone, MapPin } from "lucide-react"
 
 interface ISP {
   id: string
@@ -14,36 +17,125 @@ interface ISP {
   is_active: boolean
 }
 
+/* ── AVATAR COLOR HASH: consistent color per ISP name ── */
+const AVATAR_COLORS = [
+  "bg-blue-100 text-blue-800",
+  "bg-slate-100 text-slate-700",
+  "bg-emerald-100 text-emerald-800",
+  "bg-amber-100 text-amber-800",
+  "bg-rose-100 text-rose-800",
+  "bg-violet-100 text-violet-800",
+]
+const getAvatarColor = (name: string) => {
+  const hash = name.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0)
+  return AVATAR_COLORS[hash % AVATAR_COLORS.length]
+}
+const getInitials = (name: string) =>
+  name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase()
+
 const ISPManagement: React.FC = () => {
   useEffect(() => {
     document.title = "Net Khata - ISP Management"
   }, [])
 
-  const columns: ColumnDef<ISP>[] = [
-    {
-      header: "Name",
-      accessorKey: "name",
-    },
-    {
-      header: "Contact Person",
-      accessorKey: "contact_person",
-    },
-    {
-      header: "Email",
-      accessorKey: "email",
-    },
-    {
-      header: "Phone",
-      accessorKey: "phone",
-    },
-    {
-      header: "Address",
-      accessorKey: "address",
-    },
-  ]
+  const columns = useMemo<ColumnDef<ISP>[]>(
+    () => [
+      {
+        header: "Name",
+        accessorKey: "name",
+        cell: (info) => {
+          const name = info.getValue() as string
+          return (
+            /* ── AVATAR CELL: name-hash initials + ISP name ── */
+            <div className="flex items-center gap-2.5">
+              <div
+                className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 text-[10px] font-medium ${getAvatarColor(name)}`}
+              >
+                {getInitials(name)}
+              </div>
+              <span className="text-[13px] font-medium text-slate-700">{name}</span>
+            </div>
+          )
+        },
+      },
+      {
+        header: "Contact Person",
+        accessorKey: "contact_person",
+        cell: (info) => {
+          const value = info.getValue() as string
+          if (!value) return <span className="text-slate-400">—</span>
+          return <span className="text-[13px] text-slate-600">{value}</span>
+        },
+      },
+      {
+        header: "Email",
+        accessorKey: "email",
+        cell: (info) => {
+          const value = info.getValue() as string
+          if (!value) return <span className="text-slate-400">—</span>
+          return (
+            <div className="flex items-center gap-2">
+              <Mail className="w-4 h-4 text-slate-400 flex-shrink-0" />
+              <span className="text-[13px] text-slate-600">{value}</span>
+            </div>
+          )
+        },
+      },
+      {
+        header: "Phone",
+        accessorKey: "phone",
+        cell: (info) => {
+          const value = info.getValue() as string
+          if (!value) return <span className="text-slate-400">—</span>
+          return (
+            <div className="flex items-center gap-2">
+              <Phone className="w-4 h-4 text-slate-400 flex-shrink-0" />
+              <span className="text-[13px] text-slate-600">{value}</span>
+            </div>
+          )
+        },
+      },
+      {
+        header: "Address",
+        accessorKey: "address",
+        cell: (info) => {
+          const value = info.getValue() as string
+          if (!value) return <span className="text-slate-400">—</span>
+          return (
+            /* ── ADDRESS: truncated with tooltip, MapPin icon ── */
+            <div className="flex items-start gap-2 max-w-[220px]">
+              <MapPin className="w-4 h-4 text-slate-400 flex-shrink-0 mt-0.5" />
+              <span className="text-[13px] text-slate-600 truncate" title={value}>
+                {value}
+              </span>
+            </div>
+          )
+        },
+      },
+    ],
+    [],
+  )
 
-  return <CRUDPage<ISP> title="ISP" endpoint="isps" columns={columns} FormComponent={ISPForm} />
+  return (
+    <CRUDPage<ISP>
+      title="ISP"
+      endpoint="isps"
+      columns={columns}
+      FormComponent={ISPForm}
+      validateBeforeSubmit={(formData) => {
+        if (!formData.name?.trim()) return "ISP name is required"
+        if (!formData.contact_person?.trim()) return "Contact person is required"
+        if (!formData.email?.trim()) return "Email is required"
+        if (!formData.phone?.trim()) return "Phone number is required"
+        return null
+      }}
+    />
+  )
 }
 
 export default ISPManagement
-

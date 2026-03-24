@@ -44,6 +44,30 @@ interface CredentialsData {
   last_name: string
 }
 
+/* ── ROLE BADGE COLORS: semantic muted pair per role ── */
+const ROLE_COLORS: Record<string, string> = {
+  technician:     "bg-blue-50   text-blue-700   border-blue-200",
+  employee:       "bg-slate-100 text-slate-600  border-slate-200",
+  company_owner:  "bg-violet-50 text-violet-700 border-violet-200",
+  auditor:        "bg-amber-50  text-amber-700  border-amber-200",
+  recovery_agent: "bg-rose-50   text-rose-600   border-rose-200",
+}
+const getRoleColor = (role: string) =>
+  ROLE_COLORS[role?.toLowerCase()] ?? "bg-slate-100 text-slate-600 border-slate-200"
+
+/* ── AVATAR COLOR HASH: 5 muted pairs, consistent per name ── */
+const AVATAR_COLORS = [
+  "bg-blue-100 text-blue-800",
+  "bg-slate-100 text-slate-700",
+  "bg-emerald-100 text-emerald-800",
+  "bg-amber-100 text-amber-800",
+  "bg-rose-100 text-rose-800",
+]
+const getAvatarColor = (name: string) => {
+  const hash = name.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0)
+  return AVATAR_COLORS[hash % AVATAR_COLORS.length]
+}
+
 const EmployeeManagement: React.FC = () => {
   const navigate = useNavigate()
   const [credentialsModal, setCredentialsModal] = useState<{ isOpen: boolean; employeeId: string | null }>({
@@ -89,25 +113,18 @@ const EmployeeManagement: React.FC = () => {
     setSaving(true)
     try {
       const token = getToken()
-      const payload: any = {
-        username: formData.username,
-        email: formData.email,
-      }
-
+      const payload: any = { username: formData.username, email: formData.email }
       if (generatePassword) {
         payload.generate_password = true
       } else if (formData.password) {
         payload.password = formData.password
       }
-
       const response = await axiosInstance.put(
         `/employees/${credentialsModal.employeeId}/credentials`,
         payload,
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       )
-
       toast.success("Credentials updated successfully!")
-
       if (response.data.password) {
         setNewPassword(response.data.password)
       } else {
@@ -126,15 +143,42 @@ const EmployeeManagement: React.FC = () => {
     setTimeout(() => setCopied(null), 2000)
   }
 
+  const closeCredentialsModal = () => {
+    setCredentialsModal({ isOpen: false, employeeId: null })
+    setNewPassword(null)
+  }
+
   const columns = useMemo<ColumnDef<Employee>[]>(
     () => [
       {
         header: "Name",
         accessorFn: (row) => `${row.first_name} ${row.last_name}`,
+        cell: (info) => {
+          const name = info.getValue() as string
+          return (
+            /* ── AVATAR CELL with name-hash color ── */
+            <div className="flex items-center gap-2.5">
+              <div
+                className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 text-[10px] font-medium ${getAvatarColor(name)}`}
+              >
+                {name
+                  .split(" ")
+                  .map((n) => n[0])
+                  .join("")
+                  .slice(0, 2)
+                  .toUpperCase()}
+              </div>
+              <span className="text-[13px] text-slate-700 font-medium">{name}</span>
+            </div>
+          )
+        },
       },
       {
         header: "Username",
         accessorKey: "username",
+        cell: (info) => (
+          <span className="text-[13px] text-slate-600 font-mono">{info.getValue() as string}</span>
+        ),
       },
       {
         header: "Contact",
@@ -143,21 +187,36 @@ const EmployeeManagement: React.FC = () => {
       {
         header: "CNIC",
         accessorKey: "cnic",
+        cell: (info) => (
+          <span className="text-[13px] text-slate-600 font-mono">{info.getValue() as string}</span>
+        ),
       },
       {
         header: "Salary",
         accessorKey: "salary",
-        cell: (info) => info.getValue() ? `PKR ${Number(info.getValue()).toLocaleString()}` : '-',
+        cell: (info) => {
+          const value = info.getValue()
+          if (!value) return <span className="text-slate-400">—</span>
+          return (
+            /* ── MONETARY VALUE: plain tabular-nums, never colored ── */
+            <span className="text-[13px] text-slate-900 font-medium tabular-nums">
+              <span className="text-[11px] text-slate-400 mr-0.5">PKR</span>
+              {Number(value).toLocaleString()}
+            </span>
+          )
+        },
       },
       {
         header: "Balance",
         accessorKey: "current_balance",
         cell: (info) => {
           const value = info.getValue() as number
-          if (value === undefined || value === null) return '-'
+          if (value === undefined || value === null) return <span className="text-slate-400">—</span>
           return (
-            <span className={value >= 0 ? "text-emerald-600 font-semibold" : "text-red-600 font-semibold"}>
-              PKR {Number(value).toLocaleString()}
+            /* ── BALANCE: plain tabular-nums per Skill 05 Amendment ── */
+            <span className="text-[13px] text-slate-900 font-medium tabular-nums">
+              <span className="text-[11px] text-slate-400 mr-0.5">PKR</span>
+              {Number(value).toLocaleString()}
             </span>
           )
         },
@@ -166,8 +225,9 @@ const EmployeeManagement: React.FC = () => {
         header: "Role",
         accessorKey: "role",
         cell: (info) => (
-          <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-violet-100 text-violet-800 border border-violet-200">
-            {(info.getValue() as string)?.replace('_', ' ').toUpperCase()}
+          /* ── ROLE BADGE: role-aware semantic color per Skill 05 badge tiers ── */
+          <span className={`inline-flex items-center px-2 py-0.5 rounded border text-[10px] font-medium uppercase tracking-[0.06em] ${getRoleColor(info.getValue() as string)}`}>
+            {(info.getValue() as string)?.replace("_", " ")}
           </span>
         ),
       },
@@ -175,16 +235,17 @@ const EmployeeManagement: React.FC = () => {
         header: "Quick Actions",
         id: "quick_actions",
         cell: (info) => (
-          <div className="flex items-center gap-2">
+          /* ── QUICK ACTION BUTTONS: ghost with label, no gradients, no shadows ── */
+          <div className="flex items-center gap-1.5">
             <button
               onClick={(e) => {
                 e.stopPropagation()
                 navigate(`/employees/${info.row.original.id}`)
               }}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-[#89A8B2] to-[#B3C8CF] text-white rounded-lg hover:from-[#7a9aa4] hover:to-[#a3b8bf] transition-all duration-200 text-xs font-medium shadow-sm"
+              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-[12px] font-medium text-slate-600 border border-slate-200 rounded-md hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors duration-150"
               title="View Profile"
             >
-              <Eye className="h-3.5 w-3.5" />
+              <Eye className="w-4 h-4" />
               Profile
             </button>
             <button
@@ -192,10 +253,10 @@ const EmployeeManagement: React.FC = () => {
                 e.stopPropagation()
                 openCredentialsModal(info.row.original.id)
               }}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg hover:from-amber-600 hover:to-orange-600 transition-all duration-200 text-xs font-medium shadow-sm"
+              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-[12px] font-medium text-slate-600 border border-slate-200 rounded-md hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors duration-150"
               title="Manage Credentials"
             >
-              <Key className="h-3.5 w-3.5" />
+              <Key className="w-4 h-4" />
               Credentials
             </button>
           </div>
@@ -228,152 +289,189 @@ const EmployeeManagement: React.FC = () => {
         }}
       />
 
-      {/* Credentials Modal */}
+      {/* ── CREDENTIALS MODAL ── */}
       {credentialsModal.isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-md">
-            {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-gray-200">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ backgroundColor: "rgba(15, 23, 42, 0.50)" }}
+          onClick={closeCredentialsModal}
+        >
+          {/* ── PANEL: no shadow, rounded-xl, border only ── */}
+          <div
+            className="bg-white rounded-xl border border-slate-200 w-full max-w-md flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+
+            {/* ── HEADER: white, border-b, no gradient ── */}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200 flex-shrink-0">
               <div className="flex items-center gap-2">
-                <Key className="w-5 h-5 text-amber-500" />
-                <h3 className="text-lg font-semibold text-gray-900">Manage Credentials</h3>
+                <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Key className="w-4 h-4 text-blue-600" />
+                </div>
+                <h3 className="text-[15px] font-medium text-slate-900">Manage Credentials</h3>
               </div>
               <button
-                onClick={() => setCredentialsModal({ isOpen: false, employeeId: null })}
-                className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
+                onClick={closeCredentialsModal}
+                className="p-1.5 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors duration-150"
               >
-                <X className="w-5 h-5 text-gray-500" />
+                <X className="w-4 h-4" />
               </button>
             </div>
 
-            {/* Body */}
-            <div className="p-4 space-y-4">
+            {/* ── BODY: scrollable independently ── */}
+            <div className="flex-1 overflow-y-auto px-5 py-4">
               {credentialsLoading ? (
-                <div className="flex items-center justify-center py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500"></div>
+                /* ── SKELETON LOADING: preserve layout shape ── */
+                <div className="space-y-4">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="space-y-1.5">
+                      <div className="h-3 w-16 bg-slate-100 rounded animate-pulse" />
+                      <div className="h-9 w-full bg-slate-100 rounded-md animate-pulse" />
+                    </div>
+                  ))}
                 </div>
               ) : newPassword ? (
-                // Show generated password
+                /* ── GENERATED PASSWORD VIEW ── */
                 <div className="space-y-4">
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                    <p className="text-sm text-green-800 font-medium mb-2">
+                  <div className="bg-emerald-50 border border-emerald-200 rounded-md p-3">
+                    <p className="text-[13px] text-emerald-800 font-medium">
                       New credentials generated successfully!
                     </p>
-                    <p className="text-xs text-green-600">
-                      Please copy these credentials now. The password cannot be viewed again.
+                    <p className="text-[11px] text-emerald-600 mt-0.5">
+                      Copy these now — the password cannot be viewed again.
                     </p>
                   </div>
 
-                  <div className="space-y-3">
-                    <div>
-                      <label className="text-sm font-medium text-gray-700">Username</label>
-                      <div className="flex items-center gap-2 mt-1">
-                        <input
-                          type="text"
-                          value={formData.username}
-                          readOnly
-                          className="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-sm"
-                        />
-                        <button
-                          onClick={() => copyToClipboard(formData.username, "username")}
-                          className="p-2 hover:bg-gray-100 rounded-lg"
-                        >
-                          {copied === "username" ? (
-                            <Check className="w-5 h-5 text-green-500" />
-                          ) : (
-                            <Copy className="w-5 h-5 text-gray-500" />
-                          )}
-                        </button>
-                      </div>
+                  {/* Username read-only */}
+                  <div className="space-y-1.5">
+                    <label className="block text-[11px] font-medium text-slate-600 uppercase tracking-[0.06em]">
+                      Username
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={formData.username}
+                        readOnly
+                        className="flex-1 h-9 px-3 text-[13px] bg-slate-50 border border-slate-200 rounded-md text-slate-700 cursor-default"
+                      />
+                      <button
+                        onClick={() => copyToClipboard(formData.username, "username")}
+                        className="p-1.5 rounded-md text-slate-400 hover:text-blue-600 hover:bg-blue-50 border border-slate-200 transition-colors duration-150"
+                        title="Copy username"
+                      >
+                        {copied === "username" ? (
+                          <Check className="w-4 h-4 text-emerald-600" />
+                        ) : (
+                          <Copy className="w-4 h-4" />
+                        )}
+                      </button>
                     </div>
+                  </div>
 
-                    <div>
-                      <label className="text-sm font-medium text-gray-700">Password</label>
-                      <div className="flex items-center gap-2 mt-1">
-                        <input
-                          type="text"
-                          value={newPassword}
-                          readOnly
-                          className="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-amber-50 text-sm font-mono"
-                        />
-                        <button
-                          onClick={() => copyToClipboard(newPassword, "password")}
-                          className="p-2 hover:bg-gray-100 rounded-lg"
-                        >
-                          {copied === "password" ? (
-                            <Check className="w-5 h-5 text-green-500" />
-                          ) : (
-                            <Copy className="w-5 h-5 text-gray-500" />
-                          )}
-                        </button>
-                      </div>
+                  {/* Password read-only */}
+                  <div className="space-y-1.5">
+                    <label className="block text-[11px] font-medium text-slate-600 uppercase tracking-[0.06em]">
+                      Generated Password
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={newPassword}
+                        readOnly
+                        className="flex-1 h-9 px-3 text-[13px] bg-slate-50 border border-slate-200 rounded-md text-slate-900 font-mono cursor-default"
+                      />
+                      <button
+                        onClick={() => copyToClipboard(newPassword, "password")}
+                        className="p-1.5 rounded-md text-slate-400 hover:text-blue-600 hover:bg-blue-50 border border-slate-200 transition-colors duration-150"
+                        title="Copy password"
+                      >
+                        {copied === "password" ? (
+                          <Check className="w-4 h-4 text-emerald-600" />
+                        ) : (
+                          <Copy className="w-4 h-4" />
+                        )}
+                      </button>
                     </div>
                   </div>
                 </div>
               ) : (
-                // Edit form
+                /* ── EDIT CREDENTIALS FORM ── */
                 <div className="space-y-4">
-                  <div className="bg-gray-50 rounded-lg p-3">
-                    <p className="text-sm text-gray-700">
-                      <span className="font-medium">{credentials?.first_name} {credentials?.last_name}</span>
-                    </p>
-                  </div>
+                  {/* Employee name chip */}
+                  {credentials && (
+                    <div className="bg-slate-50 border border-slate-200 rounded-md px-3 py-2">
+                      <p className="text-[13px] font-medium text-slate-700">
+                        {credentials.first_name} {credentials.last_name}
+                      </p>
+                      <p className="text-[11px] text-slate-400 mt-0.5">Employee account settings</p>
+                    </div>
+                  )}
 
-                  <div>
-                    <label className="text-sm font-medium text-gray-700">Username</label>
+                  {/* Username */}
+                  <div className="space-y-1.5">
+                    <label className="block text-[11px] font-medium text-slate-600 uppercase tracking-[0.06em]">
+                      Username
+                    </label>
                     <input
                       type="text"
                       value={formData.username}
                       onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                      className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                      className="w-full h-9 px-3 text-[13px] bg-white border border-slate-200 rounded-md text-slate-900 placeholder:text-slate-400 hover:border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/[0.12] transition-colors duration-150 outline-none"
                     />
                   </div>
 
-                  <div>
-                    <label className="text-sm font-medium text-gray-700">Email</label>
+                  {/* Email */}
+                  <div className="space-y-1.5">
+                    <label className="block text-[11px] font-medium text-slate-600 uppercase tracking-[0.06em]">
+                      Email
+                    </label>
                     <input
                       type="email"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                      className="w-full h-9 px-3 text-[13px] bg-white border border-slate-200 rounded-md text-slate-900 placeholder:text-slate-400 hover:border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/[0.12] transition-colors duration-150 outline-none"
                     />
                   </div>
 
-                  <div>
-                    <label className="text-sm font-medium text-gray-700">New Password (optional)</label>
+                  {/* New Password */}
+                  <div className="space-y-1.5">
+                    <label className="block text-[11px] font-medium text-slate-600 uppercase tracking-[0.06em]">
+                      New Password{" "}
+                      <span className="text-slate-400 normal-case tracking-normal">(optional)</span>
+                    </label>
                     <input
                       type="password"
                       value={formData.password}
                       onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                       placeholder="Leave empty to keep current"
-                      className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                      className="w-full h-9 px-3 text-[13px] bg-white border border-slate-200 rounded-md text-slate-900 placeholder:text-slate-400 hover:border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/[0.12] transition-colors duration-150 outline-none"
                     />
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Footer */}
-            <div className="flex items-center justify-end gap-2 p-4 border-t border-gray-200">
+            {/* ── FOOTER: bg-slate-50 border-t, cancel left, primary right ── */}
+            <div className="flex items-center justify-end gap-2 px-5 py-3 bg-slate-50 border-t border-slate-200 rounded-b-xl flex-shrink-0">
               {newPassword ? (
                 <button
-                  onClick={() => setCredentialsModal({ isOpen: false, employeeId: null })}
-                  className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 text-sm font-medium"
+                  onClick={closeCredentialsModal}
+                  className="px-4 py-2 text-[13px] font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-150"
                 >
                   Done
                 </button>
               ) : (
                 <>
                   <button
-                    onClick={() => setCredentialsModal({ isOpen: false, employeeId: null })}
-                    className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm font-medium"
+                    onClick={closeCredentialsModal}
+                    className="px-4 py-2 text-[13px] font-medium text-slate-600 border border-slate-200 rounded-md hover:bg-slate-50 transition-colors duration-150"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={() => handleSaveCredentials(true)}
                     disabled={saving}
-                    className="flex items-center gap-2 px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 text-sm font-medium disabled:opacity-50"
+                    className="inline-flex items-center gap-2 px-4 py-2 text-[13px] font-medium text-slate-700 border border-slate-200 bg-white rounded-md hover:bg-slate-50 disabled:opacity-60 disabled:cursor-not-allowed transition-colors duration-150"
                   >
                     <RefreshCw className={`w-4 h-4 ${saving ? "animate-spin" : ""}`} />
                     Generate Password
@@ -381,7 +479,7 @@ const EmployeeManagement: React.FC = () => {
                   <button
                     onClick={() => handleSaveCredentials(false)}
                     disabled={saving}
-                    className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 text-sm font-medium disabled:opacity-50"
+                    className="px-4 py-2 text-[13px] font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors duration-150"
                   >
                     {saving ? "Saving..." : "Save"}
                   </button>

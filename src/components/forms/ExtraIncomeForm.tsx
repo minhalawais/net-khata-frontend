@@ -1,7 +1,10 @@
 "use client"
 
 import type React from "react"
-import { Building, Calendar, FileText, User, CreditCard, Settings, DollarSign, Clock, Upload, Check } from "lucide-react"
+import {
+  Building, Calendar, FileText, User, CreditCard,
+  Settings, Clock, Upload, Check, ChevronDown, Loader,
+} from "lucide-react"
 import { useState, useEffect } from "react"
 import { getToken } from "../../utils/auth.ts"
 import axiosInstance from "../../utils/axiosConfig.ts"
@@ -15,322 +18,330 @@ interface ExtraIncomeFormProps {
 }
 
 interface BankAccount {
-  id: string
-  bank_name: string
-  account_title: string
-  account_number: string
+  id: string; bank_name: string; account_title: string; account_number: string
 }
 
 interface ExtraIncomeType {
-  id: string
-  name: string
-  description: string
-  is_active: boolean
+  id: string; name: string; description: string; is_active: boolean
 }
 
-// Helper functions for Pakistani timezone (PKT = UTC+5)
-// Helper functions for Pakistani timezone (PKT = UTC+5)
-const getPakistaniDate = () => {
-    return new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Karachi' });
-}
+const getPakistaniDate = () =>
+  new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Karachi' })
+const getPakistaniTime = () =>
+  new Date().toLocaleTimeString('en-GB', { timeZone: 'Asia/Karachi', hour: '2-digit', minute: '2-digit', hour12: false })
 
-const getPakistaniTime = () => {
-    return new Date().toLocaleTimeString('en-GB', { timeZone: 'Asia/Karachi', hour: '2-digit', minute: '2-digit', hour12: false });
-}
+/* ── SHARED STYLE CONSTANTS — Skill 10 recipe ── */
+const inputBase =
+  "h-9 w-full bg-white border border-slate-200 rounded-md text-[13px] text-slate-900 placeholder:text-slate-400 hover:border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/[0.12] transition-colors duration-150 outline-none"
+const labelClass = "block text-[11px] font-medium text-slate-600 uppercase tracking-[0.06em]"
 
-export function ExtraIncomeForm({ formData, handleInputChange, handleFileChange, isEditing, onManageIncomeTypes }: ExtraIncomeFormProps) {
+/* ── SECTION HEADER: left-border overline (Skill 10) ── */
+const SectionHeader = ({ icon: Icon, label }: { icon: React.ElementType; label: string }) => (
+  <div className="flex items-center gap-2 pl-2.5 border-l-2 border-slate-300 mb-4">
+    <Icon className="w-4 h-4 text-slate-400" />
+    <span className="text-[10px] font-medium text-slate-400 uppercase tracking-[0.08em]">{label}</span>
+  </div>
+)
+
+export function ExtraIncomeForm({
+  formData, handleInputChange, handleFileChange, isEditing, onManageIncomeTypes,
+}: ExtraIncomeFormProps) {
   const [bankAccounts, setBankAccounts] = useState<BankAccount[]>([])
   const [incomeTypes, setIncomeTypes] = useState<ExtraIncomeType[]>([])
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoadingData, setIsLoadingData] = useState(false)
   const [paymentProofPreview, setPaymentProofPreview] = useState<string | null>(null)
+  const [proofFileName, setProofFileName] = useState<string | null>(null)
 
   const paymentMethods = [
     { value: 'cash', label: 'Cash' },
     { value: 'bank_transfer', label: 'Bank Transfer' },
-    { value: 'online', label: 'Online Payment' }
+    { value: 'online', label: 'Online Payment' },
   ]
 
-  // Fetch bank accounts and income types on component mount
+  const showBankAccountField = formData.payment_method === 'online' || formData.payment_method === 'bank_transfer'
+
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoadingData(true)
       try {
         const token = getToken()
-
-        // Fetch bank accounts
-        const bankResponse = await axiosInstance.get('/bank-accounts/list?active_only=true', {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        setBankAccounts(bankResponse.data)
-
-        // Fetch income types
-        const incomeTypesResponse = await axiosInstance.get('/extra-income-types/list', {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        setIncomeTypes(incomeTypesResponse.data.filter((type: ExtraIncomeType) => type.is_active))
+        const [bankRes, typesRes] = await Promise.all([
+          axiosInstance.get('/bank-accounts/list?active_only=true', { headers: { Authorization: `Bearer ${token}` } }),
+          axiosInstance.get('/extra-income-types/list', { headers: { Authorization: `Bearer ${token}` } }),
+        ])
+        setBankAccounts(bankRes.data)
+        setIncomeTypes(typesRes.data.filter((t: ExtraIncomeType) => t.is_active))
       } catch (error) {
         console.error('Failed to fetch data', error)
+      } finally {
+        setIsLoadingData(false)
       }
     }
-
     fetchData()
 
-    // Set default date and time for new income entries
     if (!isEditing) {
       if (!formData.income_date) {
-        handleInputChange({
-          target: {
-            name: "income_date",
-            value: getPakistaniDate(),
-          },
-        } as React.ChangeEvent<HTMLInputElement>)
+        handleInputChange({ target: { name: "income_date", value: getPakistaniDate() } } as React.ChangeEvent<HTMLInputElement>)
       }
-
       if (!formData.income_time) {
-        handleInputChange({
-          target: {
-            name: "income_time",
-            value: getPakistaniTime(),
-          },
-        } as React.ChangeEvent<HTMLInputElement>)
+        handleInputChange({ target: { name: "income_time", value: getPakistaniTime() } } as React.ChangeEvent<HTMLInputElement>)
       }
     }
   }, [isEditing])
 
-  // Check if bank account field should be shown
-  const showBankAccountField = formData.payment_method === 'online' || formData.payment_method === 'bank_transfer'
+  const handleProofChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      setProofFileName(file.name)
+      handleFileChange?.('payment_proof', file)
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader()
+        reader.onload = (ev) => setPaymentProofPreview(ev.target?.result as string)
+        reader.readAsDataURL(file)
+      } else {
+        setPaymentProofPreview(null)
+      }
+    }
+  }
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <label htmlFor="income_type_id" className="block text-sm font-medium text-deep-ocean">
-              Income Type *
+
+      {/* ════════════════════════════════════
+          SECTION: Income Classification
+      ════════════════════════════════════ */}
+      <div>
+        <SectionHeader icon={FileText} label="Income Classification" />
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-4">
+
+          {/* Income Type + Manage link */}
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <label htmlFor="income_type_id" className={labelClass}>
+                Income Type <span className="text-rose-500 ml-0.5">*</span>
+              </label>
+              {/* ── MANAGE TYPES: inline text link ── */}
+              <button type="button" onClick={onManageIncomeTypes}
+                className="inline-flex items-center gap-1 text-[12px] font-medium text-blue-600 hover:text-blue-700 transition-colors duration-150">
+                <Settings className="w-3 h-3" />
+                Manage Types
+              </button>
+            </div>
+            <div className="relative">
+              <select id="income_type_id" name="income_type_id"
+                value={formData.income_type_id || ""} onChange={handleInputChange}
+                className={`${inputBase} pl-3 pr-9 appearance-none`} required disabled={isLoadingData}>
+                <option value="">Select Income Type</option>
+                {incomeTypes.map(type => (
+                  <option key={type.id} value={type.id}>{type.name}</option>
+                ))}
+              </select>
+              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                {isLoadingData
+                  ? <Loader className="w-4 h-4 text-slate-400 animate-spin" />
+                  : <ChevronDown className="w-4 h-4 text-slate-400" />}
+              </div>
+            </div>
+          </div>
+
+          {/* Amount */}
+          <div className="space-y-1.5">
+            <label htmlFor="amount" className={labelClass}>
+              Amount <span className="text-rose-500 ml-0.5">*</span>
             </label>
-            <button
-              type="button"
-              onClick={onManageIncomeTypes}
-              className="text-xs text-electric-blue hover:text-btn-hover flex items-center gap-1"
-            >
-              <Settings className="h-3 w-3" />
-              Manage Types
-            </button>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <span className="text-[11px] font-medium text-slate-400">PKR</span>
+              </div>
+              <input type="number" id="amount" name="amount"
+                value={formData.amount || ""} onChange={handleInputChange}
+                placeholder="0.00" step="0.01" min="0"
+                className={`${inputBase} pl-10`} required />
+            </div>
           </div>
-          <select
-            id="income_type_id"
-            name="income_type_id"
-            value={formData.income_type_id || ""}
-            onChange={handleInputChange}
-            className="w-full px-4 py-2.5 border border-slate-gray/20 rounded-lg bg-light-sky/30 text-deep-ocean focus:outline-none focus:ring-2 focus:ring-electric-blue/30 focus:border-transparent transition-all duration-200"
-            required
-          >
-            <option value="">Select Income Type</option>
-            {incomeTypes.map(type => (
-              <option key={type.id} value={type.id}>{type.name}</option>
-            ))}
-          </select>
+
+        </div>
+      </div>
+
+      {/* ════════════════════════════════════
+          SECTION: Date & Time
+      ════════════════════════════════════ */}
+      <div>
+        <SectionHeader icon={Calendar} label="Date & Time" />
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-4">
+
+          {/* Income Date */}
+          <div className="space-y-1.5">
+            <label htmlFor="income_date" className={labelClass}>
+              Income Date <span className="text-rose-500 ml-0.5">*</span>
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Calendar className="w-3.5 h-3.5 text-slate-400" />
+              </div>
+              <input type="date" id="income_date" name="income_date"
+                value={formData.income_date || getPakistaniDate()} onChange={handleInputChange}
+                className={`${inputBase} pl-9`} required />
+            </div>
+          </div>
+
+          {/* Income Time */}
+          <div className="space-y-1.5">
+            <label htmlFor="income_time" className={labelClass}>
+              Income Time <span className="text-rose-500 ml-0.5">*</span>
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Clock className="w-4 h-4 text-slate-400" />
+              </div>
+              <input type="time" id="income_time" name="income_time"
+                value={formData.income_time || getPakistaniTime()} onChange={handleInputChange}
+                className={`${inputBase} pl-9`} required />
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      {/* ════════════════════════════════════
+          SECTION: Payment Details
+      ════════════════════════════════════ */}
+      <div>
+        <SectionHeader icon={CreditCard} label="Payment Details" />
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-4">
+
+          {/* Payment Method */}
+          <div className="space-y-1.5">
+            <label htmlFor="payment_method" className={labelClass}>Payment Method</label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <CreditCard className="w-4 h-4 text-slate-400" />
+              </div>
+              <select id="payment_method" name="payment_method"
+                value={formData.payment_method || ""} onChange={handleInputChange}
+                className={`${inputBase} pl-9 pr-9 appearance-none`}>
+                <option value="">Select Payment Method</option>
+                {paymentMethods.map(method => (
+                  <option key={method.value} value={method.value}>{method.label}</option>
+                ))}
+              </select>
+              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                <ChevronDown className="w-4 h-4 text-slate-400" />
+              </div>
+            </div>
+          </div>
+
+          {/* Bank Account — conditional */}
+          {showBankAccountField && (
+            <div className="space-y-1.5">
+              <label htmlFor="bank_account_id" className={labelClass}>
+                Bank Account <span className="text-rose-500 ml-0.5">*</span>
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Building className="w-4 h-4 text-slate-400" />
+                </div>
+                <select id="bank_account_id" name="bank_account_id"
+                  value={formData.bank_account_id || ""} onChange={handleInputChange}
+                  className={`${inputBase} pl-9 pr-9 appearance-none`} required={showBankAccountField}>
+                  <option value="">Select Bank Account</option>
+                  {bankAccounts.map(account => (
+                    <option key={account.id} value={account.id}>
+                      {account.bank_name} - {account.account_title} (****{account.account_number.slice(-4)})
+                    </option>
+                  ))}
+                </select>
+                <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                  <ChevronDown className="w-4 h-4 text-slate-400" />
+                </div>
+              </div>
+              <p className="text-[11px] text-slate-400">
+                Required for {formData.payment_method === 'online' ? 'online payments' : 'bank transfers'}
+              </p>
+            </div>
+          )}
+
+          {/* Payer */}
+          <div className="space-y-1.5">
+            <label htmlFor="payer" className={labelClass}>Payer</label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <User className="w-4 h-4 text-slate-400" />
+              </div>
+              <input type="text" id="payer" name="payer"
+                value={formData.payer || ""} onChange={handleInputChange}
+                placeholder="Enter payer name"
+                className={`${inputBase} pl-9`} />
+            </div>
+          </div>
+
         </div>
 
-        <div className="space-y-2">
-          <label htmlFor="amount" className="block text-sm font-medium text-deep-ocean">
-            Amount *
-          </label>
+        {/* Description — full width */}
+        <div className="space-y-1.5 mt-4">
+          <label htmlFor="description" className={labelClass}>Description</label>
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <span className="text-slate-gray/60 font-medium">PKR</span>
+            <div className="absolute top-2.5 left-0 pl-3 pointer-events-none">
+              <FileText className="w-4 h-4 text-slate-400" />
             </div>
-            <input
-              type="number"
-              id="amount"
-              name="amount"
-              value={formData.amount || ""}
-              onChange={handleInputChange}
-              placeholder="0.00"
-              step="0.01"
-              min="0"
-              className="w-full pl-12 pr-4 py-2.5 border border-slate-gray/20 rounded-lg bg-light-sky/30 text-deep-ocean placeholder-slate-gray/50 focus:outline-none focus:ring-2 focus:ring-electric-blue/30 focus:border-transparent transition-all duration-200"
-              required
+            <textarea id="description" name="description"
+              value={formData.description || ""} onChange={handleInputChange}
+              placeholder="Enter income description" rows={3}
+              className="pl-9 pr-3 py-2 w-full bg-white border border-slate-200 rounded-md text-[13px] text-slate-900 placeholder:text-slate-400 hover:border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/[0.12] transition-colors duration-150 outline-none resize-none"
             />
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-2">
-          <label htmlFor="income_date" className="block text-sm font-medium text-deep-ocean">
-            Income Date *
-          </label>
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Calendar className="h-5 w-5 text-slate-gray/60" />
-            </div>
-            <input
-              type="date"
-              id="income_date"
-              name="income_date"
-              value={formData.income_date || getPakistaniDate()}
-              onChange={handleInputChange}
-              className="w-full pl-10 pr-4 py-2.5 border border-slate-gray/20 rounded-lg bg-light-sky/30 text-deep-ocean focus:outline-none focus:ring-2 focus:ring-electric-blue/30 focus:border-transparent transition-all duration-200"
-              required
-            />
-          </div>
-        </div>
+      {/* ════════════════════════════════════
+          SECTION: Payment Proof
+      ════════════════════════════════════ */}
+      <div>
+        <SectionHeader icon={Upload} label="Payment Proof" />
 
-        <div className="space-y-2">
-          <label htmlFor="income_time" className="block text-sm font-medium text-deep-ocean">
-            Income Time *
-          </label>
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Clock className="h-5 w-5 text-slate-gray/60" />
-            </div>
-            <input
-              type="time"
-              id="income_time"
-              name="income_time"
-              value={formData.income_time || getPakistaniTime()}
-              onChange={handleInputChange}
-              className="w-full pl-10 pr-4 py-2.5 border border-slate-gray/20 rounded-lg bg-light-sky/30 text-deep-ocean focus:outline-none focus:ring-2 focus:ring-electric-blue/30 focus:border-transparent transition-all duration-200"
-              required
-            />
-          </div>
-        </div>
-      </div>
-
-      <div className="space-y-2">
-        <label htmlFor="payment_method" className="block text-sm font-medium text-deep-ocean">
-          Payment Method
-        </label>
-        <select
-          id="payment_method"
-          name="payment_method"
-          value={formData.payment_method || ""}
-          onChange={handleInputChange}
-          className="w-full px-4 py-2.5 border border-slate-gray/20 rounded-lg bg-light-sky/30 text-deep-ocean focus:outline-none focus:ring-2 focus:ring-electric-blue/30 focus:border-transparent transition-all duration-200"
-        >
-          <option value="">Select Payment Method</option>
-          {paymentMethods.map(method => (
-            <option key={method.value} value={method.value}>{method.label}</option>
-          ))}
-        </select>
-      </div>
-
-      <div className="space-y-2">
-        <label htmlFor="payer" className="block text-sm font-medium text-deep-ocean">
-          Payer
-        </label>
-        <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <User className="h-5 w-5 text-slate-gray/60" />
-          </div>
-          <input
-            type="text"
-            id="payer"
-            name="payer"
-            value={formData.payer || ""}
-            onChange={handleInputChange}
-            placeholder="Enter payer name"
-            className="w-full pl-10 pr-4 py-2.5 border border-slate-gray/20 rounded-lg bg-light-sky/30 text-deep-ocean placeholder-slate-gray/50 focus:outline-none focus:ring-2 focus:ring-electric-blue/30 focus:border-transparent transition-all duration-200"
-          />
-        </div>
-      </div>
-
-      <div className="space-y-2">
-        <label htmlFor="description" className="block text-sm font-medium text-deep-ocean">
-          Description
-        </label>
-        <div className="relative">
-          <div className="absolute top-3 left-3 flex items-start pointer-events-none">
-            <FileText className="h-5 w-5 text-slate-gray/60" />
-          </div>
-          <textarea
-            id="description"
-            name="description"
-            value={formData.description || ""}
-            onChange={handleInputChange}
-            placeholder="Enter income description"
-            rows={3}
-            className="w-full pl-10 pr-4 py-2.5 border border-slate-gray/20 rounded-lg bg-light-sky/30 text-deep-ocean placeholder-slate-gray/50 focus:outline-none focus:ring-2 focus:ring-electric-blue/30 focus:border-transparent transition-all duration-200 resize-y"
-          />
-        </div>
-      </div>
-
-      {showBankAccountField && (
-        <div className="space-y-2">
-          <label htmlFor="bank_account_id" className="block text-sm font-medium text-deep-ocean">
-            Bank Account *
-          </label>
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Building className="h-5 w-5 text-slate-gray/60" />
-            </div>
-            <select
-              id="bank_account_id"
-              name="bank_account_id"
-              value={formData.bank_account_id || ""}
-              onChange={handleInputChange}
-              className="w-full pl-10 pr-4 py-2.5 border border-slate-gray/20 rounded-lg bg-light-sky/30 text-deep-ocean focus:outline-none focus:ring-2 focus:ring-electric-blue/30 focus:border-transparent transition-all duration-200"
-              required={showBankAccountField}
-            >
-              <option value="">Select Bank Account</option>
-              {bankAccounts.map(account => (
-                <option key={account.id} value={account.id}>
-                  {account.bank_name} - {account.account_title} (****{account.account_number.slice(-4)})
-                </option>
-              ))}
-            </select>
-          </div>
-          <p className="text-xs text-slate-gray/70 mt-1">
-            Required for {formData.payment_method === 'online' ? 'online payments' : 'bank transfers'}
-          </p>
-        </div>
-      )}
-
-      {/* Payment Proof Upload */}
-      <div className="space-y-2">
-        <label className="block text-sm font-medium text-deep-ocean">
-          Payment Proof
-        </label>
-        <div className="relative">
-          <input
-            type="file"
-            id="payment_proof"
-            name="payment_proof"
-            accept="image/*,.pdf"
-            onChange={(e) => {
-              const file = e.target.files?.[0]
-              if (file) {
-                handleFileChange?.('payment_proof', file)
-                if (file.type.startsWith('image/')) {
-                  const reader = new FileReader()
-                  reader.onload = (ev) => setPaymentProofPreview(ev.target?.result as string)
-                  reader.readAsDataURL(file)
-                } else {
-                  setPaymentProofPreview(null)
-                }
-              }
-            }}
-            className="hidden"
-          />
-          <label
-            htmlFor="payment_proof"
-            className="flex items-center justify-center gap-2 w-full py-3 px-4 border-2 border-dashed border-slate-gray/30 rounded-lg cursor-pointer hover:border-electric-blue hover:bg-light-sky/50 transition-all"
-          >
+        <div className="space-y-1.5">
+          <label className={labelClass}>Upload Proof</label>
+          <input type="file" id="payment_proof" name="payment_proof"
+            accept="image/*,.pdf" onChange={handleProofChange} className="sr-only" />
+          <label htmlFor="payment_proof"
+            className="flex items-center gap-3 w-full py-3 px-4 border border-dashed border-slate-200 rounded-md cursor-pointer hover:border-blue-400 hover:bg-blue-50/20 transition-colors duration-150">
             {paymentProofPreview ? (
-              <img src={paymentProofPreview} alt="Preview" className="h-16 w-16 object-cover rounded-lg" />
-            ) : formData.payment_proof ? (
-              <span className="text-sm text-emerald-green flex items-center gap-2">
-                <Check className="h-4 w-4" /> Proof uploaded
-              </span>
+              <>
+                <img src={paymentProofPreview} alt="Preview"
+                  className="w-10 h-10 object-cover rounded-lg flex-shrink-0" />
+                <div>
+                  <p className="text-[13px] font-medium text-slate-700">{proofFileName || "Image selected"}</p>
+                  <p className="text-[11px] text-slate-400">Click to replace</p>
+                </div>
+              </>
+            ) : (proofFileName || formData.payment_proof) ? (
+              <>
+                <div className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Check className="w-4 h-4 text-emerald-600" />
+                </div>
+                <div>
+                  <p className="text-[13px] font-medium text-slate-700">{proofFileName || "Proof uploaded"}</p>
+                  <p className="text-[11px] text-slate-400">Click to replace</p>
+                </div>
+              </>
             ) : (
               <>
-                <Upload className="h-5 w-5 text-slate-gray/60" />
-                <span className="text-sm text-slate-gray">Upload payment proof (image/PDF)</span>
+                <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Upload className="w-4 h-4 text-slate-400" />
+                </div>
+                <div>
+                  <p className="text-[13px] text-slate-500">Click to upload payment proof</p>
+                  <p className="text-[11px] text-slate-400">Image or PDF up to 10MB</p>
+                </div>
               </>
             )}
           </label>
         </div>
       </div>
+
     </div>
   )
 }

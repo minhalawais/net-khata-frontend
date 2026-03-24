@@ -3,10 +3,9 @@
 import type React from "react"
 import { useEffect, useState, Fragment, useCallback } from "react"
 import { Combobox, Transition } from "@headlessui/react"
-import { Search, Check, Paperclip, Calendar, User, X, Loader2, MessageSquare, ChevronDown, MapPin, Phone, Globe } from 'lucide-react'
+import { Search, Check, Paperclip, User, X, Loader2, ChevronDown, MapPin, Phone, Globe } from 'lucide-react'
 import axiosInstance from "../../utils/axiosConfig.ts"
 import { getToken } from "../../utils/auth.ts"
-import { motion } from "framer-motion"
 
 interface ComplaintFormProps {
   formData: any
@@ -100,7 +99,7 @@ export function ComplaintForm({
 
   const memoizedHandleFileChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      handleFileChange(e)
+      if (handleFileChange) handleFileChange(e)
     },
     [handleFileChange],
   )
@@ -119,116 +118,105 @@ export function ComplaintForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {ticketNumber && (
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="bg-emerald-green/10 border-l-4 border-emerald-green rounded-r-lg p-4"
-        >
-          <p className="font-medium text-emerald-green flex items-center">
-            <Check className="h-5 w-5 mr-2" /> Ticket Number: {ticketNumber}
+        <div className="bg-emerald-50 border-l-[3px] border-emerald-500 px-4 py-3 rounded-r-md">
+          <p className="text-[13px] font-medium text-emerald-700 flex items-center">
+            <Check className="h-4 w-4 mr-2" /> Ticket Number: {ticketNumber}
           </p>
-        </motion.div>
+        </div>
       )}
 
       {/* Search Customer Section */}
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-deep-ocean">
+        <label className="block text-[11px] font-medium text-slate-600">
           Search User by Phone # or Internet ID
         </label>
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search className="h-5 w-5 text-slate-gray/60" />
+            <Search className="h-4 w-4 text-slate-400" />
           </div>
           <input
             type="text"
             value={customerSearchTerm}
             onChange={(e) => handleCustomerSearchChange(e.target.value)}
             placeholder="Enter Phone # or Internet ID..."
-            className="w-full pl-10 pr-10 py-2.5 border border-slate-gray/20 rounded-lg bg-light-sky/30 text-deep-ocean placeholder-slate-gray/50 focus:outline-none focus:ring-2 focus:ring-electric-blue/30 focus:border-transparent transition-all duration-200"
+            className="w-full h-9 pl-9 pr-9 text-[13px] text-slate-900 placeholder:text-slate-400 border border-slate-200 rounded-md bg-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/[0.12] hover:border-slate-300 transition-colors duration-150"
           />
           <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-            {isSearching && <Loader2 className="h-5 w-5 text-electric-blue animate-spin" />}
-            {!isSearching && customerFound === true && <Check className="h-5 w-5 text-emerald-green" />}
-            {!isSearching && customerFound === false && <X className="h-5 w-5 text-coral-red" />}
+            {isSearching && <Loader2 className="h-4 w-4 text-blue-600 animate-spin" />}
+            {!isSearching && customerFound === true && <Check className="h-4 w-4 text-emerald-600" />}
+            {!isSearching && customerFound === false && <X className="h-4 w-4 text-rose-600" />}
           </div>
         </div>
-        <p className="text-xs text-slate-gray">When the user searches, the form below will auto-fill</p>
+        <p className="text-[11px] text-slate-400">When the user searches, the form below will auto-fill.</p>
       </div>
 
-      {/* Customer Details Table - Matching the image layout */}
+      {/* Customer Details Display - Premium Grid Design */}
       {selectedCustomer && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="border border-slate-gray/30 rounded-lg overflow-hidden"
-        >
-          <table className="w-full border-collapse">
-            <tbody>
-              {/* Row 1: User Name | Internet ID */}
-              <tr className="border-b border-slate-gray/20">
-                <td className="px-4 py-3 bg-slate-50 font-medium text-sm text-deep-ocean border-r border-slate-gray/20 w-1/4">
-                  <div className="flex items-center gap-2">
-                    <User className="h-4 w-4 text-slate-gray" />
-                    User Name
-                  </div>
-                </td>
-                <td className="px-4 py-3 text-sm text-deep-ocean border-r border-slate-gray/20 w-1/4 bg-white">
-                  {`${selectedCustomer.first_name} ${selectedCustomer.last_name}`}
-                </td>
-                <td className="px-4 py-3 bg-slate-50 font-medium text-sm text-deep-ocean border-r border-slate-gray/20 w-1/4">
-                  <div className="flex items-center gap-2">
-                    <Globe className="h-4 w-4 text-slate-gray" />
-                    Internet ID
-                  </div>
-                </td>
-                <td className="px-4 py-3 text-sm text-deep-ocean w-1/4 bg-white">
-                  {selectedCustomer.internet_id}
-                </td>
-              </tr>
-              
-              {/* Row 2: Phone # | Installation Address */}
-              <tr className="border-b border-slate-gray/20">
-                <td className="px-4 py-3 bg-slate-50 font-medium text-sm text-deep-ocean border-r border-slate-gray/20">
-                  <div className="flex items-center gap-2">
-                    <Phone className="h-4 w-4 text-slate-gray" />
-                    Phone #
-                  </div>
-                </td>
-                <td className="px-4 py-3 text-sm text-deep-ocean border-r border-slate-gray/20 bg-white">
-                  {selectedCustomer.phone_1}
-                </td>
-                <td className="px-4 py-3 bg-slate-50 font-medium text-sm text-deep-ocean border-r border-slate-gray/20">
-                  <div className="flex items-center gap-2">
-                    <MapPin className="h-4 w-4 text-slate-gray" />
-                    Installation Address
-                  </div>
-                </td>
-                <td className="px-4 py-3 text-sm text-deep-ocean bg-white">
-                  {selectedCustomer.installation_address}
-                </td>
-              </tr>
-              
-              {/* Row 3: GPS Coordinates (full width) */}
-              <tr>
-                <td className="px-4 py-3 bg-slate-50 font-medium text-sm text-deep-ocean border-r border-slate-gray/20">
-                  <div className="flex items-center gap-2">
-                    <MapPin className="h-4 w-4 text-slate-gray" />
-                    GPS Coordinates
-                  </div>
-                </td>
-                <td colSpan={3} className="px-4 py-3 text-sm text-deep-ocean bg-white">
-                  {selectedCustomer.gps_coordinates || "N/A"}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </motion.div>
+        <div className="bg-slate-50/50 border border-slate-200/60 rounded-[10px] p-1 shadow-sm">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 rounded-[8px] overflow-hidden">
+            {/* User Name */}
+            <div className="bg-white p-3.5 flex items-start gap-3 border border-transparent hover:border-blue-100 hover:bg-blue-50/30 transition-colors">
+              <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center shrink-0">
+                <User className="h-4 w-4 text-blue-600" />
+              </div>
+              <div>
+                <p className="text-[11px] font-medium tracking-wide text-slate-500 uppercase">User Name</p>
+                <p className="text-[13px] font-semibold text-slate-900 mt-0.5">{selectedCustomer.first_name} {selectedCustomer.last_name}</p>
+              </div>
+            </div>
+
+            {/* Internet ID */}
+            <div className="bg-white p-3.5 flex items-start gap-3 border border-transparent hover:border-blue-100 hover:bg-blue-50/30 transition-colors">
+              <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center shrink-0">
+                <Globe className="h-4 w-4 text-slate-600" />
+              </div>
+              <div>
+                <p className="text-[11px] font-medium tracking-wide text-slate-500 uppercase">Internet ID</p>
+                <p className="text-[13px] font-medium text-slate-800 mt-0.5">{selectedCustomer.internet_id}</p>
+              </div>
+            </div>
+
+            {/* Phone */}
+            <div className="bg-white p-3.5 flex items-start gap-3 border border-transparent hover:border-blue-100 hover:bg-blue-50/30 transition-colors">
+              <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center shrink-0">
+                <Phone className="h-4 w-4 text-slate-600" />
+              </div>
+              <div>
+                <p className="text-[11px] font-medium tracking-wide text-slate-500 uppercase">Phone Number</p>
+                <p className="text-[13px] font-medium text-slate-800 mt-0.5">{selectedCustomer.phone_1}</p>
+              </div>
+            </div>
+
+            {/* Address */}
+            <div className="bg-white p-3.5 flex items-start gap-3 border border-transparent hover:border-blue-100 hover:bg-blue-50/30 transition-colors">
+              <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center shrink-0">
+                <MapPin className="h-4 w-4 text-slate-600" />
+              </div>
+              <div>
+                <p className="text-[11px] font-medium tracking-wide text-slate-500 uppercase">Installation Address</p>
+                <p className="text-[13px] font-medium text-slate-800 mt-0.5 truncate max-w-[200px]" title={selectedCustomer.installation_address}>{selectedCustomer.installation_address}</p>
+              </div>
+            </div>
+            
+            {/* GPS Coordinates */}
+            {selectedCustomer.gps_coordinates && (
+              <div className="bg-white p-3.5 flex items-start gap-3 sm:col-span-2 border border-transparent hover:border-blue-100 hover:bg-blue-50/30 transition-colors">
+                <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center shrink-0">
+                  <MapPin className="h-4 w-4 text-slate-600" />
+                </div>
+                <div>
+                  <p className="text-[11px] font-medium tracking-wide text-slate-500 uppercase">GPS Coordinates</p>
+                  <p className="text-[13px] font-medium text-slate-800 mt-0.5">{selectedCustomer.gps_coordinates}</p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       )}
 
       {/* Complaint Details */}
       <div className="space-y-2">
-        <label htmlFor="description" className="block text-sm font-medium text-deep-ocean">
+        <label htmlFor="description" className="block text-[11px] font-medium text-slate-600">
           Complaint Details
         </label>
         <div className="relative">
@@ -238,7 +226,7 @@ export function ComplaintForm({
             value={formData.description || ""}
             onChange={handleInputChange}
             placeholder="Add details here...."
-            className="w-full px-4 py-3 min-h-[120px] border border-slate-gray/20 rounded-lg bg-white text-deep-ocean placeholder-slate-gray/50 focus:outline-none focus:ring-2 focus:ring-electric-blue/30 focus:border-transparent transition-all duration-200 resize-y"
+            className="w-full px-3 py-2.5 min-h-[120px] border border-slate-200 rounded-md bg-white text-[13px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/[0.12] hover:border-slate-300 transition-colors duration-150 resize-none"
             required
           />
         </div>
@@ -246,21 +234,30 @@ export function ComplaintForm({
 
       {/* Attachment Section */}
       <div className="space-y-2">
-        <label htmlFor="attachment" className="block text-sm font-medium text-deep-ocean">
+        <label htmlFor="attachment" className="block text-[11px] font-medium text-slate-600">
           ATTACHMENT (IF ANY)
         </label>
-        <div className="border-2 border-dashed border-slate-gray/30 rounded-lg p-6 bg-white hover:border-electric-blue/50 transition-colors">
-          <div className="flex flex-col items-center justify-center">
-            <Paperclip className="h-8 w-8 text-slate-gray/50 mb-2" />
-            <input
-              id="attachment"
-              name="attachment"
-              type="file"
-              onChange={memoizedHandleFileChange}
-              className="w-full text-sm text-slate-gray file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-electric-blue file:text-white hover:file:bg-btn-hover transition-all duration-200"
-              accept=".png,.jpg,.jpeg,.pdf"
-            />
-            <p className="mt-2 text-xs text-slate-gray">PNG, JPG, JPEG, or PDF up to 10MB</p>
+        <div className="group relative border-2 border-dashed border-slate-200 hover:border-blue-400 rounded-xl p-8 bg-slate-50/50 hover:bg-blue-50/30 transition-all duration-200">
+          <div className="flex flex-col items-center justify-center text-center">
+            <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm border border-slate-100 mb-4 group-hover:scale-110 group-hover:bg-blue-100 transition-all duration-300">
+              <Paperclip className="h-5 w-5 text-slate-400 group-hover:text-blue-600 transition-colors" />
+            </div>
+            <p className="text-[13px] font-medium text-slate-700 mb-1">Click to upload or drag and drop</p>
+            <p className="text-[11px] text-slate-500 mb-4">SVG, PNG, JPG or PDF (max. 10MB)</p>
+            
+            <div className="relative">
+              <input
+                id="attachment"
+                name="attachment"
+                type="file"
+                onChange={memoizedHandleFileChange}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                accept=".svg,.png,.jpg,.jpeg,.pdf"
+              />
+              <span className="inline-flex items-center h-8 px-4 text-[12px] font-medium text-slate-700 bg-white border border-slate-200 rounded-md shadow-sm group-hover:border-blue-300 transition-colors pointer-events-none">
+                Select file
+              </span>
+            </div>
           </div>
         </div>
         {formData.attachment_path && (
@@ -269,7 +266,7 @@ export function ComplaintForm({
               href={`/complaints/attachment/${formData.id}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center text-sm text-electric-blue hover:text-btn-hover transition-colors"
+              className="inline-flex items-center text-[12px] font-medium text-blue-600 hover:text-blue-700 transition-colors duration-150"
             >
               <Paperclip className="mr-2 h-4 w-4" />
               View current attachment
@@ -280,16 +277,16 @@ export function ComplaintForm({
 
       {/* Assign To Employee Dropdown */}
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-deep-ocean">Assign To</label>
-        <p className="text-xs text-slate-gray mb-1">Drop Down (Show all employee's name here)</p>
+        <label className="block text-[11px] font-medium text-slate-600">Assign To</label>
+        <p className="text-[11px] text-slate-400 mb-1">Drop Down (Show all employee's name here)</p>
         <Combobox value={selectedEmployee} onChange={handleEmployeeChange}>
           <div className="relative">
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <User className="h-5 w-5 text-slate-gray/60" />
+                <User className="h-4 w-4 text-slate-400" />
               </div>
               <Combobox.Input
-                className="w-full pl-10 pr-10 py-2.5 border border-slate-gray/20 rounded-lg bg-white text-deep-ocean placeholder-slate-gray/50 focus:outline-none focus:ring-2 focus:ring-electric-blue/30 focus:border-transparent transition-all duration-200"
+                className="w-full h-9 pl-9 pr-9 border border-slate-200 rounded-md bg-white text-[13px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/[0.12] hover:border-slate-300 transition-colors duration-150"
                 displayValue={(employee: Employee | null) =>
                   employee ? `${employee.first_name} ${employee.last_name}` : ""
                 }
@@ -297,7 +294,7 @@ export function ComplaintForm({
                 placeholder="Select an employee..."
               />
               <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                <ChevronDown className="h-5 w-5 text-slate-gray/60" />
+                <ChevronDown className="h-4 w-4 text-slate-400" />
               </div>
             </div>
 
@@ -308,9 +305,9 @@ export function ComplaintForm({
               leaveTo="opacity-0"
               afterLeave={() => setEmployeeQuery("")}
             >
-              <Combobox.Options className="absolute z-10 mt-2 w-full overflow-auto rounded-lg bg-white py-2 shadow-lg ring-1 ring-slate-gray/10 focus:outline-none max-h-60">
+              <Combobox.Options className="absolute z-10 mt-2 w-full overflow-auto rounded-md bg-white py-2 border border-slate-200 focus:outline-none max-h-60">
                 {filteredEmployees?.length === 0 && employeeQuery !== "" ? (
-                  <div className="px-4 py-3 text-sm text-slate-gray italic">No employees found</div>
+                  <div className="px-4 py-3 text-[12px] text-slate-500 italic">No employees found</div>
                 ) : (
                   filteredEmployees.map((employee) => (
                     <Combobox.Option
@@ -318,23 +315,23 @@ export function ComplaintForm({
                       value={employee}
                       className={({ active }) =>
                         `relative cursor-pointer select-none py-3 px-4 ${
-                          active ? "bg-electric-blue/10 text-electric-blue" : "text-deep-ocean"
+                          active ? "bg-blue-50 text-blue-700" : "text-slate-700"
                         }`
                       }
                     >
                       {({ selected, active }) => (
                         <div className="flex items-center justify-between">
                           <div className="flex items-center">
-                            <div className="w-8 h-8 rounded-full bg-light-sky flex items-center justify-center text-deep-ocean font-semibold mr-3">
+                            <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-800 font-medium mr-3">
                               {employee.first_name[0]}
                             </div>
                             <div>
-                              <div className="font-medium">
+                              <div className="text-[13px] font-medium">
                                 {employee.first_name} {employee.last_name}
                               </div>
                             </div>
                           </div>
-                          {selected && <Check className={`h-4 w-4 ${active ? "text-electric-blue" : "text-deep-ocean"}`} />}
+                          {selected && <Check className={`h-4 w-4 ${active ? "text-blue-700" : "text-slate-700"}`} />}
                         </div>
                       )}
                     </Combobox.Option>
@@ -347,12 +344,13 @@ export function ComplaintForm({
       </div>
 
       {/* Submit Button */}
-      <div className="flex justify-end pt-4">
+      <div className="flex justify-end pt-5 border-t border-slate-100 mt-6">
         <button
           type="submit"
-          className="inline-flex items-center px-6 py-2.5 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-electric-blue hover:bg-electric-blue/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-electric-blue/50 transition-all duration-200"
+          className="inline-flex items-center gap-2 h-10 px-6 border border-transparent rounded-[8px] text-[13px] font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 shadow-sm hover:shadow-md"
         >
-          {isEditing ? "Update Complaint" : "Create Complaint"}
+          <Check className="w-4 h-4" />
+          {isEditing ? "Update Complaint" : "Create Ticket"}
         </button>
       </div>
     </form>

@@ -103,14 +103,14 @@ type Payment = CustomerData['payments'][0]
 const statusConfig: Record<string, { bg: string; text: string; icon: React.ElementType }> = {
   paid: { bg: "bg-emerald-50", text: "text-emerald-700", icon: CheckCircle },
   pending: { bg: "bg-amber-50", text: "text-amber-700", icon: Clock },
-  overdue: { bg: "bg-red-50", text: "text-red-700", icon: XCircle },
-  draft: { bg: "bg-gray-100", text: "text-gray-600", icon: Clock },
+  overdue: { bg: "bg-rose-50", text: "text-rose-700", icon: XCircle },
+  draft: { bg: "bg-slate-100", text: "text-slate-600", icon: Clock },
   verified: { bg: "bg-emerald-50", text: "text-emerald-700", icon: CheckCircle },
-  open: { bg: "bg-red-50", text: "text-red-700", icon: AlertCircle },
+  open: { bg: "bg-rose-50", text: "text-rose-700", icon: AlertCircle },
   in_progress: { bg: "bg-blue-50", text: "text-blue-700", icon: Clock },
   resolved: { bg: "bg-emerald-50", text: "text-emerald-700", icon: CheckCircle },
-  closed: { bg: "bg-gray-100", text: "text-gray-600", icon: CheckCircle },
-  failed: { bg: "bg-red-50", text: "text-red-700", icon: XCircle },
+  closed: { bg: "bg-slate-100", text: "text-slate-600", icon: CheckCircle },
+  failed: { bg: "bg-rose-50", text: "text-rose-700", icon: XCircle },
 }
 
 export default function CustomerPortalPage() {
@@ -161,43 +161,42 @@ export default function CustomerPortalPage() {
   // Lookup Form Screen
   if (!data) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F1F0E8' }}>
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4">
         <div className="max-w-md w-full mx-4">
           {/* Card */}
-          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+          <div className="bg-white rounded-[10px] shadow-sm border border-slate-200 overflow-hidden">
             {/* Header */}
-            <div className="px-8 pt-8 pb-6 text-center" style={{ backgroundColor: '#89A8B2' }}>
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-white/20 rounded-2xl mb-4">
-                <User className="w-8 h-8 text-white" />
+            <div className="px-8 pt-8 pb-6 text-center border-b border-slate-100 bg-slate-50">
+              <div className="inline-flex items-center justify-center w-14 h-14 bg-blue-50 rounded-[10px] mb-4 border border-blue-200">
+                <User className="w-7 h-7 text-blue-600" />
               </div>
-              <h1 className="text-2xl font-bold text-white">Customer Portal</h1>
-              <p className="text-white/80 text-sm mt-1">View your account details</p>
+              <h1 className="text-[18px] font-medium text-slate-900">Customer Portal</h1>
+              <p className="text-slate-500 text-[12px] mt-1">View your account details</p>
             </div>
 
             {/* Form */}
             <div className="p-8">
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-[12px] font-medium text-slate-700 mb-2">
                     CNIC Number
                   </label>
                   <div className="relative">
-                    <IdCard className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <IdCard className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <input
                       type="text"
                       value={cnic}
                       onChange={(e) => setCnic(formatCnic(e.target.value))}
-                      className="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl text-lg font-mono tracking-wider focus:outline-none focus:ring-2 focus:border-transparent transition-all"
-                      style={{ '--tw-ring-color': '#89A8B2' } as React.CSSProperties}
+                      className="w-full pl-10 pr-4 h-11 border border-slate-200 rounded-md text-[15px] font-mono tracking-wide text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
                       placeholder="0000000000000"
                       maxLength={13}
                     />
                   </div>
-                  <p className="text-xs text-gray-500 mt-2 text-right">{cnic.length}/13 digits</p>
+                  <p className="text-[11px] text-slate-500 mt-2 text-right">{cnic.length}/13 digits</p>
                 </div>
 
                 {error && (
-                  <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-100 rounded-xl text-red-700 text-sm">
+                  <div className="flex items-center gap-2 p-3 bg-rose-50 border border-rose-200 rounded-md text-rose-700 text-[12px]">
                     <AlertCircle className="w-4 h-4 flex-shrink-0" />
                     {error}
                   </div>
@@ -206,8 +205,7 @@ export default function CustomerPortalPage() {
                 <button
                   type="submit"
                   disabled={loading || cnic.length !== 13}
-                  className="w-full py-3.5 text-white font-semibold rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90"
-                  style={{ backgroundColor: '#89A8B2' }}
+                  className="w-full h-11 text-white font-medium text-[13px] rounded-md transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed bg-blue-600 hover:bg-blue-700"
                 >
                   {loading ? (
                     <>
@@ -224,10 +222,10 @@ export default function CustomerPortalPage() {
               </form>
 
               {/* Security Note */}
-              <div className="mt-6 flex items-start gap-3 p-4 rounded-xl" style={{ backgroundColor: '#E5E1DA' }}>
-                <Shield className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: '#89A8B2' }} />
-                <div className="text-xs text-gray-600">
-                  <p className="font-medium text-gray-700 mb-1">Secure Access</p>
+              <div className="mt-6 flex items-start gap-3 p-4 rounded-[10px] border border-slate-200 bg-slate-50">
+                <Shield className="w-4 h-4 flex-shrink-0 mt-0.5 text-blue-600" />
+                <div className="text-[11px] text-slate-500">
+                  <p className="font-medium text-slate-700 mb-1">Secure Access</p>
                   <p>Your CNIC is used only for verification purposes.</p>
                 </div>
               </div>
@@ -255,14 +253,14 @@ export default function CustomerPortalPage() {
   ]
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#F1F0E8' }}>
+    <div className="min-h-screen bg-slate-50">
       {/* White Top Navbar with Logo */}
-      <nav className="bg-white shadow-sm border-b border-gray-100">
-        <div className="max-w-6xl mx-auto px-4 py-2 flex items-center justify-between">
+      <nav className="bg-white border-b border-slate-200">
+        <div className="max-w-[1400px] mx-auto px-4 py-2 flex items-center justify-between">
           <div className="h-10 w-48 flex items-center">
             <NetKhataLogo variant="landscape" />
           </div>
-          <div className="flex items-center gap-2 text-xs text-gray-500">
+          <div className="flex items-center gap-2 text-[11px] text-slate-500">
             <User className="w-3.5 h-3.5" />
             <span className="font-medium">Customer Portal</span>
           </div>
@@ -270,24 +268,24 @@ export default function CustomerPortalPage() {
       </nav>
 
       {/* Customer Info Bar */}
-      <div className="text-white shadow-sm" style={{ backgroundColor: '#89A8B2' }}>
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+      <div className="py-4 px-4">
+        <div className="max-w-[1400px] mx-auto bg-white border border-slate-200 rounded-[10px] p-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-              <User className="w-6 h-6" />
+            <div className="w-12 h-12 bg-blue-50 rounded-md border border-blue-200 flex items-center justify-center">
+              <User className="w-5 h-5 text-blue-600" />
             </div>
             <div>
-              <h1 className="font-bold text-lg">{customer.name}</h1>
-              <p className="text-sm text-white/80">{customer.internet_id}</p>
+              <h1 className="font-medium text-[15px] text-slate-900">{customer.name}</h1>
+              <p className="text-[11px] text-slate-500">{customer.internet_id}</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <span className={`px-3 py-1.5 rounded-lg text-xs font-medium ${customer.is_active ? "bg-emerald-400/20 text-white" : "bg-red-400/20 text-white"}`}>
-              {customer.is_active ? "● Active" : "● Inactive"}
+            <span className={`px-2 py-1 rounded text-[11px] font-medium border ${customer.is_active ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-rose-50 text-rose-700 border-rose-200"}`}>
+              {customer.is_active ? "Active" : "Inactive"}
             </span>
             <button
               onClick={handleLogout}
-              className="flex items-center gap-2 px-4 py-2 text-sm bg-white/10 hover:bg-white/20 rounded-xl transition-colors"
+              className="flex items-center gap-2 h-9 px-4 text-[12px] border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-md transition-colors"
             >
               <LogOut className="w-4 h-4" />
               Exit
@@ -296,13 +294,13 @@ export default function CustomerPortalPage() {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 py-6">
+      <div className="max-w-[1400px] mx-auto px-4 pb-6">
         {/* Summary Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
+          <div className="bg-white rounded-[10px] border border-slate-200 p-4 shadow-sm">
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-sm text-gray-500 mb-1">Total Due</p>
+                <p className="text-[11px] text-slate-500 mb-1 uppercase tracking-[0.06em]">Total Due</p>
                 <p className={`text-2xl font-bold ${data.summary.total_due > 0 ? "text-red-600" : "text-emerald-600"}`}>
                   PKR {data.summary.total_due.toLocaleString()}
                 </p>
@@ -312,21 +310,21 @@ export default function CustomerPortalPage() {
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
+          <div className="bg-white rounded-[10px] border border-slate-200 p-4 shadow-sm">
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-sm text-gray-500 mb-1">Invoices</p>
+                <p className="text-[11px] text-slate-500 mb-1 uppercase tracking-[0.06em]">Invoices</p>
                 <p className="text-2xl font-bold text-gray-900">{data.summary.invoice_count}</p>
               </div>
-              <div className="p-2.5 rounded-xl" style={{ backgroundColor: '#E5E1DA' }}>
-                <FileText className="w-5 h-5" style={{ color: '#89A8B2' }} />
+              <div className="p-2.5 rounded-md bg-blue-50">
+                <FileText className="w-5 h-5 text-blue-600" />
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
+          <div className="bg-white rounded-[10px] border border-slate-200 p-4 shadow-sm">
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-sm text-gray-500 mb-1">Total Paid</p>
+                <p className="text-[11px] text-slate-500 mb-1 uppercase tracking-[0.06em]">Total Paid</p>
                 <p className="text-2xl font-bold text-gray-900">PKR {data.summary.total_paid.toLocaleString()}</p>
               </div>
               <div className="p-2.5 rounded-xl bg-emerald-50">
@@ -334,10 +332,10 @@ export default function CustomerPortalPage() {
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
+          <div className="bg-white rounded-[10px] border border-slate-200 p-4 shadow-sm">
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-sm text-gray-500 mb-1">Open Complaints</p>
+                <p className="text-[11px] text-slate-500 mb-1 uppercase tracking-[0.06em]">Open Complaints</p>
                 <p className="text-2xl font-bold text-gray-900">{data.summary.open_complaints}</p>
               </div>
               <div className={`p-2.5 rounded-xl ${data.summary.open_complaints > 0 ? "bg-amber-50" : "bg-gray-50"}`}>
@@ -348,7 +346,7 @@ export default function CustomerPortalPage() {
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex gap-1 mb-6 p-1 bg-white rounded-xl border border-gray-100 shadow-sm overflow-x-auto">
+        <div className="flex gap-1 mb-6 p-1 bg-white rounded-[10px] border border-slate-200 shadow-sm overflow-x-auto">
           {tabs.map((tab) => {
             const Icon = tab.icon
             const isActive = activeTab === tab.id
@@ -356,11 +354,10 @@ export default function CustomerPortalPage() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all whitespace-nowrap ${isActive
-                    ? "text-white"
-                    : "text-gray-600 hover:bg-gray-50"
+                className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-md font-medium text-[12px] transition-all whitespace-nowrap ${isActive
+                    ? "text-blue-700 bg-blue-50"
+                    : "text-slate-500 hover:bg-slate-50"
                   }`}
-                style={isActive ? { backgroundColor: '#89A8B2' } : {}}
               >
                 <Icon className="w-4 h-4" />
                 {tab.name}
@@ -374,10 +371,10 @@ export default function CustomerPortalPage() {
           {activeTab === "overview" && (
             <div className="grid lg:grid-cols-2 gap-6">
               {/* Personal Info */}
-              <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-                <div className="px-6 py-4 border-b border-gray-100" style={{ backgroundColor: '#B3C8CF20' }}>
-                  <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-                    <User className="w-4 h-4" style={{ color: '#89A8B2' }} />
+              <div className="bg-white rounded-[10px] border border-slate-200 shadow-sm overflow-hidden">
+                <div className="px-6 py-4 border-b border-slate-100 bg-slate-50">
+                  <h3 className="text-[13px] font-medium text-slate-900 flex items-center gap-2">
+                    <User className="w-4 h-4 text-blue-600" />
                     Personal Information
                   </h3>
                 </div>
@@ -387,7 +384,7 @@ export default function CustomerPortalPage() {
                       <Globe className="w-4 h-4" />
                       Internet ID
                     </span>
-                    <span className="font-semibold" style={{ color: '#89A8B2' }}>{customer.internet_id}</span>
+                    <span className="font-semibold text-blue-600">{customer.internet_id}</span>
                   </div>
                   <div className="flex items-center justify-between py-2 border-b border-gray-50">
                     <span className="text-sm text-gray-500 flex items-center gap-2">
@@ -423,10 +420,10 @@ export default function CustomerPortalPage() {
               </div>
 
               {/* Connection Info */}
-              <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-                <div className="px-6 py-4 border-b border-gray-100" style={{ backgroundColor: '#B3C8CF20' }}>
-                  <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-                    <Wifi className="w-4 h-4" style={{ color: '#89A8B2' }} />
+              <div className="bg-white rounded-[10px] border border-slate-200 shadow-sm overflow-hidden">
+                <div className="px-6 py-4 border-b border-slate-100 bg-slate-50">
+                  <h3 className="text-[13px] font-medium text-slate-900 flex items-center gap-2">
+                    <Wifi className="w-4 h-4 text-blue-600" />
                     Connection Details
                   </h3>
                 </div>
@@ -461,10 +458,10 @@ export default function CustomerPortalPage() {
               </div>
 
               {/* Active Packages */}
-              <div className="lg:col-span-2 bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-                <div className="px-6 py-4 border-b border-gray-100" style={{ backgroundColor: '#B3C8CF20' }}>
-                  <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-                    <Package className="w-4 h-4" style={{ color: '#89A8B2' }} />
+              <div className="lg:col-span-2 bg-white rounded-[10px] border border-slate-200 shadow-sm overflow-hidden">
+                <div className="px-6 py-4 border-b border-slate-100 bg-slate-50">
+                  <h3 className="text-[13px] font-medium text-slate-900 flex items-center gap-2">
+                    <Package className="w-4 h-4 text-blue-600" />
                     Active Packages
                   </h3>
                 </div>
@@ -476,11 +473,10 @@ export default function CustomerPortalPage() {
                       {data.packages.map((pkg, idx) => (
                         <div
                           key={idx}
-                          className="p-4 rounded-xl border"
-                          style={{ backgroundColor: '#E5E1DA30', borderColor: '#B3C8CF50' }}
+                          className="p-4 rounded-md border border-slate-200 bg-slate-50"
                         >
                           <h4 className="font-semibold text-gray-900">{pkg.name}</h4>
-                          <p className="text-2xl font-bold mt-2" style={{ color: '#89A8B2' }}>
+                          <p className="text-2xl font-bold mt-2 text-blue-700">
                             PKR {pkg.price.toLocaleString()}
                             <span className="text-sm font-normal text-gray-500">/mo</span>
                           </p>
@@ -495,10 +491,10 @@ export default function CustomerPortalPage() {
           )}
 
           {activeTab === "invoices" && (
-            <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-              <div className="px-6 py-4 border-b border-gray-100" style={{ backgroundColor: '#B3C8CF20' }}>
-                <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-                  <FileText className="w-4 h-4" style={{ color: '#89A8B2' }} />
+            <div className="bg-white rounded-[10px] border border-slate-200 shadow-sm overflow-hidden">
+              <div className="px-6 py-4 border-b border-slate-100 bg-slate-50">
+                <h3 className="text-[13px] font-medium text-slate-900 flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-blue-600" />
                   Recent Invoices
                 </h3>
               </div>
@@ -530,13 +526,12 @@ export default function CustomerPortalPage() {
                                 <p className="text-sm text-red-600">Due: PKR {invoice.remaining.toLocaleString()}</p>
                               )}
                             </div>
-                            <span className={`px-3 py-1 rounded-lg text-xs font-medium ${status.bg} ${status.text}`}>
+                            <span className={`px-2 py-1 rounded text-[11px] font-medium border border-current/20 ${status.bg} ${status.text}`}>
                               {invoice.status}
                             </span>
                             <button
                               onClick={() => handleViewInvoice(invoice.id)}
-                              className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors hover:opacity-80"
-                              style={{ backgroundColor: '#89A8B2', color: 'white' }}
+                              className="flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium rounded-md transition-colors bg-blue-600 text-white hover:bg-blue-700"
                             >
                               <ExternalLink className="w-3.5 h-3.5" />
                               View
@@ -552,10 +547,10 @@ export default function CustomerPortalPage() {
           )}
 
           {activeTab === "payments" && (
-            <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-              <div className="px-6 py-4 border-b border-gray-100" style={{ backgroundColor: '#B3C8CF20' }}>
-                <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-                  <CreditCard className="w-4 h-4" style={{ color: '#89A8B2' }} />
+            <div className="bg-white rounded-[10px] border border-slate-200 shadow-sm overflow-hidden">
+              <div className="px-6 py-4 border-b border-slate-100 bg-slate-50">
+                <h3 className="text-[13px] font-medium text-slate-900 flex items-center gap-2">
+                  <CreditCard className="w-4 h-4 text-blue-600" />
                   Recent Payments
                 </h3>
               </div>
@@ -586,8 +581,8 @@ export default function CustomerPortalPage() {
                             </div>
                           </div>
                           <div className="flex items-center gap-3">
-                            <span className="text-sm text-gray-600 capitalize bg-gray-100 px-3 py-1 rounded-lg">{payment.payment_method}</span>
-                            <span className={`px-3 py-1 rounded-lg text-xs font-medium ${status.bg} ${status.text}`}>
+                            <span className="text-[12px] text-slate-600 capitalize bg-slate-100 px-3 py-1 rounded-md">{payment.payment_method}</span>
+                            <span className={`px-2 py-1 rounded text-[11px] font-medium border border-current/20 ${status.bg} ${status.text}`}>
                               {payment.status}
                             </span>
                           </div>
@@ -601,10 +596,10 @@ export default function CustomerPortalPage() {
           )}
 
           {activeTab === "complaints" && (
-            <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-              <div className="px-6 py-4 border-b border-gray-100" style={{ backgroundColor: '#B3C8CF20' }}>
-                <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4" style={{ color: '#89A8B2' }} />
+            <div className="bg-white rounded-[10px] border border-slate-200 shadow-sm overflow-hidden">
+              <div className="px-6 py-4 border-b border-slate-100 bg-slate-50">
+                <h3 className="text-[13px] font-medium text-slate-900 flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 text-blue-600" />
                   Complaint History
                 </h3>
               </div>
@@ -631,7 +626,7 @@ export default function CustomerPortalPage() {
                               </p>
                             </div>
                           </div>
-                          <span className={`px-3 py-1 rounded-lg text-xs font-medium flex-shrink-0 ${status.bg} ${status.text}`}>
+                          <span className={`px-2 py-1 rounded text-[11px] font-medium border border-current/20 flex-shrink-0 ${status.bg} ${status.text}`}>
                             {complaint.status.replace("_", " ")}
                           </span>
                         </div>
@@ -647,32 +642,32 @@ export default function CustomerPortalPage() {
 
       {/* Payment Detail Modal */}
       {selectedPayment && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4">
+          <div className="bg-white rounded-[10px] border border-slate-200 shadow-xl w-full max-w-md overflow-hidden">
             {/* Modal Header */}
-            <div className="flex items-center justify-between p-5 border-b border-gray-100" style={{ backgroundColor: '#89A8B2' }}>
+            <div className="flex items-center justify-between p-4 border-b border-slate-100 bg-slate-50">
               <div className="flex items-center gap-3">
-                <CreditCard className="w-5 h-5 text-white" />
-                <h3 className="text-lg font-semibold text-white">Payment Details</h3>
+                <CreditCard className="w-4 h-4 text-blue-600" />
+                <h3 className="text-[13px] font-medium text-slate-900">Payment Details</h3>
               </div>
               <button
                 onClick={() => setSelectedPayment(null)}
-                className="p-1.5 hover:bg-white/20 rounded-lg transition-colors"
+                className="h-8 w-8 inline-flex items-center justify-center rounded-md border border-slate-200 text-slate-500 hover:bg-white hover:text-slate-700 transition-colors"
               >
-                <X className="w-5 h-5 text-white" />
+                <X className="w-4 h-4" />
               </button>
             </div>
 
             {/* Modal Body */}
             <div className="p-5 space-y-4">
               {/* Amount & Status */}
-              <div className="text-center pb-4 border-b border-gray-100">
-                <p className="text-3xl font-bold text-gray-900">PKR {selectedPayment.amount.toLocaleString()}</p>
+              <div className="text-center pb-4 border-b border-slate-100">
+                <p className="text-[28px] font-semibold text-slate-900">PKR {selectedPayment.amount.toLocaleString()}</p>
                 <div className="mt-2">
                   {(() => {
                     const status = statusConfig[selectedPayment.status] || statusConfig.pending
                     return (
-                      <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${status.bg} ${status.text}`}>
+                      <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded text-[11px] font-medium border border-current/20 ${status.bg} ${status.text}`}>
                         <status.icon className="w-4 h-4" />
                         {selectedPayment.status.charAt(0).toUpperCase() + selectedPayment.status.slice(1)}
                       </span>
@@ -683,78 +678,78 @@ export default function CustomerPortalPage() {
 
               {/* Details Grid */}
               <div className="space-y-3">
-                <div className="flex items-center justify-between py-2 border-b border-gray-50">
-                  <span className="text-sm text-gray-500 flex items-center gap-2">
+                <div className="flex items-center justify-between py-2 border-b border-slate-100">
+                  <span className="text-[12px] text-slate-500 flex items-center gap-2">
                     <Calendar className="w-4 h-4" />
                     Payment Date
                   </span>
-                  <span className="font-medium text-gray-900">
+                  <span className="font-medium text-[12px] text-slate-900">
                     {selectedPayment.payment_date ? new Date(selectedPayment.payment_date).toLocaleString() : "—"}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between py-2 border-b border-gray-50">
-                  <span className="text-sm text-gray-500 flex items-center gap-2">
+                <div className="flex items-center justify-between py-2 border-b border-slate-100">
+                  <span className="text-[12px] text-slate-500 flex items-center gap-2">
                     <CreditCard className="w-4 h-4" />
                     Payment Method
                   </span>
-                  <span className="font-medium text-gray-900 capitalize">{selectedPayment.payment_method}</span>
+                  <span className="font-medium text-[12px] text-slate-900 capitalize">{selectedPayment.payment_method}</span>
                 </div>
 
                 {selectedPayment.invoice_number && (
-                  <div className="flex items-center justify-between py-2 border-b border-gray-50">
-                    <span className="text-sm text-gray-500 flex items-center gap-2">
+                  <div className="flex items-center justify-between py-2 border-b border-slate-100">
+                    <span className="text-[12px] text-slate-500 flex items-center gap-2">
                       <Receipt className="w-4 h-4" />
                       Invoice
                     </span>
-                    <span className="font-medium text-gray-900">{selectedPayment.invoice_number}</span>
+                    <span className="font-medium text-[12px] text-slate-900">{selectedPayment.invoice_number}</span>
                   </div>
                 )}
 
                 {selectedPayment.bank_account && (
-                  <div className="flex items-center justify-between py-2 border-b border-gray-50">
-                    <span className="text-sm text-gray-500 flex items-center gap-2">
+                  <div className="flex items-center justify-between py-2 border-b border-slate-100">
+                    <span className="text-[12px] text-slate-500 flex items-center gap-2">
                       <Building className="w-4 h-4" />
                       Bank
                     </span>
-                    <span className="font-medium text-gray-900">{selectedPayment.bank_account}</span>
+                    <span className="font-medium text-[12px] text-slate-900">{selectedPayment.bank_account}</span>
                   </div>
                 )}
 
                 {selectedPayment.transaction_id && (
-                  <div className="flex items-center justify-between py-2 border-b border-gray-50">
-                    <span className="text-sm text-gray-500 flex items-center gap-2">
+                  <div className="flex items-center justify-between py-2 border-b border-slate-100">
+                    <span className="text-[12px] text-slate-500 flex items-center gap-2">
                       <Hash className="w-4 h-4" />
                       Transaction ID
                     </span>
-                    <span className="font-medium font-mono text-sm text-gray-900">{selectedPayment.transaction_id}</span>
+                    <span className="font-medium font-mono text-[12px] text-slate-900">{selectedPayment.transaction_id}</span>
                   </div>
                 )}
 
                 {selectedPayment.failure_reason && (
-                  <div className="p-3 bg-red-50 rounded-lg border border-red-100">
-                    <p className="text-sm font-medium text-red-700 mb-1">Failure Reason</p>
-                    <p className="text-sm text-red-600">{selectedPayment.failure_reason}</p>
+                  <div className="p-3 bg-rose-50 rounded-md border border-rose-200">
+                    <p className="text-[12px] font-medium text-rose-700 mb-1">Failure Reason</p>
+                    <p className="text-[12px] text-rose-700">{selectedPayment.failure_reason}</p>
                   </div>
                 )}
               </div>
 
               {/* Payment Proof */}
               {selectedPayment.payment_proof && (
-                <div className="pt-3 border-t border-gray-100">
-                  <p className="text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
-                    <Image className="w-4 h-4" style={{ color: '#89A8B2' }} />
+                <div className="pt-3 border-t border-slate-100">
+                  <p className="text-[12px] font-medium text-slate-700 mb-3 flex items-center gap-2">
+                    <Image className="w-4 h-4 text-blue-600" />
                     Payment Proof
                   </p>
-                  <div className="rounded-xl overflow-hidden border border-gray-200">
+                  <div className="rounded-md overflow-hidden border border-slate-200">
                     <img
                       src={selectedPayment.payment_proof}
                       alt="Payment Proof"
-                      className="w-full max-h-64 object-contain bg-gray-50"
+                      className="w-full max-h-64 object-contain bg-slate-50"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement
                         target.style.display = 'none'
-                        target.parentElement!.innerHTML = '<p class="p-4 text-center text-gray-500 text-sm">Unable to load image</p>'
+                        target.parentElement!.innerHTML = '<p class="p-4 text-center text-slate-500 text-sm">Unable to load image</p>'
                       }}
                     />
                   </div>
@@ -762,8 +757,7 @@ export default function CustomerPortalPage() {
                     href={selectedPayment.payment_proof}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-2 flex items-center justify-center gap-2 text-sm font-medium py-2 rounded-lg transition-colors"
-                    style={{ color: '#89A8B2' }}
+                    className="mt-2 flex items-center justify-center gap-2 text-[12px] font-medium py-2 rounded-md text-blue-600 hover:bg-blue-50 transition-colors"
                   >
                     <ExternalLink className="w-4 h-4" />
                     Open in New Tab
@@ -773,11 +767,10 @@ export default function CustomerPortalPage() {
             </div>
 
             {/* Modal Footer */}
-            <div className="px-5 py-4 border-t border-gray-100 bg-gray-50">
+            <div className="px-5 py-4 border-t border-slate-100 bg-slate-50">
               <button
                 onClick={() => setSelectedPayment(null)}
-                className="w-full py-2.5 font-medium rounded-xl transition-colors text-white hover:opacity-90"
-                style={{ backgroundColor: '#89A8B2' }}
+                className="w-full h-9 font-medium text-[12px] rounded-md transition-colors text-white bg-blue-600 hover:bg-blue-700"
               >
                 Close
               </button>

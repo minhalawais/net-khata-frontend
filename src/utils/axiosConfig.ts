@@ -7,8 +7,8 @@ import { removeToken, getToken, getRefreshToken } from "./auth.ts";
 const getBaseURL = () => {
   return process.env.REACT_APP_API_BASE_URL ||
     (process.env.NODE_ENV === "development"
-      ? "http://localhost:8000"  // Development URL
-      : "http://localhost:8000"                       // Production: Relative path
+      ? "https://netkhata.com.pk/api"  // Development URL
+      : "https://netkhata.com.pk/api"                       // Production: Relative path
     );
 };
 

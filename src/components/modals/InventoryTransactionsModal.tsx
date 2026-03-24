@@ -89,11 +89,11 @@ export const InventoryTransactionsModal: React.FC<InventoryTransactionsModalProp
   const getTransactionTypeColor = (type: string) => {
     switch (type.toLowerCase()) {
       case "add":
-        return "bg-[#D1FAE5] text-[#10B981]"
+        return "bg-emerald-50 text-emerald-700 border-emerald-200"
       case "remove":
-        return "bg-[#FEE2E2] text-[#EF4444]"
+        return "bg-rose-50 text-rose-600 border-rose-200"
       default:
-        return "bg-[#EBF5FF] text-[#3A86FF]"
+        return "bg-blue-50 text-blue-700 border-blue-200"
     }
   }
 
@@ -108,89 +108,101 @@ export const InventoryTransactionsModal: React.FC<InventoryTransactionsModalProp
     }
   }
 
+  const footer = (
+    <button
+      type="button"
+      onClick={onClose}
+      className="h-9 px-4 text-[13px] font-medium text-slate-600 border border-slate-200 rounded-md hover:bg-slate-50 transition-colors duration-150"
+    >
+      Done
+    </button>
+  )
+
   return (
-    <Modal isVisible={isVisible} onClose={onClose} title="Inventory Transactions">
-      <div className="mb-6">
-        <h3 className="text-lg font-semibold mb-3 text-[#2A5C8A]">Add New Transaction</h3>
+    <Modal isVisible={isVisible} onClose={onClose} title="Inventory Transactions" footer={footer}>
+      <div className="mb-6 bg-slate-50 border border-slate-200 rounded-[10px] p-4">
+        <div className="flex items-center gap-2 pl-2.5 border-l-2 border-slate-300 mb-4">
+          <span className="text-[10px] font-medium text-slate-400 uppercase tracking-[0.08em]">Add New Transaction</span>
+        </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-[#4A5568] mb-1">Transaction Type</label>
+            <label className="block text-[11px] font-medium text-slate-600 mb-1.5">Transaction Type</label>
             <select
               name="transaction_type"
               value={newTransaction.transaction_type}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 rounded-lg border border-[#EBF5FF] text-[#4A5568] focus:border-[#3A86FF] focus:ring-2 focus:ring-[#3A86FF]/20 transition-colors"
+              className="w-full h-9 px-3 rounded-md border border-slate-200 text-[13px] text-slate-700 bg-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/[0.12] hover:border-slate-300 transition-colors duration-150"
               required
             >
               <option value="">Select type</option>
-              <option value="add" className="text-[#10B981]">
+              <option value="add">
                 Add
               </option>
-              <option value="remove" className="text-[#EF4444]">
+              <option value="remove">
                 Remove
               </option>
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-[#4A5568] mb-1">Quantity</label>
+            <label className="block text-[11px] font-medium text-slate-600 mb-1.5">Quantity</label>
             <input
               type="number"
               name="quantity"
               value={newTransaction.quantity}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 rounded-lg border border-[#EBF5FF] text-[#4A5568] focus:border-[#3A86FF] focus:ring-2 focus:ring-[#3A86FF]/20 transition-colors"
+              className="w-full h-9 px-3 rounded-md border border-slate-200 text-[13px] text-slate-700 bg-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/[0.12] hover:border-slate-300 transition-colors duration-150"
               required
               min="1"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-[#4A5568] mb-1">Notes</label>
+            <label className="block text-[11px] font-medium text-slate-600 mb-1.5">Notes</label>
             <textarea
               name="notes"
               value={newTransaction.notes}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 rounded-lg border border-[#EBF5FF] text-[#4A5568] focus:border-[#3A86FF] focus:ring-2 focus:ring-[#3A86FF]/20 transition-colors resize-y"
+              className="w-full px-3 py-2.5 rounded-md border border-slate-200 text-[13px] text-slate-700 bg-white placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/[0.12] hover:border-slate-300 transition-colors duration-150 resize-none"
               rows={3}
               placeholder="Enter transaction notes"
             />
           </div>
           <button
             type="submit"
-            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-[#3A86FF] hover:bg-[#2563EB] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#3A86FF] transition-colors"
+            className="inline-flex justify-center h-9 px-4 text-[13px] font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500/[0.12] transition-colors duration-150"
           >
             Add Transaction
           </button>
         </form>
       </div>
       <div>
-        <h3 className="text-lg font-semibold mb-3 text-[#2A5C8A]">Transaction History</h3>
+        <h3 className="text-[13px] font-medium mb-3 text-slate-900">Transaction History</h3>
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-[#EBF5FF]">
-            <thead className="bg-[#EBF5FF]">
+          <table className="min-w-full border-collapse">
+            <thead className="bg-slate-50 border-b border-slate-200">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-[#2A5C8A] uppercase tracking-wider">
+                <th className="px-4 py-2.5 text-left text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em]">
                   Type
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-[#2A5C8A] uppercase tracking-wider">
+                <th className="px-4 py-2.5 text-left text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em]">
                   Performed By
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-[#2A5C8A] uppercase tracking-wider">
+                <th className="px-4 py-2.5 text-left text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em]">
                   Date
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-[#2A5C8A] uppercase tracking-wider">
+                <th className="px-4 py-2.5 text-left text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em]">
                   Quantity
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-[#2A5C8A] uppercase tracking-wider">
+                <th className="px-4 py-2.5 text-left text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em]">
                   Notes
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-[#EBF5FF]">
+            <tbody className="bg-white">
               {transactions.map((transaction) => (
-                <tr key={transaction.id} className="hover:bg-[#F8FAFC]">
-                  <td className="px-6 py-4 whitespace-nowrap">
+                <tr key={transaction.id} className="border-b border-slate-100 hover:bg-blue-50/40 transition-colors duration-100">
+                  <td className="px-4 py-3 whitespace-nowrap">
                     <span
-                      className={`px-2 py-1 inline-flex items-center text-xs leading-5 font-semibold rounded-full ${getTransactionTypeColor(
+                      className={`px-2 py-0.5 inline-flex items-center text-[10px] font-medium rounded border ${getTransactionTypeColor(
                         transaction.transaction_type,
                       )}`}
                     >
@@ -198,17 +210,17 @@ export const InventoryTransactionsModal: React.FC<InventoryTransactionsModalProp
                       <span className="ml-1">{transaction.transaction_type}</span>
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4A5568]">{transaction.performed_by}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4A5568]">
+                  <td className="px-4 py-3 whitespace-nowrap text-[13px] text-slate-700">{transaction.performed_by}</td>
+                  <td className="px-4 py-3 whitespace-nowrap text-[13px] text-slate-600 tabular-nums">
                     {new Date(transaction.performed_at).toLocaleString()}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4A5568]">{transaction.quantity}</td>
-                  <td className="px-6 py-4 text-sm text-[#4A5568]">{transaction.notes}</td>
+                  <td className="px-4 py-3 whitespace-nowrap text-[13px] text-slate-600 tabular-nums">{transaction.quantity}</td>
+                  <td className="px-4 py-3 text-[13px] text-slate-600">{transaction.notes}</td>
                 </tr>
               ))}
               {transactions.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-6 py-4 text-center text-sm text-[#4A5568]">
+                  <td colSpan={5} className="px-4 py-6 text-center text-[13px] text-slate-400">
                     No transactions found
                   </td>
                 </tr>

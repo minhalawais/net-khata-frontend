@@ -5,17 +5,8 @@ import { useState, useEffect, useMemo } from "react"
 import { CSVLink } from "react-csv"
 import type { ColumnDef, SortingState } from "@tanstack/react-table"
 import {
-  Plus,
-  Pencil,
-  Trash2,
-  Check,
-  CheckCircle2,
-  XCircle,
-  LayoutDashboard,
-  ChevronRight,
-  FileText,
-  Eye,
-  Share2,
+  Plus, Pencil, Trash2, Check, CheckCircle2, XCircle,
+  LayoutDashboard, ChevronRight, FileText, Eye, Share2,
 } from "lucide-react"
 import { Table } from "./table/invoiceTable.tsx"
 import { Modal } from "./modal.tsx"
@@ -39,39 +30,35 @@ interface CRUDPageProps<T> {
   refreshTrigger?: number
 }
 
+/* ── AMOUNT FORMATTER: PKR K/M abbreviation ── */
+const formatAmount = (val: number) => {
+  if (val >= 1_000_000) return `PKR ${(val / 1_000_000).toFixed(2)}M`
+  if (val >= 1_000) return `PKR ${(val / 1_000).toFixed(1)}k`
+  return `PKR ${Math.round(val).toLocaleString()}`
+}
+
 export function CRUDPage<T extends { id: string }>({
-  title,
-  endpoint,
-  columns,
-  FormComponent,
-  customHeaderButton,
-  refreshTrigger,
+  title, endpoint, columns, FormComponent, customHeaderButton, refreshTrigger,
 }: CRUDPageProps<T>) {
   const [data, setData] = useState<T[]>([])
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [editingItem, setEditingItem] = useState<T | null>(null)
   const [formData, setFormData] = useState<Partial<T>>({})
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [isSidebarHovered, setIsSidebarHovered] = useState(false)
   const [selectedRows, setSelectedRows] = useState<string[]>([])
   const [isLoading, setIsLoading] = useState(false)
-  const [stats, setStats] = useState({
-    total: 0,
-    total_amount: 0,
-    paid: 0,
-    paid_amount: 0,
-    pending: 0,
-    pending_amount: 0,
-  })
+  const [stats, setStats] = useState({ total: 0, total_amount: 0, paid: 0, paid_amount: 0, pending: 0, pending_amount: 0 })
   const [pageIndex, setPageIndex] = useState(0)
   const [pageSize, setPageSize] = useState(20)
   const [totalCount, setTotalCount] = useState<number>(0)
   const [sorting, setSorting] = useState<SortingState>([])
   const [search, setSearch] = useState<string>("")
-  // Add loading states for view and share operations
   const [loadingViewId, setLoadingViewId] = useState<string | null>(null)
   const [loadingShareId, setLoadingShareId] = useState<string | null>(null)
-  // Unified payment modal state
   const [isUnifiedPaymentModalVisible, setIsUnifiedPaymentModalVisible] = useState(false)
+
+  const sidebarExpanded = isSidebarOpen || isSidebarHovered
 
   useEffect(() => {
     fetchData()
@@ -83,26 +70,18 @@ export function CRUDPage<T extends { id: string }>({
   const fetchStats = async () => {
     try {
       const token = getToken()
-      const res = await axiosInstance.get(`/${endpoint}/summary`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      const res = await axiosInstance.get(`/${endpoint}/summary`, { headers: { Authorization: `Bearer ${token}` } })
       setStats({
-        total: res.data.total ?? 0,
-        total_amount: res.data.total_amount ?? 0,
-        paid: res.data.paid ?? 0,
-        paid_amount: res.data.paid_amount ?? 0,
-        pending: res.data.pending ?? 0,
-        pending_amount: res.data.pending_amount ?? 0,
+        total: res.data.total ?? 0, total_amount: res.data.total_amount ?? 0,
+        paid: res.data.paid ?? 0, paid_amount: res.data.paid_amount ?? 0,
+        pending: res.data.pending ?? 0, pending_amount: res.data.pending_amount ?? 0,
       })
     } catch {
-      // best-effort fallback using loaded page (may be incomplete)
       setStats((prev) => ({
+        ...prev,
         total: totalCount || prev.total,
-        total_amount: prev.total_amount,
         paid: data.filter((item: any) => item.status === "paid").length,
-        paid_amount: prev.paid_amount,
         pending: data.filter((item: any) => item.status === "pending").length,
-        pending_amount: prev.pending_amount,
       }))
     }
   }
@@ -111,37 +90,22 @@ export function CRUDPage<T extends { id: string }>({
     setIsLoading(true)
     try {
       const token = getToken()
-      // try server page endpoint first
       const res = await axiosInstance.get(`/${endpoint}/page`, {
         headers: { Authorization: `Bearer ${token}` },
-        params: {
-          page: pageIndex + 1,
-          page_size: pageSize,
-          sort: buildSortQuery(sorting),
-          q: search || undefined,
-        },
+        params: { page: pageIndex + 1, page_size: pageSize, sort: buildSortQuery(sorting), q: search || undefined },
       })
       const items = res.data.items ?? []
       setData(items)
       setTotalCount(Number(res.data.total ?? items.length))
-    } catch (err: any) {
-      // fallback: legacy list endpoint
+    } catch {
       try {
         const token = getToken()
-        const response = await axiosInstance.get(`/${endpoint}/list`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
+        const response = await axiosInstance.get(`/${endpoint}/list`, { headers: { Authorization: `Bearer ${token}` } })
         const all = response.data ?? []
-        // emulate pagination on client as a fallback
         setTotalCount(all.length)
-        const start = pageIndex * pageSize
-        const slice = all.slice(start, start + pageSize)
-        setData(slice)
+        setData(all.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize))
       } catch (error) {
-        console.error(`Failed to fetch ${title}`, error)
-        toast.error(`Failed to fetch ${title}`, {
-          style: { background: "#FEE2E2", color: "#EF4444" },
-        })
+        toast.error(`Failed to fetch ${title}`)
       }
     } finally {
       setIsLoading(false)
@@ -149,45 +113,26 @@ export function CRUDPage<T extends { id: string }>({
   }
 
   const showModal = (item: T | null) => {
-    setEditingItem(item)
-    setFormData(item || {})
-    setIsModalVisible(true)
+    setEditingItem(item); setFormData(item || {}); setIsModalVisible(true)
   }
-
   const handleCancel = () => {
-    setIsModalVisible(false)
-    setEditingItem(null)
-    setFormData({})
+    setIsModalVisible(false); setEditingItem(null); setFormData({})
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+    e.preventDefault(); setIsLoading(true)
     try {
       const token = getToken()
       if (editingItem) {
-        await axiosInstance.put(`/${endpoint}/update/${editingItem.id}`, formData, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        toast.success(`${title} updated successfully`, {
-          style: { background: "#D1FAE5", color: "#10B981" },
-        })
+        await axiosInstance.put(`/${endpoint}/update/${editingItem.id}`, formData, { headers: { Authorization: `Bearer ${token}` } })
+        toast.success(`${title} updated successfully`)
       } else {
-        await axiosInstance.post(`/${endpoint}/add`, formData, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        toast.success(`${title} added successfully`, {
-          style: { background: "#D1FAE5", color: "#10B981" },
-        })
+        await axiosInstance.post(`/${endpoint}/add`, formData, { headers: { Authorization: `Bearer ${token}` } })
+        toast.success(`${title} added successfully`)
       }
-      await fetchData()
-      await fetchStats()
-      handleCancel()
-    } catch (error) {
-      console.error("Operation failed", error)
-      toast.error("Operation failed", {
-        style: { background: "#FEE2E2", color: "#EF4444" },
-      })
+      await fetchData(); await fetchStats(); handleCancel()
+    } catch {
+      toast.error("Operation failed")
     } finally {
       setIsLoading(false)
     }
@@ -198,19 +143,11 @@ export function CRUDPage<T extends { id: string }>({
     try {
       setIsLoading(true)
       const token = getToken()
-      await axiosInstance.delete(`/${endpoint}/delete/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      toast.success(`${title} deleted successfully`, {
-        style: { background: "#D1FAE5", color: "#10B981" },
-      })
-      await fetchData()
-      await fetchStats()
-    } catch (error) {
-      console.error("Delete operation failed", error)
-      toast.error("Delete operation failed", {
-        style: { background: "#FEE2E2", color: "#EF4444" },
-      })
+      await axiosInstance.delete(`/${endpoint}/delete/${id}`, { headers: { Authorization: `Bearer ${token}` } })
+      toast.success(`${title} deleted successfully`)
+      await fetchData(); await fetchStats()
+    } catch {
+      toast.error("Delete operation failed")
     } finally {
       setIsLoading(false)
     }
@@ -221,166 +158,78 @@ export function CRUDPage<T extends { id: string }>({
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen((prev) => !prev)
-  }
+  const toggleSidebar = () => setIsSidebarOpen((prev) => !prev)
 
-  // Enhanced handleViewInvoice with loading and timeout
   const handleViewInvoice = async (invoice: any) => {
     setLoadingViewId(invoice.id)
-
-    // Create a timeout promise
-    const timeoutPromise = new Promise((_, reject) => {
-      setTimeout(() => reject(new Error('Request timeout after 50 seconds')), 50000)
-    });
-
-    // Create the actual request promise
-    const viewPromise = new Promise(async (resolve, reject) => {
-      try {
-        const token = getToken()
-        // Verify the invoice exists and is accessible
-        await axiosInstance.get(`/${endpoint}/${invoice.id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-          timeout: 50000
-        })
-        resolve(true)
-      } catch (error) {
-        reject(error)
-      }
-    })
-
+    const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 50000))
     try {
-      // Race between the request and timeout
-      await Promise.race([viewPromise, timeoutPromise])
-
-      // If we get here, the request was successful within timeout
-      window.open(`/${endpoint}/${invoice.id}`, "_blank")
-      toast.success("Invoice opened successfully", {
-        style: { background: "#D1FAE5", color: "#10B981" },
-      })
+      await Promise.race([
+        (async () => {
+          const token = getToken()
+          await axiosInstance.get(`/${endpoint}/${invoice.id}`, { headers: { Authorization: `Bearer ${token}` }, timeout: 50000 })
+          window.open(`/${endpoint}/${invoice.id}`, "_blank")
+        })(),
+        timeoutPromise,
+      ])
+      toast.success("Invoice opened successfully")
     } catch (error: any) {
-      console.error("Failed to view invoice", error)
-      const errorMessage = error.message === 'Request timeout after 50 seconds'
-        ? "Request timeout. Please try again."
-        : "Failed to load invoice. Please try again."
-
-      toast.error(errorMessage, {
-        style: { background: "#FEE2E2", color: "#EF4444" },
-      })
+      toast.error(error.message === 'timeout' ? "Request timeout. Please try again." : "Failed to load invoice. Please try again.")
     } finally {
       setLoadingViewId(null)
     }
   }
 
-  // Enhanced handleWhatsAppShare with loading and timeout
-  // Enhanced handleWhatsAppShare with loading and timeout
   const handleWhatsAppShare = async (invoice: any) => {
     setLoadingShareId(invoice.id)
-
-    // Create a timeout promise
-    const timeoutPromise = new Promise((_, reject) => {
-      setTimeout(() => reject(new Error('Request timeout after 50 seconds')), 50000)
-    });
-
-    // Create the actual request promise
-    const sharePromise = new Promise(async (resolve, reject) => {
-      try {
-        // Check both phone numbers
-        const phoneNumber1 = invoice.customer_phone || invoice.phone_1;
-        const phoneNumber2 = invoice.phone_2;
-
-        if (!phoneNumber1 && !phoneNumber2) {
-          reject(new Error("Customer phone number not available"))
-          return
-        }
-
-        // Use phone number 1 if available, otherwise use phone number 2
-        const phoneNumberToUse = phoneNumber1 || phoneNumber2;
-
-        // Normalize phone number
-        let phoneNumber = phoneNumberToUse.replace(/\D/g, "") // remove all non-digits
-
-        if (phoneNumber.startsWith("00")) {
-          phoneNumber = phoneNumber.substring(2) // remove leading 00
-        }
-
-        if (phoneNumber.startsWith("+92")) {
-          phoneNumber = phoneNumber.substring(1) // +92XXXXXXXXXX → 92XXXXXXXXXX
-        } else if (phoneNumber.startsWith("92")) {
-          // already correct
-        } else if (phoneNumber.startsWith("0")) {
-          phoneNumber = "92" + phoneNumber.substring(1) // 03XXXXXXXXX → 92XXXXXXXXXX
-        } else if (phoneNumber.startsWith("3")) {
-          phoneNumber = "92" + phoneNumber // 3XXXXXXXXX → 92XXXXXXXXXX
-        }
-
-        // Verify invoice is accessible first
-        const token = getToken()
-        await axiosInstance.get(`/${endpoint}/${invoice.id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-          timeout: 50000
-        })
-
-        // Public invoice link
-        const publicInvoiceUrl = `${window.location.origin}/public/invoice/${invoice.id}`
-
-        // Formatted English-only message
-        const message = `Hello ${invoice.customer_name},
-  
-Your invoice #${invoice.invoice_number} is now available.
-
-📋 Invoice Details:
-• Amount: PKR ${Number.parseFloat(invoice.total_amount).toFixed(2)}
-• Due Date: ${new Date(invoice.due_date).toLocaleDateString()}
-• Status: ${invoice.status}
-
-📄 View your complete invoice here:
-${publicInvoiceUrl}
-
-Please review your invoice and make the payment if pending.
-
-Thank you for choosing Net Khata Communications!`
-
-        // WhatsApp URL
-        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`
-
-        // Open in new tab
-        window.open(whatsappUrl, "_blank")
-        resolve(true)
-      } catch (error) {
-        reject(error)
-      }
-    })
-
+    const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 50000))
     try {
-      // Race between the request and timeout
-      await Promise.race([sharePromise, timeoutPromise])
-
-      toast.success("Invoice shared via WhatsApp", {
-        style: { background: "#D1FAE5", color: "#10B981" },
-      })
+      await Promise.race([
+        (async () => {
+          const phoneNumber1 = invoice.customer_phone || invoice.phone_1
+          const phoneNumber2 = invoice.phone_2
+          if (!phoneNumber1 && !phoneNumber2) throw new Error("Customer phone number not available")
+          let phone = (phoneNumber1 || phoneNumber2).replace(/\D/g, "")
+          if (phone.startsWith("00")) phone = phone.substring(2)
+          if (phone.startsWith("+92")) phone = phone.substring(1)
+          else if (!phone.startsWith("92")) {
+            if (phone.startsWith("0")) phone = "92" + phone.substring(1)
+            else if (phone.startsWith("3")) phone = "92" + phone
+          }
+          const token = getToken()
+          await axiosInstance.get(`/${endpoint}/${invoice.id}`, { headers: { Authorization: `Bearer ${token}` }, timeout: 50000 })
+          const publicInvoiceUrl = `${window.location.origin}/public/invoice/${invoice.id}`
+          const message = `Hello ${invoice.customer_name},\n\nYour invoice #${invoice.invoice_number} is now available.\n\n📋 Invoice Details:\n• Amount: PKR ${Number.parseFloat(invoice.total_amount).toFixed(2)}\n• Due Date: ${new Date(invoice.due_date).toLocaleDateString()}\n• Status: ${invoice.status}\n\n📄 View your complete invoice here:\n${publicInvoiceUrl}\n\nPlease review your invoice and make the payment if pending.\n\nThank you for choosing Net Khata Communications!`
+          window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, "_blank")
+        })(),
+        timeoutPromise,
+      ])
+      toast.success("Invoice shared via WhatsApp")
     } catch (error: any) {
-      console.error("Failed to share invoice", error)
-
-      let errorMessage = "Failed to share invoice. Please try again."
-
-      if (error?.message === 'Request timeout after 50 seconds') {
-        errorMessage = "Request timeout. Please try again."
-      } else if (error?.message === "Customer phone number not available") {
-        errorMessage = "Customer phone number not available"
-      } else if (error?.response?.status === 404) {
-        errorMessage = "Invoice not found or not accessible"
-      } else if (error?.response?.status === 401) {
-        errorMessage = "Authentication failed. Please login again."
-      }
-
-      toast.error(errorMessage, {
-        style: { background: "#FEE2E2", color: "#EF4444" },
-      })
+      if (error.message === 'timeout') toast.error("Request timeout. Please try again.")
+      else if (error.message === "Customer phone number not available") toast.error("Customer phone number not available")
+      else if (error?.response?.status === 404) toast.error("Invoice not found or not accessible")
+      else toast.error("Failed to share invoice. Please try again.")
     } finally {
       setLoadingShareId(null)
     }
   }
+
+  /* ── MODAL FOOTER ── */
+  const modalFooter = (
+    <>
+      <button type="button" onClick={handleCancel}
+        className="px-4 py-2 text-[13px] font-medium text-slate-600 border border-slate-200 rounded-md hover:bg-slate-50 transition-colors duration-150">
+        Cancel
+      </button>
+      <button type="submit" form="invoice-form" disabled={isLoading}
+        className="px-4 py-2 text-[13px] font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors duration-150 flex items-center gap-2">
+        {isLoading ? "Processing..." : editingItem
+          ? <><Check className="w-4 h-4" /> Update {title}</>
+          : <><Plus className="w-4 h-4" /> Create {title}</>}
+      </button>
+    </>
+  )
 
   const memoizedColumns = useMemo(() => {
     return [
@@ -389,49 +238,17 @@ Thank you for choosing Net Khata Communications!`
         header: "View",
         cell: (info: any) => {
           const invoice = info.row.original
-          const isLoading = loadingViewId === invoice.id
-
+          const loading = loadingViewId === invoice.id
           return (
-            <div className="flex justify-center">
-              <button
-                onClick={() => handleViewInvoice(invoice)}
-                disabled={isLoading}
-                className={`flex items-center gap-2 px-4 py-2 bg-electric-blue text-white rounded-lg hover:bg-btn-hover transition-colors duration-200 text-sm shadow-sm ${isLoading ? "opacity-50 cursor-not-allowed" : ""
-                  }`}
-                title="View Invoice"
-              >
-                {isLoading ? (
-                  <>
-                    <svg
-                      className="animate-spin h-4 w-4 text-white"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
-                    Loading...
-                  </>
-                ) : (
-                  <>
-                    <Eye className="w-4 h-4" />
-                    View Invoice
-                  </>
-                )}
-              </button>
-            </div>
+            /* ── VIEW INVOICE: ghost button with label ── */
+            <button
+              onClick={() => handleViewInvoice(invoice)}
+              disabled={loading}
+              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-[12px] font-medium text-slate-600 border border-slate-200 rounded-md hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 disabled:opacity-60 disabled:cursor-not-allowed transition-colors duration-150"
+            >
+              <Eye className="w-4 h-4" />
+              {loading ? "Loading..." : "View"}
+            </button>
           )
         },
       },
@@ -439,79 +256,40 @@ Thank you for choosing Net Khata Communications!`
         header: "Share",
         cell: (info: any) => {
           const invoice = info.row.original
-          console.log('Invoice: ', invoice)
-          const isLoading = loadingShareId === invoice.id
-
-          // Check both phone numbers
-          const phoneNumber1 = invoice.customer_phone || invoice.phone_1;
-          const phoneNumber2 = invoice.phone_2;
-          const hasPhoneNumber = !!(phoneNumber1 || phoneNumber2);
-
+          const loading = loadingShareId === invoice.id
+          const hasPhone = !!(invoice.customer_phone || invoice.phone_1 || invoice.phone_2)
           return (
-            <div className="flex justify-center">
-              <button
-                onClick={() => handleWhatsAppShare(invoice)}
-                disabled={isLoading || !hasPhoneNumber}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors duration-200 text-sm shadow-sm ${!hasPhoneNumber
-                  ? "bg-gray-400 text-white cursor-not-allowed opacity-50"
-                  : isLoading
-                    ? "bg-emerald-green/50 text-white cursor-not-allowed"
-                    : "bg-emerald-green text-white hover:bg-emerald-green/90"
-                  }`}
-                title={!hasPhoneNumber ? "Phone number not available" : "Share via WhatsApp"}
-              >
-                {isLoading ? (
-                  <>
-                    <svg
-                      className="animate-spin h-4 w-4 text-white"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
-                    Loading...
-                  </>
-                ) : (
-                  <>
-                    <Share2 className="w-4 h-4" />
-                    Share
-                  </>
-                )}
-              </button>
-            </div>
+            /* ── SHARE: ghost button, emerald on hover ── */
+            <button
+              onClick={() => handleWhatsAppShare(invoice)}
+              disabled={loading || !hasPhone}
+              title={!hasPhone ? "Phone number not available" : "Share via WhatsApp"}
+              className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 text-[12px] font-medium border rounded-md transition-colors duration-150 ${
+                !hasPhone
+                  ? "text-slate-400 border-slate-200 cursor-not-allowed opacity-50"
+                  : loading
+                  ? "text-slate-400 border-slate-200 opacity-60 cursor-not-allowed"
+                  : "text-slate-600 border-slate-200 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-200"
+              }`}
+            >
+              <Share2 className="w-4 h-4" />
+              {loading ? "Loading..." : "Share"}
+            </button>
           )
         },
       },
       {
         header: "Actions",
         cell: (info: any) => (
-          <div className="flex items-center gap-2 justify-center">
-            <button
-              onClick={() => showModal(info.row.original)}
-              className="p-2 text-white bg-electric-blue rounded-md hover:bg-btn-hover transition-colors"
-              title="Edit"
-            >
-              <Pencil className="h-4 w-4" />
+          /* ── EDIT/DELETE: icon-only ghost buttons ── */
+          <div className="flex items-center gap-1">
+            <button onClick={() => showModal(info.row.original)}
+              className="p-1.5 rounded-md text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors duration-150" title="Edit">
+              <Pencil className="w-4 h-4" />
             </button>
-            <button
-              onClick={() => handleDelete(info.row.original.id)}
-              className="p-2 text-white bg-coral-red rounded-md hover:bg-coral-red/80 transition-colors"
-              title="Delete"
-            >
-              <Trash2 className="h-4 w-4" />
+            <button onClick={() => handleDelete(info.row.original.id)}
+              className="p-1.5 rounded-md text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors duration-150" title="Delete">
+              <Trash2 className="w-4 h-4" />
             </button>
           </div>
         ),
@@ -520,220 +298,132 @@ Thank you for choosing Net Khata Communications!`
   }, [columns, loadingViewId, loadingShareId])
 
   return (
-    <div className="flex h-screen bg-light-sky/50">
-      <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} setIsOpen={setIsSidebarOpen} />
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <Topbar toggleSidebar={toggleSidebar} />
-        <main
-          className={`flex-1 overflow-x-hidden overflow-y-auto bg-light-sky/50 p-0 sm:p-6 pt-20 transition-all duration-300 ${isSidebarOpen ? "ml-64" : "ml-0 lg:ml-20"
-            }`}
-        >
+    <div className="flex h-screen bg-slate-100 overflow-hidden">
+      <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} setIsOpen={setIsSidebarOpen} onHoverChange={setIsSidebarHovered} />
 
-          <div className="container mx-auto">
-            {/* Breadcrumb */}
-            <div className="flex items-center text-sm text-slate-gray mb-6">
-              <LayoutDashboard className="h-4 w-4 mr-1" />
+      <div className={`flex-1 flex flex-col min-w-0 overflow-hidden transition-all duration-200 ${sidebarExpanded ? "lg:pl-[260px]" : "lg:pl-[60px]"}`}>
+        <div className="flex-shrink-0">
+          <Topbar toggleSidebar={toggleSidebar} sidebarExpanded={sidebarExpanded} />
+        </div>
+
+        <main className="flex-1 overflow-y-auto bg-slate-100 px-6 py-5">
+          <div className="max-w-[1400px] mx-auto">
+
+            {/* ── BREADCRUMB ── */}
+            <div className="flex items-center gap-1 text-[11px] text-slate-400 mb-5">
+              <LayoutDashboard className="w-3.5 h-3.5" />
               <span>Dashboard</span>
-              <ChevronRight className="h-4 w-4 mx-1" />
-              <span className="text-deep-ocean font-medium">{title} Management</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+              <span className="text-slate-600 font-medium">{title} Management</span>
             </div>
 
-            {/* Header Section */}
-            <div className="bg-white rounded-xl shadow-md p-6 mb-6">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-                <div>
-                  <h1 className="text-2xl md:text-3xl font-bold text-deep-ocean flex items-center gap-2">
-                    <FileText className="h-7 w-7 text-electric-blue" />
-                    {title} Management
-                  </h1>
-                  <p className="text-slate-gray mt-1">Manage your {title.toLowerCase()} records efficiently</p>
+            {/* ── PAGE HEADER CARD ── */}
+            <div className="bg-white rounded-[10px] border border-slate-200 p-5 mb-5">
+
+              {/* Title + Actions row */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <FileText className="w-4 h-4 text-blue-600" />
+                  </div>
+                  <div>
+                    <h1 className="text-[15px] font-medium text-slate-900">{title} Management</h1>
+                    <p className="text-[11px] text-slate-400 mt-0.5">Manage your {title.toLowerCase()} records</p>
+                  </div>
                 </div>
-                <div className="flex flex-wrap gap-3 self-start md:self-center">
-                  <CSVLink
-                    data={data}
-                    filename={`${title.toLowerCase()}.csv`}
-                    className="bg-slate-gray text-white px-4 py-2.5 rounded-lg hover:bg-slate-gray/80 transition-colors flex items-center justify-center gap-2 shadow-sm"
-                  >
-                    <FileText className="h-5 w-5" />
-                    Export CSV
+
+                <div className="flex flex-wrap gap-2 self-start sm:self-center">
+                  {/* ── EXPORT: secondary ghost ── */}
+                  <CSVLink data={data} filename={`${title.toLowerCase()}.csv`}
+                    className="inline-flex items-center gap-2 px-4 py-2 text-[13px] font-medium text-slate-600 border border-slate-200 rounded-md hover:bg-slate-50 transition-colors duration-150">
+                    <FileText className="w-4 h-4" /> Export CSV
                   </CSVLink>
+                  {/* ── CUSTOM HEADER BUTTON (e.g. Generate Monthly Invoices) ── */}
                   {customHeaderButton}
-
-                  <button
-                    onClick={() => setIsUnifiedPaymentModalVisible(true)}
-                    className="bg-emerald-green text-white px-4 py-2.5 rounded-lg hover:bg-emerald-green/90 transition-colors flex items-center justify-center gap-2 shadow-sm"
-                  >
-                    <Plus className="h-5 w-5" />
-                    Add Payment
+                  {/* ── ADD PAYMENT: secondary ghost ── */}
+                  <button onClick={() => setIsUnifiedPaymentModalVisible(true)}
+                    className="inline-flex items-center gap-2 px-4 py-2 text-[13px] font-medium text-slate-600 border border-slate-200 rounded-md hover:bg-slate-50 transition-colors duration-150">
+                    <Plus className="w-4 h-4" /> Add Payment
                   </button>
-
-                  <button
-                    onClick={() => showModal(null)}
-                    className="bg-electric-blue text-white px-4 py-2.5 rounded-lg hover:bg-btn-hover transition-colors flex items-center justify-center gap-2 shadow-sm"
-                  >
-                    <Plus className="h-5 w-5" />
-                    Add New {title}
+                  {/* ── PRIMARY ACTION ── */}
+                  <button onClick={() => showModal(null)}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-[13px] font-medium rounded-md hover:bg-blue-700 transition-colors duration-150">
+                    <Plus className="w-4 h-4" /> Add New {title}
                   </button>
                 </div>
               </div>
 
-              {/* Stats Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <div className="bg-light-sky/50 rounded-lg p-4 border border-slate-gray/10">
+              {/* ── STAT STRIP: bg-slate-50, distinct icon colors, amount sub-line ── */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {/* Total */}
+                <div className="bg-slate-50 rounded-[10px] border border-slate-200 p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-slate-gray text-sm">Total {title}s</p>
-                      <h3 className="text-2xl font-bold text-deep-ocean mt-1">{stats.total}</h3>
-                      <p className="text-sm font-semibold text-deep-ocean/70 mt-1">
-                        {(() => {
-                          const val = stats.total_amount
-                          if (val >= 1000000) return `PKR ${(val / 1000000).toFixed(2)}M`
-                          if (val >= 1000) return `PKR ${(val / 1000).toFixed(1)}k`
-                          return `PKR ${Math.round(val).toLocaleString()}`
-                        })()}
-                      </p>
+                      <p className="text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em]">Total {title}s</p>
+                      <p className="text-[22px] font-semibold text-slate-900 tabular-nums leading-none mt-1.5">{stats.total}</p>
+                      <p className="text-[11px] text-slate-400 mt-1 tabular-nums">{formatAmount(stats.total_amount)}</p>
                     </div>
-                    <div className="bg-deep-ocean/10 p-3 rounded-full">
-                      <FileText className="h-6 w-6 text-deep-ocean" />
+                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <FileText className="w-4 h-4 text-blue-600" />
                     </div>
                   </div>
                 </div>
-
-                <div className="bg-emerald-green/5 rounded-lg p-4 border border-emerald-green/10">
+                {/* Paid */}
+                <div className="bg-slate-50 rounded-[10px] border border-slate-200 p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-slate-gray text-sm">Paid {title}s</p>
-                      <h3 className="text-2xl font-bold text-emerald-green mt-1">{stats.paid}</h3>
-                      <p className="text-sm font-semibold text-emerald-green/70 mt-1">
-                        {(() => {
-                          const val = stats.paid_amount
-                          if (val >= 1000000) return `PKR ${(val / 1000000).toFixed(2)}M`
-                          if (val >= 1000) return `PKR ${(val / 1000).toFixed(1)}k`
-                          return `PKR ${Math.round(val).toLocaleString()}`
-                        })()}
-                      </p>
+                      <p className="text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em]">Paid {title}s</p>
+                      <p className="text-[22px] font-semibold text-slate-900 tabular-nums leading-none mt-1.5">{stats.paid}</p>
+                      <p className="text-[11px] text-slate-400 mt-1 tabular-nums">{formatAmount(stats.paid_amount)}</p>
                     </div>
-                    <div className="bg-emerald-green/10 p-3 rounded-full">
-                      <CheckCircle2 className="h-6 w-6 text-emerald-green" />
+                    <div className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                     </div>
                   </div>
                 </div>
-
-                <div className="bg-coral-red/5 rounded-lg p-4 border border-coral-red/10">
+                {/* Pending */}
+                <div className="bg-slate-50 rounded-[10px] border border-slate-200 p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-slate-gray text-sm">Pending {title}s</p>
-                      <h3 className="text-2xl font-bold text-coral-red mt-1">{stats.pending}</h3>
-                      <p className="text-sm font-semibold text-coral-red/70 mt-1">
-                        {(() => {
-                          const val = stats.pending_amount
-                          if (val >= 1000000) return `PKR ${(val / 1000000).toFixed(2)}M`
-                          if (val >= 1000) return `PKR ${(val / 1000).toFixed(1)}k`
-                          return `PKR ${Math.round(val).toLocaleString()}`
-                        })()}
-                      </p>
+                      <p className="text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em]">Pending {title}s</p>
+                      <p className="text-[22px] font-semibold text-slate-900 tabular-nums leading-none mt-1.5">{stats.pending}</p>
+                      <p className="text-[11px] text-slate-400 mt-1 tabular-nums">{formatAmount(stats.pending_amount)}</p>
                     </div>
-                    <div className="bg-coral-red/10 p-3 rounded-full">
-                      <XCircle className="h-6 w-6 text-coral-red" />
+                    <div className="w-8 h-8 bg-rose-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <XCircle className="w-4 h-4 text-rose-500" />
                     </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Table Section */}
-            <div className="mb-8">
-              <Table
-                data={data}
-                columns={memoizedColumns}
-                selectedRows={selectedRows}
-                setSelectedRows={setSelectedRows}
-                isLoading={isLoading}
-                serverMode={true}
-                totalCount={totalCount}
-                pageIndex={pageIndex}
-                pageSize={pageSize}
-                onPageChange={setPageIndex}
-                onPageSizeChange={setPageSize}
-                sorting={sorting}
-                onSortingChange={setSorting}
-                onGlobalSearch={setSearch}
-              />
-            </div>
+            {/* ── TABLE ── */}
+            <Table
+              data={data} columns={memoizedColumns} selectedRows={selectedRows}
+              setSelectedRows={setSelectedRows} isLoading={isLoading}
+              serverMode={true} totalCount={totalCount} pageIndex={pageIndex}
+              pageSize={pageSize} onPageChange={setPageIndex} onPageSizeChange={setPageSize}
+              sorting={sorting} onSortingChange={setSorting} onGlobalSearch={setSearch}
+            />
+
           </div>
         </main>
       </div>
 
-      {/* Modal */}
-      <Modal
-        isVisible={isModalVisible}
-        onClose={handleCancel}
+      {/* ── ADD/EDIT MODAL ── */}
+      <Modal isVisible={isModalVisible} onClose={handleCancel}
         title={editingItem ? `Edit ${title}` : `Add New ${title}`}
-        isLoading={isLoading}
-      >
-        <form onSubmit={handleSubmit} className="bg-white">
+        isLoading={isLoading} footer={modalFooter}>
+        <form id="invoice-form" onSubmit={handleSubmit}>
           <FormComponent formData={formData} handleInputChange={handleInputChange} isEditing={!!editingItem} />
-          <div className="mt-6 flex justify-end gap-3">
-            <button
-              type="button"
-              onClick={handleCancel}
-              className="px-4 py-2.5 border border-slate-gray/20 text-slate-gray rounded-lg hover:bg-light-sky/50 transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="px-4 py-2.5 bg-electric-blue text-white rounded-lg hover:bg-btn-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-electric-blue disabled:opacity-50 transition-colors flex items-center gap-2"
-            >
-              {isLoading ? (
-                <>
-                  <svg
-                    className="animate-spin h-5 w-5 text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                  Processing...
-                </>
-              ) : editingItem ? (
-                <>
-                  <Check className="h-5 w-5" />
-                  Update {title}
-                </>
-              ) : (
-                <>
-                  <Plus className="h-5 w-5" />
-                  Create {title}
-                </>
-              )}
-            </button>
-          </div>
         </form>
       </Modal>
 
-      {/* Unified Payment Modal */}
+      {/* ── UNIFIED PAYMENT MODAL ── */}
       <UnifiedPaymentModal
         isOpen={isUnifiedPaymentModalVisible}
         onClose={() => setIsUnifiedPaymentModalVisible(false)}
-        onPaymentAdded={() => {
-          fetchData()
-          fetchStats()
-        }}
+        onPaymentAdded={() => { fetchData(); fetchStats() }}
       />
     </div>
   )

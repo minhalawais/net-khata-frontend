@@ -93,38 +93,21 @@ export function RecoveryTaskForm({
     }
   }
 
-  const selectClasses = `
-    w-full pl-10 pr-10 py-3 border border-[#EBF5FF] rounded-lg shadow-sm bg-white text-[#4A5568]
-    appearance-none focus:ring-2 focus:ring-[#3A86FF]/30 focus:border-[#3A86FF] transition-all duration-200
-    bg-no-repeat bg-[url('data:image/svg+xml;charset=US-ASCII,<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 8L10 12L14 8" stroke="%234A5568" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>')]
-    bg-right-4 bg-center-y
-  `
-
-  const textareaClasses = `
-    w-full pl-10 pr-4 py-3 border border-[#EBF5FF] rounded-lg shadow-sm bg-white text-[#4A5568]
-    placeholder-[#4A5568]/60 focus:ring-2 focus:ring-[#3A86FF]/30 focus:border-[#3A86FF] transition-all duration-200
-  `
-
-  const labelClasses = "block text-sm font-medium text-[#2A5C8A] mb-1"
-  const iconClasses = "h-5 w-5 text-[#4A5568]/60"
-
-  const statusColors: Record<string, string> = {
-    pending: "text-[#F59E0B]",
-    in_progress: "text-[#3A86FF]",
-    completed: "text-[#10B981]",
-    cancelled: "text-[#EF4444]",
-  }
+  const selectClasses = "w-full h-9 pl-9 pr-9 border border-slate-200 rounded-md bg-white text-[13px] text-slate-700 appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500/[0.12] focus:border-blue-500 hover:border-slate-300 transition-colors duration-150"
+  const textareaClasses = "w-full px-3 py-2.5 border border-slate-200 rounded-md bg-white text-[13px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/[0.12] focus:border-blue-500 hover:border-slate-300 transition-colors duration-150"
+  const labelClasses = "block text-[11px] font-medium text-slate-600 mb-1.5"
+  const iconClasses = "h-4 w-4 text-slate-400"
 
   return (
     <div className="space-y-6">
       {/* Invoice Selection with SearchableSelect */}
       <div className="space-y-2">
-        <label className={labelClasses}>Invoice *</label>
+        <label className={labelClasses}>Invoice <span className="text-rose-500 ml-0.5">*</span></label>
         {isLoadingInvoices ? (
-          <div className="w-full pl-10 pr-10 py-2.5 border border-slate-gray/20 rounded-lg bg-light-sky/30 text-deep-ocean">
+          <div className="w-full h-9 px-3 border border-slate-200 rounded-md bg-white text-slate-700">
             <div className="flex items-center justify-center">
-              <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-electric-blue"></div>
-              <span className="ml-2 text-slate-gray/60">Loading invoices...</span>
+              <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-600 border-t-transparent" />
+              <span className="ml-2 text-[12px] text-slate-500">Loading invoices...</span>
             </div>
           </div>
         ) : (
@@ -139,10 +122,15 @@ export function RecoveryTaskForm({
 
       {/* Employee Assignment */}
       <div className="space-y-2">
-        <label className={labelClasses}>Assign To *</label>
+        <label className={labelClasses}>Assign To <span className="text-rose-500 ml-0.5">*</span></label>
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <Users className={iconClasses} />
+          </div>
+          <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+            <svg className="w-3.5 h-3.5 text-slate-400" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6 8L10 12L14 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
           </div>
           <select
             name="assigned_to"
@@ -163,10 +151,15 @@ export function RecoveryTaskForm({
 
       {/* Status */}
       <div className="space-y-2">
-        <label className={labelClasses}>Status *</label>
+        <label className={labelClasses}>Status <span className="text-rose-500 ml-0.5">*</span></label>
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <AlertCircle className={iconClasses} />
+          </div>
+          <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+            <svg className="w-3.5 h-3.5 text-slate-400" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6 8L10 12L14 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
           </div>
           <select
             name="status"
@@ -175,10 +168,10 @@ export function RecoveryTaskForm({
             className={selectClasses}
             required
           >
-            <option value="pending" className={statusColors.pending}>Pending</option>
-            <option value="in_progress" className={statusColors.in_progress}>In Progress</option>
-            <option value="completed" className={statusColors.completed}>Completed</option>
-            <option value="cancelled" className={statusColors.cancelled}>Cancelled</option>
+            <option value="pending">Pending</option>
+            <option value="in_progress">In Progress</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
           </select>
         </div>
       </div>
@@ -196,7 +189,7 @@ export function RecoveryTaskForm({
             onChange={handleInputChange}
             placeholder="Enter any relevant notes for the recovery task..."
             rows={4}
-            className={`${textareaClasses} resize-y min-h-[120px]`}
+            className={`${textareaClasses} pl-9 resize-none min-h-[120px]`}
           />
         </div>
       </div>

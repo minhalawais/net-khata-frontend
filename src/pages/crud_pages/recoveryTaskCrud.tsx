@@ -25,11 +25,11 @@ const RecoveryTaskManagement: React.FC = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'pending': return 'bg-yellow-100 text-yellow-800';
-      case 'in_progress': return 'bg-blue-100 text-blue-800';
-      case 'completed': return 'bg-green-100 text-green-800';
-      case 'cancelled': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'pending': return 'bg-amber-50 text-amber-700 border-amber-200';
+      case 'in_progress': return 'bg-blue-50 text-blue-700 border-blue-200';
+      case 'completed': return 'bg-emerald-50 text-emerald-700 border-emerald-200';
+      case 'cancelled': return 'bg-slate-100 text-slate-600 border-slate-200';
+      default: return 'bg-slate-100 text-slate-600 border-slate-200';
     }
   };
 
@@ -41,10 +41,10 @@ const RecoveryTaskManagement: React.FC = () => {
         cell: info => {
           const row = info.row.original;
           return (
-            <div className="flex flex-col">
-              <span className="font-semibold text-deep-ocean">{row.invoice_number || '-'}</span>
-              <span className="text-xs text-slate-gray">{row.customer_name}</span>
-              <span className="text-xs text-electric-blue">{row.customer_internet_id}</span>
+            <div className="flex flex-col gap-0.5">
+              <span className="text-[13px] font-medium text-slate-700 font-mono">{row.invoice_number || '-'}</span>
+              <span className="text-[11px] text-slate-400">{row.customer_name}</span>
+              <span className="text-[11px] font-medium text-blue-600">{row.customer_internet_id}</span>
             </div>
           );
         },
@@ -54,10 +54,11 @@ const RecoveryTaskManagement: React.FC = () => {
         accessorKey: 'total_amount',
         cell: info => {
           const value = info.getValue() as number | null;
-          if (!value) return <span className="text-gray-400">-</span>;
+          if (!value) return <span className="text-slate-400">-</span>;
           return (
-            <span className="font-semibold text-emerald-green">
-              PKR {value.toLocaleString()}
+            <span className="text-[13px] font-medium text-slate-900 tabular-nums">
+              <span className="text-[11px] text-slate-400 mr-0.5">PKR</span>
+              {value.toLocaleString()}
             </span>
           );
         },
@@ -65,16 +66,18 @@ const RecoveryTaskManagement: React.FC = () => {
       {
         header: 'Assigned To',
         accessorKey: 'assigned_to_name',
-        cell: info => info.getValue() || '-',
+        cell: info => (
+          <span className="text-[13px] text-slate-600">{(info.getValue() as string) || '-'}</span>
+        ),
       },
       {
         header: 'Status',
         accessorKey: 'status',
         cell: info => {
           const value = info.getValue() as string | null;
-          if (!value) return <span className="text-gray-400">-</span>;
+          if (!value) return <span className="text-slate-400">-</span>;
           return (
-            <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(value)}`}>
+            <span className={`inline-flex items-center px-2 py-0.5 text-[10px] font-medium rounded border ${getStatusColor(value)}`}>
               {value.replace('_', ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
             </span>
           );
@@ -85,9 +88,9 @@ const RecoveryTaskManagement: React.FC = () => {
         accessorKey: 'notes',
         cell: info => {
           const value = info.getValue() as string | null;
-          if (!value) return <span className="text-gray-400">-</span>;
+          if (!value) return <span className="text-slate-400">-</span>;
           return (
-            <div className="max-w-xs overflow-hidden text-ellipsis whitespace-nowrap" title={value}>
+            <div className="max-w-xs overflow-hidden text-ellipsis whitespace-nowrap text-[13px] text-slate-600" title={value}>
               {value}
             </div>
           );
@@ -98,8 +101,8 @@ const RecoveryTaskManagement: React.FC = () => {
         accessorKey: 'created_at',
         cell: info => {
           const value = info.getValue() as string | null;
-          if (!value) return <span className="text-gray-400">-</span>;
-          return new Date(value).toLocaleDateString();
+          if (!value) return <span className="text-slate-400">-</span>;
+          return <span className="text-[13px] text-slate-600 tabular-nums">{new Date(value).toLocaleDateString()}</span>;
         },
       },
     ],

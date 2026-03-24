@@ -102,30 +102,30 @@ const WhatsAppQueueDashboard: React.FC = () => {
 
     const getStatusBadge = (status: string) => {
         const styles = {
-            sent: 'bg-[#B3C8CF] text-[#2A5C8A] border border-[#89A8B2]',
-            pending: 'bg-[#F1F0E8] text-[#656565] border border-[#E5E1DA]',
-            failed: 'bg-red-50 text-red-700 border border-red-200',
-            failed_permanent: 'bg-gray-100 text-gray-600 border border-gray-300'
+            sent: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+            pending: 'bg-amber-50 text-amber-700 border-amber-200',
+            failed: 'bg-rose-50 text-rose-600 border-rose-200',
+            failed_permanent: 'bg-slate-100 text-slate-500 border-slate-200'
         };
         return styles[status as keyof typeof styles] || styles.pending;
     };
 
     const getPriorityBadge = (priority: number) => {
-        if (priority === 0) return { label: 'High', color: 'bg-red-100 text-red-700 border border-red-200' };
-        if (priority === 10) return { label: 'Medium', color: 'bg-[#F1F0E8] text-[#656565] border border-[#E5E1DA]' };
-        return { label: 'Low', color: 'bg-[#B3C8CF] text-[#2A5C8A] border border-[#89A8B2]' };
+        if (priority === 0) return { label: 'High', color: 'bg-rose-50 text-rose-600 border-rose-200' };
+        if (priority === 10) return { label: 'Medium', color: 'bg-amber-50 text-amber-700 border-amber-200' };
+        return { label: 'Low', color: 'bg-slate-100 text-slate-600 border-slate-200' };
     };
 
     if (loading) {
         return (
-            <div className="flex h-screen bg-[#F1F0E8]">
+            <div className="flex h-screen bg-slate-50 overflow-hidden">
                 <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} setIsOpen={setIsSidebarOpen} />
                 <div className="flex-1 flex flex-col overflow-hidden">
                     <Topbar toggleSidebar={toggleSidebar} />
-                    <main className="flex-1 overflow-y-auto p-6 mt-14 flex justify-center items-center">
+                    <main className={`flex-1 overflow-y-auto bg-slate-50 p-0 sm:p-6 pt-20 transition-all duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-0 lg:ml-20'} flex justify-center items-center`}>
                         <div className="flex flex-col items-center space-y-4">
-                            <div className="animate-spin rounded-full h-16 w-16 border-4 border-[#E5E1DA] border-t-[#89A8B2]"></div>
-                            <p className="text-[#656565] font-medium">Loading dashboard...</p>
+                            <div className="animate-spin rounded-full h-10 w-10 border-2 border-slate-200 border-t-blue-600"></div>
+                            <p className="text-[13px] text-slate-500">Loading dashboard...</p>
                         </div>
                     </main>
                 </div>
@@ -134,102 +134,99 @@ const WhatsAppQueueDashboard: React.FC = () => {
     }
 
     return (
-        <div className="flex h-screen bg-[#F1F0E8] ml-20">
+        <div className="flex h-screen bg-slate-50 overflow-hidden">
             <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} setIsOpen={setIsSidebarOpen} />
             <div className="flex-1 flex flex-col overflow-hidden">
                 <Topbar toggleSidebar={toggleSidebar} />
-                <main className="flex-1 overflow-y-auto p-6 mt-14">
-                    <div className="flex justify-between items-center mb-8">
-                        <div className="flex items-center gap-3">
-                            <div className="bg-gradient-to-br from-[#89A8B2] to-[#B3C8CF] p-3 rounded-2xl shadow-lg">
-                                <MessageSquare className="w-8 h-8 text-white" />
-                            </div>
-                            <div>
-                                <h1 className="text-4xl font-bold text-[#2A5C8A]">WhatsApp Queue</h1>
-                                <p className="text-[#656565] mt-2 text-lg">Monitor and manage your message queue efficiently</p>
-                            </div>
+                <main className={`flex-1 overflow-y-auto bg-slate-50 p-0 sm:p-6 pt-20 transition-all duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-0 lg:ml-20'}`}>
+                    <div className="max-w-[1400px] mx-auto space-y-4">
+                    <div className="bg-white rounded-[10px] border border-slate-200 p-5 flex items-center justify-between gap-4">
+                        <div>
+                            <h1 className="text-[15px] font-medium text-slate-900 flex items-center gap-2">
+                                <span className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
+                                    <MessageSquare className="w-4 h-4 text-blue-600" />
+                                </span>
+                                WhatsApp Queue
+                            </h1>
+                            <p className="text-[11px] text-slate-400 mt-1">Monitor and manage your message queue efficiently</p>
                         </div>
                         <button
                             onClick={fetchData}
                             disabled={refreshing}
-                            className="flex items-center gap-2 bg-gradient-to-r from-[#89A8B2] to-[#B3C8CF] hover:from-[#7A98A2] hover:to-[#A3B8BF] text-white px-6 py-3 rounded-xl shadow-lg transition-all duration-300 disabled:opacity-50 font-medium"
+                            className="h-9 px-4 text-[13px] font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 transition-colors duration-150 flex items-center gap-1.5"
                         >
-                            <RefreshCw className={`w-5 h-5 ${refreshing ? 'animate-spin' : ''}`} />
+                            <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
                             Refresh
                         </button>
                     </div>
 
-                    {/* Statistics Cards */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                        <div className="bg-white p-6 rounded-2xl shadow-xl border-2 border-[#F1F0E8] hover:shadow-2xl transition-all duration-300 hover:scale-105">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div className="bg-white rounded-[10px] border border-slate-200 p-4">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="text-[#656565] text-sm font-medium uppercase tracking-wide">Pending</p>
-                                    <p className="text-4xl font-bold text-[#2A5C8A] mt-2">{queueStats?.pending || 0}</p>
-                                    <p className="text-xs text-[#89A8B2] mt-1">Messages in queue</p>
+                                    <p className="text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em]">Pending</p>
+                                    <p className="text-[22px] font-semibold text-slate-900 mt-1 tabular-nums">{queueStats?.pending || 0}</p>
+                                    <p className="text-[11px] text-slate-400 mt-1">Messages in queue</p>
                                 </div>
-                                <div className="bg-gradient-to-br from-yellow-400 to-yellow-500 p-4 rounded-2xl shadow-lg">
-                                    <Clock className="w-8 h-8 text-white" />
-                                </div>
+                                <span className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
+                                    <Clock className="w-4 h-4 text-blue-600" />
+                                </span>
                             </div>
                         </div>
 
-                        <div className="bg-white p-6 rounded-2xl shadow-xl border-2 border-[#F1F0E8] hover:shadow-2xl transition-all duration-300 hover:scale-105">
+                        <div className="bg-white rounded-[10px] border border-slate-200 p-4">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="text-[#656565] text-sm font-medium uppercase tracking-wide">Sent</p>
-                                    <p className="text-4xl font-bold text-[#2A5C8A] mt-2">{queueStats?.sent || 0}</p>
-                                    <p className="text-xs text-[#89A8B2] mt-1">Successfully delivered</p>
+                                    <p className="text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em]">Sent</p>
+                                    <p className="text-[22px] font-semibold text-slate-900 mt-1 tabular-nums">{queueStats?.sent || 0}</p>
+                                    <p className="text-[11px] text-slate-400 mt-1">Successfully delivered</p>
                                 </div>
-                                <div className="bg-gradient-to-br from-green-400 to-green-500 p-4 rounded-2xl shadow-lg">
-                                    <CheckCircle2 className="w-8 h-8 text-white" />
-                                </div>
+                                <span className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
+                                    <CheckCircle2 className="w-4 h-4 text-blue-600" />
+                                </span>
                             </div>
                         </div>
 
-                        <div className="bg-white p-6 rounded-2xl shadow-xl border-2 border-[#F1F0E8] hover:shadow-2xl transition-all duration-300 hover:scale-105">
+                        <div className="bg-white rounded-[10px] border border-slate-200 p-4">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="text-[#656565] text-sm font-medium uppercase tracking-wide">Failed</p>
-                                    <p className="text-4xl font-bold text-[#2A5C8A] mt-2">{queueStats?.failed || 0}</p>
-                                    <p className="text-xs text-[#89A8B2] mt-1">Delivery failed</p>
+                                    <p className="text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em]">Failed</p>
+                                    <p className="text-[22px] font-semibold text-slate-900 mt-1 tabular-nums">{queueStats?.failed || 0}</p>
+                                    <p className="text-[11px] text-slate-400 mt-1">Delivery failed</p>
                                 </div>
-                                <div className="bg-gradient-to-br from-red-400 to-red-500 p-4 rounded-2xl shadow-lg">
-                                    <XCircle className="w-8 h-8 text-white" />
-                                </div>
+                                <span className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
+                                    <XCircle className="w-4 h-4 text-blue-600" />
+                                </span>
                             </div>
                         </div>
 
-                        <div className="bg-white p-6 rounded-2xl shadow-xl border-2 border-[#F1F0E8] hover:shadow-2xl transition-all duration-300 hover:scale-105">
-                            <div>
-                                <div className="flex items-center justify-between mb-3">
-                                    <p className="text-[#656565] text-sm font-medium uppercase tracking-wide">Daily Quota</p>
-                                    <div className="bg-gradient-to-br from-[#89A8B2] to-[#B3C8CF] p-2 rounded-xl">
-                                        <TrendingUp className="w-5 h-5 text-white" />
-                                    </div>
-                                </div>
-                                <div className="flex items-baseline gap-2">
-                                    <p className="text-4xl font-bold text-[#2A5C8A]">{quotaStats?.messages_sent || 0}</p>
-                                    <p className="text-[#656565] text-lg">/ {quotaStats?.effective_limit || 195}</p>
-                                </div>
-                                <div className="mt-4 bg-[#E5E1DA] rounded-full h-3 overflow-hidden shadow-inner">
-                                    <div
-                                        className="bg-gradient-to-r from-[#89A8B2] to-[#B3C8CF] h-full transition-all duration-500 rounded-full"
-                                        style={{ width: `${Math.min(quotaStats?.percentage_used || 0, 100)}%` }}
-                                    />
-                                </div>
-                                <p className="text-xs text-[#89A8B2] mt-2 font-medium">
-                                    {quotaStats?.remaining || 0} messages remaining today
-                                </p>
+                        <div className="bg-white rounded-[10px] border border-slate-200 p-4">
+                            <div className="flex items-center justify-between mb-2">
+                                <p className="text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em]">Daily Quota</p>
+                                <span className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
+                                    <TrendingUp className="w-4 h-4 text-blue-600" />
+                                </span>
                             </div>
+                            <p className="text-[22px] font-semibold text-slate-900 tabular-nums">
+                                {quotaStats?.messages_sent || 0}
+                                <span className="text-[13px] text-slate-400 font-medium ml-1">/ {quotaStats?.effective_limit || 195}</span>
+                            </p>
+                            <div className="mt-3 bg-slate-100 rounded-full h-2 overflow-hidden">
+                                <div
+                                    className="bg-blue-600 h-full rounded-full"
+                                    style={{ width: `${Math.min(quotaStats?.percentage_used || 0, 100)}%` }}
+                                />
+                            </div>
+                            <p className="text-[11px] text-slate-400 mt-1.5">
+                                {quotaStats?.remaining || 0} messages remaining today
+                            </p>
                         </div>
                     </div>
 
-                    {/* Filters */}
-                    <div className="bg-white p-5 rounded-2xl shadow-xl border-2 border-[#F1F0E8] mb-6">
-                        <div className="flex items-center gap-3 mb-3">
-                            <Filter className="w-5 h-5 text-[#89A8B2]" />
-                            <h3 className="text-lg font-semibold text-[#2A5C8A]">Filter Messages</h3>
+                    <div className="bg-white rounded-[10px] border border-slate-200 p-4">
+                        <div className="flex items-center gap-2 mb-3">
+                            <Filter className="w-4 h-4 text-slate-400" />
+                            <h3 className="text-[13px] font-medium text-slate-900">Filter Messages</h3>
                         </div>
                         <div className="flex gap-3 flex-wrap">
                             {['all', 'pending', 'sent', 'failed'].map((status) => (
@@ -239,9 +236,9 @@ const WhatsAppQueueDashboard: React.FC = () => {
                                         setFilter(status);
                                         setCurrentPage(1);
                                     }}
-                                    className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ${filter === status
-                                        ? 'bg-gradient-to-r from-[#89A8B2] to-[#B3C8CF] text-white shadow-lg scale-105'
-                                        : 'bg-[#F1F0E8] text-[#656565] hover:bg-[#E5E1DA] hover:scale-105'
+                                    className={`h-8 px-3 rounded-md text-[12px] font-medium transition-colors duration-150 ${filter === status
+                                        ? 'bg-blue-600 text-white'
+                                        : 'bg-white border border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50'
                                         }`}
                                 >
                                     {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -250,63 +247,62 @@ const WhatsAppQueueDashboard: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Messages Table */}
-                    <div className="bg-white rounded-2xl shadow-xl border-2 border-[#F1F0E8] overflow-hidden">
+                    <div className="bg-white rounded-[10px] border border-slate-200 overflow-hidden">
                         <div className="overflow-x-auto">
                             <table className="w-full">
-                                <thead className="bg-gradient-to-r from-[#B3C8CF] to-[#89A8B2]">
+                                <thead className="bg-slate-50 border-b border-slate-200">
                                     <tr>
-                                        <th className="text-left text-xs font-bold text-white uppercase tracking-wider py-4 px-6">Customer</th>
-                                        <th className="text-left text-xs font-bold text-white uppercase tracking-wider py-4 px-6">Mobile</th>
-                                        <th className="text-left text-xs font-bold text-white uppercase tracking-wider py-4 px-6">Type</th>
-                                        <th className="text-left text-xs font-bold text-white uppercase tracking-wider py-4 px-6">Message</th>
-                                        <th className="text-left text-xs font-bold text-white uppercase tracking-wider py-4 px-6">Priority</th>
-                                        <th className="text-left text-xs font-bold text-white uppercase tracking-wider py-4 px-6">Status</th>
-                                        <th className="text-left text-xs font-bold text-white uppercase tracking-wider py-4 px-6">Created</th>
-                                        <th className="text-left text-xs font-bold text-white uppercase tracking-wider py-4 px-6">Actions</th>
+                                        <th className="text-left text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em] py-2.5 px-4">Customer</th>
+                                        <th className="text-left text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em] py-2.5 px-4">Mobile</th>
+                                        <th className="text-left text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em] py-2.5 px-4">Type</th>
+                                        <th className="text-left text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em] py-2.5 px-4">Message</th>
+                                        <th className="text-left text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em] py-2.5 px-4">Priority</th>
+                                        <th className="text-left text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em] py-2.5 px-4">Status</th>
+                                        <th className="text-left text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em] py-2.5 px-4">Created</th>
+                                        <th className="text-left text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em] py-2.5 px-4">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-[#E5E1DA]">
+                                <tbody>
                                     {messages.length === 0 ? (
                                         <tr>
-                                            <td colSpan={8} className="text-center py-12 text-[#656565]">
-                                                <MessageSquare className="w-16 h-16 mx-auto mb-4 text-[#B3C8CF]" />
-                                                <p className="text-lg font-medium">No messages found</p>
+                                            <td colSpan={8} className="text-center py-12 text-slate-500">
+                                                <MessageSquare className="w-10 h-10 mx-auto mb-3 text-slate-300" />
+                                                <p className="text-[13px] font-medium text-slate-600">No messages found</p>
                                             </td>
                                         </tr>
                                     ) : (
                                         messages.map((message) => {
                                             const priorityInfo = getPriorityBadge(message.priority);
                                             return (
-                                                <tr key={message.id} className="hover:bg-[#F1F0E8] transition-colors">
-                                                    <td className="py-4 px-6 text-[#2A5C8A] font-semibold">{message.customer_name}</td>
-                                                    <td className="py-4 px-6 text-[#656565]">{message.mobile}</td>
-                                                    <td className="py-4 px-6">
-                                                        <span className="text-xs px-3 py-1.5 rounded-full bg-[#E5E1DA] text-[#656565] font-medium">
+                                                <tr key={message.id} className="border-b border-slate-100 hover:bg-blue-50/40 transition-colors duration-100">
+                                                    <td className="py-3 px-4 text-[13px] font-medium text-slate-800">{message.customer_name}</td>
+                                                    <td className="py-3 px-4 text-[13px] text-slate-600">{message.mobile}</td>
+                                                    <td className="py-3 px-4">
+                                                        <span className="inline-flex text-[10px] px-2 py-0.5 rounded border bg-slate-100 text-slate-600 border-slate-200 font-medium">
                                                             {message.message_type}
                                                         </span>
                                                     </td>
-                                                    <td className="py-4 px-6 text-[#656565] max-w-xs truncate">{message.message_content}</td>
-                                                    <td className="py-4 px-6">
-                                                        <span className={`text-xs px-3 py-1.5 rounded-full font-semibold ${priorityInfo.color}`}>
+                                                    <td className="py-3 px-4 text-[13px] text-slate-500 max-w-xs truncate">{message.message_content}</td>
+                                                    <td className="py-3 px-4">
+                                                        <span className={`inline-flex text-[10px] px-2 py-0.5 rounded border font-medium ${priorityInfo.color}`}>
                                                             {priorityInfo.label}
                                                         </span>
                                                     </td>
-                                                    <td className="py-4 px-6">
-                                                        <span className={`text-xs px-3 py-1.5 rounded-full font-semibold ${getStatusBadge(message.status)}`}>
+                                                    <td className="py-3 px-4">
+                                                        <span className={`inline-flex text-[10px] px-2 py-0.5 rounded border font-medium ${getStatusBadge(message.status)}`}>
                                                             {message.status}
                                                         </span>
                                                     </td>
-                                                    <td className="py-4 px-6 text-[#656565] text-sm">
+                                                    <td className="py-3 px-4 text-[11px] text-slate-400 tabular-nums">
                                                         {new Date(message.created_at).toLocaleDateString()}
                                                     </td>
-                                                    <td className="py-4 px-6">
+                                                    <td className="py-3 px-4">
                                                         {(message.status === 'failed' || message.status === 'failed_permanent') && (
                                                             <button
                                                                 onClick={() => retryMessage(message.id)}
-                                                                className="text-[#89A8B2] hover:text-[#7A98A2] font-semibold text-sm flex items-center gap-1 transition-colors"
+                                                                className="text-[12px] text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1 transition-colors duration-150"
                                                             >
-                                                                <Send className="w-4 h-4" />
+                                                                <Send className="w-3.5 h-3.5" />
                                                                 Retry
                                                             </button>
                                                         )}
@@ -319,30 +315,30 @@ const WhatsAppQueueDashboard: React.FC = () => {
                             </table>
                         </div>
 
-                        {/* Pagination */}
                         {totalPages > 1 && (
-                            <div className="bg-gradient-to-r from-[#F1F0E8] to-[#E5E1DA] px-6 py-4 flex items-center justify-between border-t-2 border-[#E5E1DA]">
-                                <div className="text-sm text-[#656565] font-medium">
+                            <div className="bg-slate-50 px-4 py-3 flex items-center justify-between border-t border-slate-200">
+                                <div className="text-[12px] text-slate-500 font-medium">
                                     Page {currentPage} of {totalPages}
                                 </div>
-                                <div className="flex gap-3">
+                                <div className="flex gap-2">
                                     <button
                                         onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
                                         disabled={currentPage === 1}
-                                        className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#89A8B2] to-[#B3C8CF] text-white font-semibold hover:from-[#7A98A2] hover:to-[#A3B8BF] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md"
+                                        className="h-8 px-3 text-[12px] font-medium border border-slate-200 text-slate-600 rounded-md hover:border-slate-300 hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150"
                                     >
                                         Previous
                                     </button>
                                     <button
                                         onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
                                         disabled={currentPage === totalPages}
-                                        className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#89A8B2] to-[#B3C8CF] text-white font-semibold hover:from-[#7A98A2] hover:to-[#A3B8BF] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md"
+                                        className="h-8 px-3 text-[12px] font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150"
                                     >
                                         Next
                                     </button>
                                 </div>
                             </div>
                         )}
+                    </div>
                     </div>
                 </main>
             </div>

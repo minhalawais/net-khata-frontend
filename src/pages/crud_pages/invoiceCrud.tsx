@@ -1,7 +1,6 @@
 "use client"
 
 import React from "react"
-
 import { useEffect, useState } from "react"
 import type { ColumnDef } from "@tanstack/react-table"
 import { CRUDPage } from "../../components/invoiceCrudPage.tsx"
@@ -12,11 +11,8 @@ import { PaymentForm } from "../../components/forms/paymentForm.tsx"
 import { getToken } from "../../utils/auth.ts"
 import axiosInstance from "../../utils/axiosConfig.ts"
 import { toast } from "react-toastify"
-import {
-  FileText,
-  Plus,
-  Check
-} from "lucide-react"
+import { FileText, Plus } from "lucide-react"
+
 interface Invoice {
   id: string
   invoice_number: string
@@ -35,27 +31,46 @@ interface Invoice {
   is_active: boolean
 }
 
+/* ── INVOICE STATUS BADGE COLORS: flat semantic pairs, no gradients ── */
+const STATUS_STYLES: Record<string, string> = {
+  paid:    "bg-emerald-50 text-emerald-700 border-emerald-200",
+  pending: "bg-amber-50   text-amber-700   border-amber-200",
+  overdue: "bg-rose-50    text-rose-600    border-rose-200",
+}
+const getStatusStyle = (status: string) =>
+  STATUS_STYLES[status?.toLowerCase()] ?? "bg-slate-100 text-slate-600 border-slate-200"
+
+/* ── INVOICE TYPE BADGE COLORS ── */
+const TYPE_STYLES: Record<string, string> = {
+  subscription: "bg-blue-50    text-blue-700   border-blue-200",
+  installation: "bg-amber-50   text-amber-700  border-amber-200",
+  equipment:    "bg-violet-50  text-violet-700 border-violet-200",
+  add_on:       "bg-slate-100  text-slate-600  border-slate-200",
+  refund:       "bg-rose-50    text-rose-600   border-rose-200",
+  deposit:      "bg-emerald-50 text-emerald-700 border-emerald-200",
+  maintenance:  "bg-slate-100  text-slate-600  border-slate-200",
+}
+const getTypeStyle = (type: string) =>
+  TYPE_STYLES[type?.toLowerCase()] ?? "bg-slate-100 text-slate-600 border-slate-200"
+
 const InvoiceManagement = () => {
   const [showBulkModal, setShowBulkModal] = useState(false)
   const [refreshTrigger, setRefreshTrigger] = useState(0)
   const [showPaymentModal, setShowPaymentModal] = useState(false)
   const [paymentFormData, setPaymentFormData] = useState<any>({})
   const [isPaymentLoading, setIsPaymentLoading] = useState(false)
+
   useEffect(() => {
     document.title = "Net Khata - Invoice Management"
   }, [])
+
   const handleBulkSuccess = () => {
     setRefreshTrigger(prev => prev + 1)
     setShowBulkModal(false)
   }
 
   const handlePendingClick = (invoice: any) => {
-    // Pre-fill payment form with invoice data
-    setPaymentFormData({
-      invoice_id: invoice.id,
-      amount: invoice.total_amount,
-      status: "paid"
-    })
+    setPaymentFormData({ invoice_id: invoice.id, amount: invoice.total_amount, status: "paid" })
     setShowPaymentModal(true)
   }
 
@@ -69,41 +84,21 @@ const InvoiceManagement = () => {
     setIsPaymentLoading(true)
     try {
       const token = getToken()
-
-      // Format the payment data
-      const formattedData = { ...paymentFormData }
-
-      // Handle file upload if payment_proof exists
-      if (formattedData.payment_proof instanceof File) {
+      if (paymentFormData.payment_proof instanceof File) {
         const formDataToSend = new FormData()
-        Object.keys(formattedData).forEach((key) => {
-          formDataToSend.append(key, formattedData[key])
-        })
-
+        Object.keys(paymentFormData).forEach((key) => formDataToSend.append(key, paymentFormData[key]))
         await axiosInstance.post("/payments/add", formDataToSend, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
+          headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" },
         })
       } else {
-        await axiosInstance.post("/payments/add", formattedData, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
+        await axiosInstance.post("/payments/add", paymentFormData, { headers: { Authorization: `Bearer ${token}` } })
       }
-
-      toast.success("Payment added successfully", {
-        style: { background: "#D1FAE5", color: "#10B981" },
-      })
-
+      toast.success("Payment added successfully")
       setShowPaymentModal(false)
       setPaymentFormData({})
       setRefreshTrigger(prev => prev + 1)
-    } catch (error) {
-      console.error("Failed to add payment", error)
-      toast.error("Failed to add payment", {
-        style: { background: "#FEE2E2", color: "#EF4444" },
-      })
+    } catch {
+      toast.error("Failed to add payment")
     } finally {
       setIsPaymentLoading(false)
     }
@@ -113,37 +108,66 @@ const InvoiceManagement = () => {
     setShowPaymentModal(false)
     setPaymentFormData({})
   }
+
   const columns = React.useMemo<ColumnDef<Invoice>[]>(
     () => [
       {
-        header: "Invoice Number",
+        header: "Invoice #",
         accessorKey: "invoice_number",
+        cell: (info) => (
+          /* ── INVOICE NUMBER: monospace ── */
+          <span className="text-[13px] text-slate-700 font-mono font-medium">
+            {info.getValue<string>()}
+          </span>
+        ),
       },
       {
         header: "Internet ID",
         accessorKey: "internet_id",
+        cell: (info) => (
+          <span className="text-[13px] text-slate-600 font-mono">{info.getValue<string>()}</span>
+        ),
       },
       {
         header: "Billing Start",
         accessorKey: "billing_start_date",
-        cell: (info) => new Date(info.getValue<string>()).toLocaleDateString(),
+        cell: (info) => (
+          <span className="text-[13px] text-slate-600">
+            {new Date(info.getValue<string>()).toLocaleDateString()}
+          </span>
+        ),
       },
       {
         header: "Billing End",
         accessorKey: "billing_end_date",
-        cell: (info) => new Date(info.getValue<string>()).toLocaleDateString(),
+        cell: (info) => (
+          <span className="text-[13px] text-slate-600">
+            {new Date(info.getValue<string>()).toLocaleDateString()}
+          </span>
+        ),
       },
       {
         header: "Due Date",
         accessorKey: "due_date",
-        cell: (info) => new Date(info.getValue<string>()).toLocaleDateString(),
+        cell: (info) => (
+          <span className="text-[13px] text-slate-600">
+            {new Date(info.getValue<string>()).toLocaleDateString()}
+          </span>
+        ),
       },
       {
         header: "Subtotal",
         accessorKey: "subtotal",
         cell: (info) => {
           const value = Number.parseFloat(info.getValue<string | number>() as string)
-          return !isNaN(value) ? `PKR${value.toFixed(2)}` : "N/A"
+          if (isNaN(value)) return <span className="text-slate-400">N/A</span>
+          return (
+            /* ── MONETARY: muted PKR prefix + tabular-nums ── */
+            <span className="text-[13px] font-medium text-slate-900 tabular-nums">
+              <span className="text-[11px] text-slate-400 mr-0.5">PKR</span>
+              {value.toFixed(2)}
+            </span>
+          )
         },
       },
       {
@@ -151,7 +175,8 @@ const InvoiceManagement = () => {
         accessorKey: "discount_percentage",
         cell: (info) => {
           const value = Number.parseFloat(info.getValue<string | number>() as string)
-          return !isNaN(value) ? `${value.toFixed(2)}%` : "N/A"
+          if (isNaN(value)) return <span className="text-slate-400">N/A</span>
+          return <span className="text-[13px] text-slate-600 tabular-nums">{value.toFixed(2)}%</span>
         },
       },
       {
@@ -159,7 +184,13 @@ const InvoiceManagement = () => {
         accessorKey: "total_amount",
         cell: (info) => {
           const value = Number.parseFloat(info.getValue<string | number>() as string)
-          return !isNaN(value) ? `PKR${value.toFixed(2)}` : "N/A"
+          if (isNaN(value)) return <span className="text-slate-400">N/A</span>
+          return (
+            <span className="text-[13px] font-medium text-slate-900 tabular-nums">
+              <span className="text-[11px] text-slate-400 mr-0.5">PKR</span>
+              {value.toFixed(2)}
+            </span>
+          )
         },
       },
       {
@@ -169,46 +200,14 @@ const InvoiceManagement = () => {
           const status = info.getValue<string>()
           const invoice = info.row.original
           const isPending = status === "pending"
-
-          let bgColor = ""
-          let textColor = ""
-          let borderColor = ""
-
-          switch (status) {
-            case "paid":
-              bgColor = "bg-gradient-to-br from-emerald-50 to-emerald-100"
-              textColor = "text-emerald-700"
-              borderColor = "border-emerald-200"
-              break
-            case "pending":
-              bgColor = "bg-gradient-to-br from-amber-50 to-amber-100"
-              textColor = "text-amber-700"
-              borderColor = "border-amber-200"
-              break
-            case "overdue":
-              bgColor = "bg-gradient-to-br from-red-50 to-red-100"
-              textColor = "text-red-700"
-              borderColor = "border-red-200"
-              break
-            default:
-              bgColor = "bg-gradient-to-br from-blue-50 to-blue-100"
-              textColor = "text-blue-700"
-              borderColor = "border-blue-200"
-          }
-
           return (
+            /* ── STATUS BADGE: flat semantic pair, no gradient, no animate-pulse ── */
             <button
               onClick={isPending ? () => handlePendingClick(invoice) : undefined}
               disabled={!isPending}
-              className={`
-                px-4 py-2 text-xs font-semibold border uppercase
-                ${bgColor} ${textColor} ${borderColor}
-                transition-all duration-200 ease-out
-                ${isPending
-                  ? 'cursor-pointer shadow-sm hover:shadow-md hover:scale-105 active:scale-95'
-                  : 'cursor-not-allowed opacity-60'
-                }
-              `}
+              className={`inline-flex items-center px-2 py-0.5 rounded border text-[10px] font-medium uppercase tracking-[0.06em] transition-colors duration-150 ${getStatusStyle(status)} ${
+                isPending ? "cursor-pointer hover:opacity-80" : "cursor-default"
+              }`}
               title={isPending ? "Click to add payment" : status}
             >
               {status}
@@ -220,123 +219,63 @@ const InvoiceManagement = () => {
     [],
   )
 
-  const handleSubmit = async (formData: any, isEditing: boolean) => {
-    const dateFields = ["billing_start_date", "billing_end_date", "due_date"]
-    const numberFields = ["subtotal", "discount_percentage", "total_amount"]
-    const formattedData = { ...formData }
-
-    dateFields.forEach((field) => {
-      if (formattedData[field]) {
-        formattedData[field] = new Date(formattedData[field]).toISOString().split("T")[0]
-      }
-    })
-
-    numberFields.forEach((field) => {
-      if (formattedData[field]) {
-        formattedData[field] = Number.parseFloat(formattedData[field])
-      }
-    })
-
-    // Parse inventory_items JSON for equipment invoices
-    if (formattedData.inventory_items && typeof formattedData.inventory_items === 'string') {
-      try {
-        formattedData.inventory_items = JSON.parse(formattedData.inventory_items)
-      } catch (e) {
-        console.error("Failed to parse inventory_items", e)
-        formattedData.inventory_items = []
-      }
-    }
-
-    return formattedData
-  }
+  /* ── PAYMENT MODAL FOOTER ── */
+  const paymentModalFooter = (
+    <>
+      <button type="button" onClick={handlePaymentCancel}
+        className="px-4 py-2 text-[13px] font-medium text-slate-600 border border-slate-200 rounded-md hover:bg-slate-50 transition-colors duration-150">
+        Cancel
+      </button>
+      <button type="submit" form="payment-modal-form" disabled={isPaymentLoading}
+        className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-[13px] font-medium rounded-md hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors duration-150">
+        {isPaymentLoading ? "Processing..." : <><Plus className="w-4 h-4" /> Add Payment</>}
+      </button>
+    </>
+  )
 
   return (
     <>
-
       <CRUDPage<Invoice>
         title="Invoice"
         endpoint="invoices"
         columns={columns}
         FormComponent={InvoiceForm}
-        onSubmit={handleSubmit}
         customHeaderButton={
+          /* ── GENERATE MONTHLY INVOICES: emerald primary ── */
           <button
             onClick={() => setShowBulkModal(true)}
-            className="bg-emerald-green text-white px-4 py-2.5 rounded-lg hover:bg-emerald-green/90 transition-colors flex items-center justify-center gap-2 shadow-sm"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white text-[13px] font-medium rounded-md hover:bg-emerald-700 transition-colors duration-150"
           >
-            <FileText className="h-5 w-5" />
+            <FileText className="w-4 h-4" />
             Generate Monthly Invoices
           </button>
         }
         refreshTrigger={refreshTrigger}
       />
+
       <BulkInvoiceModal
         isVisible={showBulkModal}
         onClose={() => setShowBulkModal(false)}
         onSuccess={handleBulkSuccess}
       />
-      {/* Payment Modal */}
+
+      {/* ── ADD PAYMENT MODAL ── */}
       <Modal
         isVisible={showPaymentModal}
         onClose={handlePaymentCancel}
         title="Add Payment"
         isLoading={isPaymentLoading}
+        footer={paymentModalFooter}
       >
-        <form onSubmit={handlePaymentSubmit} className="bg-white">
+        <form id="payment-modal-form" onSubmit={handlePaymentSubmit}>
           <PaymentForm
             formData={paymentFormData}
             handleInputChange={handlePaymentInputChange}
             isEditing={false}
           />
-          <div className="mt-6 flex justify-end gap-3">
-            <button
-              type="button"
-              onClick={handlePaymentCancel}
-              className="px-4 py-2.5 border border-slate-gray/20 text-slate-gray rounded-lg hover:bg-light-sky/50 transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={isPaymentLoading}
-              className="px-4 py-2.5 bg-electric-blue text-white rounded-lg hover:bg-btn-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-electric-blue disabled:opacity-50 transition-colors flex items-center gap-2"
-            >
-              {isPaymentLoading ? (
-                <>
-                  <svg
-                    className="animate-spin h-5 w-5 text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                  Processing...
-                </>
-              ) : (
-                <>
-                  <Plus className="h-5 w-5" />
-                  Add Payment
-                </>
-              )}
-            </button>
-          </div>
         </form>
       </Modal>
     </>
-
   )
 }
 

@@ -22,31 +22,31 @@ export const ProcessComplaintModal: React.FC<ProcessComplaintModalProps> = ({
       <div className="space-y-6">
         <div className="flex items-start gap-4">
           <div className="flex-shrink-0">
-            <div className="flex items-center justify-center h-12 w-12 rounded-full bg-[#B3C8CF]/20">
-              <AlertCircle className="h-6 w-6 text-[#89A8B2]" />
+            <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-blue-50 border border-blue-200">
+              <AlertCircle className="h-5 w-5 text-blue-600" />
             </div>
           </div>
           <div className="flex-1">
-            <h3 className="text-lg font-semibold text-[#2C3E50] mb-2">Confirm Processing</h3>
-            <p className="text-sm text-[#5A6C7D] leading-relaxed">
+            <h3 className="text-[14px] font-medium text-slate-900 mb-1.5">Confirm Processing</h3>
+            <p className="text-[13px] text-slate-600 leading-relaxed">
               Are you sure you want to process this complaint? This will change the status to "In Progress" and notify
               the customer of the update.
             </p>
           </div>
         </div>
 
-        <div className="flex flex-col-reverse sm:flex-row gap-3 pt-4 border-t border-[#B3C8CF]/20">
+        <div className="flex flex-col-reverse sm:flex-row gap-2 pt-4 border-t border-slate-200">
           <button
             onClick={onClose}
             disabled={isLoading}
-            className="flex-1 px-6 py-3 bg-white text-[#89A8B2] border-2 border-[#B3C8CF] rounded-lg hover:bg-[#F1F0E8] transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-[#89A8B2]/30"
+            className="flex-1 h-9 px-4 text-[13px] font-medium text-slate-600 bg-white border border-slate-200 rounded-md hover:border-slate-300 hover:bg-slate-50 transition-colors duration-150 disabled:opacity-60 disabled:cursor-not-allowed"
           >
             Cancel
           </button>
           <button
             onClick={onConfirm}
             disabled={isLoading}
-            className="flex-1 px-6 py-3 bg-gradient-to-r from-[#89A8B2] to-[#7A96A3] text-white rounded-lg hover:shadow-lg hover:shadow-[#89A8B2]/30 transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-[#89A8B2]/50 flex items-center justify-center gap-2"
+            className="flex-1 h-9 px-4 text-[13px] font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors duration-150 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {isLoading ? (
               <>

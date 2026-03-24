@@ -19,8 +19,9 @@ import {
   Filter,
   FileText,
   MessageSquare,
-  Image,
+  ImageIcon,   // Fix: was `Image` — renamed to `ImageIcon` in lucide-react v0.383+
 } from "lucide-react"
+import HorizontalLogo from "../../assets/net_khata_horizontal.png"
 
 interface Task {
   id: string
@@ -42,17 +43,17 @@ interface Task {
 }
 
 const statusConfig: Record<string, { color: string; bg: string; icon: React.ElementType }> = {
-  pending: { color: "text-yellow-700", bg: "bg-yellow-100", icon: Clock },
-  in_progress: { color: "text-blue-700", bg: "bg-blue-100", icon: ClipboardList },
-  completed: { color: "text-green-700", bg: "bg-green-100", icon: CheckCircle },
-  cancelled: { color: "text-gray-700", bg: "bg-gray-100", icon: X },
+  pending: { color: "text-amber-700", bg: "bg-amber-50 border border-amber-200", icon: Clock },
+  in_progress: { color: "text-blue-700", bg: "bg-blue-50 border border-blue-200", icon: ClipboardList },
+  completed: { color: "text-emerald-700", bg: "bg-emerald-50 border border-emerald-200", icon: CheckCircle },
+  cancelled: { color: "text-slate-700", bg: "bg-slate-100 border border-slate-200", icon: X },
 }
 
 const priorityConfig: Record<string, { border: string; badge: string }> = {
-  low: { border: "border-l-gray-400", badge: "bg-gray-100 text-gray-700" },
-  medium: { border: "border-l-blue-400", badge: "bg-blue-100 text-blue-700" },
-  high: { border: "border-l-orange-400", badge: "bg-orange-100 text-orange-700" },
-  critical: { border: "border-l-red-500", badge: "bg-red-100 text-red-700" },
+  low: { border: "border-l-slate-300", badge: "bg-slate-100 text-slate-700 border border-slate-200" },
+  medium: { border: "border-l-blue-400", badge: "bg-blue-50 text-blue-700 border border-blue-200" },
+  high: { border: "border-l-orange-400", badge: "bg-orange-50 text-orange-700 border border-orange-200" },
+  critical: { border: "border-l-rose-500", badge: "bg-rose-50 text-rose-700 border border-rose-200" },
 }
 
 const taskTypeLabels: Record<string, string> = {
@@ -113,6 +114,7 @@ export function PortalTasks() {
       toast.success("Task updated successfully!")
       setSelectedTask(null)
       fetchTasks()
+      window.dispatchEvent(new Event("refresh-portal-stats"))
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Failed to update task")
     } finally {
@@ -131,90 +133,111 @@ export function PortalTasks() {
 
   const isOverdue = (dueDate: string | null) => {
     if (!dueDate) return false
-    return new Date(dueDate) < new Date() 
+    return new Date(dueDate) < new Date()
   }
 
   if (loading) {
     return (
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {[...Array(6)].map((_, i) => (
-          <div key={i} className="h-40 bg-gray-200 rounded-xl animate-pulse"></div>
+          <div key={i} className="h-40 bg-slate-200 rounded-[10px] animate-pulse" />
         ))}
       </div>
     )
   }
 
   return (
-    <>
+    <div className="space-y-6 max-w-7xl mx-auto">
+
+      {/* Brand Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white border border-slate-200/80 rounded-[12px] p-5 shadow-sm">
+        <div className="flex items-center gap-4">
+          <img src={HorizontalLogo} alt="Net Khata Logo" className="h-9 w-auto object-contain" />
+          <div className="h-8 w-px bg-slate-200 hidden sm:block" />
+          <div>
+            <h1 className="text-[18px] font-semibold text-slate-900 tracking-tight leading-none">Task Manager</h1>
+            <p className="text-[12px] text-slate-500 mt-1.5">Organize, track, and complete your assigned tasks</p>
+          </div>
+        </div>
+      </div>
+
       {/* Filter Bar */}
-      <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2">
-        <Filter className="w-4 h-4 text-gray-500 flex-shrink-0" />
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-2 p-1.5 bg-slate-100/60 rounded-[10px] w-fit border border-slate-200/60">
+        <div className="pl-3 pr-2 border-r border-slate-200/80 py-1.5 flex-shrink-0">
+          <Filter className="w-4 h-4 text-slate-400" />
+        </div>
         {["all", "pending", "in_progress", "completed"].map((status) => (
           <button
             key={status}
             onClick={() => setFilter(status)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
-              filter === status
-                ? "bg-[#89A8B2] text-white shadow-md"
-                : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
-            }`}
+            className={`px-4 py-2 rounded-[6px] text-[13px] font-medium whitespace-nowrap transition-all duration-200 ${filter === status
+                ? "bg-white text-blue-600 shadow-[0_2px_4px_-1px_rgba(0,0,0,0.06)] border border-slate-200/60"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-50/50 border border-transparent"
+              }`}
           >
-            {status === "all" ? "All Tasks" : status.replace("_", " ").replace(/\b\w/g, (l) => l.toUpperCase())}
+            {status === "all"
+              ? "All Tasks"
+              : status.replace("_", " ").replace(/\b\w/g, (l) => l.toUpperCase())}
           </button>
         ))}
       </div>
 
       {/* Stats Summary */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-white rounded-[12px] border border-slate-200/80 p-5 shadow-sm hover:border-blue-300 transition-colors">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-yellow-100 rounded-lg">
-              <Clock className="w-5 h-5 text-yellow-600" />
+            <div className="p-2.5 bg-amber-50/80 rounded-[10px] text-amber-600">
+              <Clock className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-[26px] font-bold text-slate-900 tracking-tight leading-none">
                 {tasks.filter((t) => t.status === "pending").length}
               </p>
-              <p className="text-xs text-gray-500">Pending</p>
+              <p className="text-[11px] font-medium text-slate-500 uppercase tracking-[0.06em] mt-1.5">Pending</p>
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
+
+        <div className="bg-white rounded-[12px] border border-slate-200/80 p-5 shadow-sm hover:border-blue-300 transition-colors">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <ClipboardList className="w-5 h-5 text-blue-600" />
+            <div className="p-2.5 bg-blue-50/80 rounded-[10px] text-blue-600">
+              <ClipboardList className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-[26px] font-bold text-slate-900 tracking-tight leading-none">
                 {tasks.filter((t) => t.status === "in_progress").length}
               </p>
-              <p className="text-xs text-gray-500">In Progress</p>
+              <p className="text-[11px] font-medium text-slate-500 uppercase tracking-[0.06em] mt-1.5">In Progress</p>
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
+
+        <div className="bg-white rounded-[12px] border border-slate-200/80 p-5 shadow-sm hover:border-blue-300 transition-colors">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <CheckCircle className="w-5 h-5 text-green-600" />
+            <div className="p-2.5 bg-emerald-50/80 rounded-[10px] text-emerald-600">
+              <CheckCircle className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-[26px] font-bold text-slate-900 tracking-tight leading-none">
                 {tasks.filter((t) => t.status === "completed").length}
               </p>
-              <p className="text-xs text-gray-500">Completed</p>
+              <p className="text-[11px] font-medium text-slate-500 uppercase tracking-[0.06em] mt-1.5">Completed</p>
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-red-100 rounded-lg">
-              <AlertTriangle className="w-5 h-5 text-red-600" />
+
+        <div className="bg-rose-50/80 border border-rose-200/60 rounded-[12px] p-5 shadow-[0_2px_8px_-4px_rgba(244,63,94,0.15)] group relative overflow-hidden">
+          <div className="flex items-center gap-3 relative z-10">
+            <div className="p-2.5 bg-white rounded-[10px] text-rose-600 shadow-sm transition-transform group-hover:scale-110 duration-300">
+              <AlertTriangle className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-[26px] font-bold text-rose-700 tracking-tight leading-none">
                 {tasks.filter((t) => isOverdue(t.due_date) && t.status !== "completed").length}
               </p>
-              <p className="text-xs text-gray-500">Overdue</p>
+              <p className="text-[11px] font-bold text-rose-600/90 uppercase tracking-[0.06em] mt-1.5">
+                Overdue Tasks
+              </p>
             </div>
           </div>
         </div>
@@ -222,7 +245,7 @@ export function PortalTasks() {
 
       {/* Tasks Grid */}
       {tasks.length === 0 ? (
-        <div className="text-center py-12 bg-white rounded-xl border border-gray-200">
+        <div className="text-center py-12 bg-white rounded-[10px] border border-slate-200">
           <ClipboardList className="w-12 h-12 text-gray-300 mx-auto mb-4" />
           <p className="text-gray-500">No tasks found</p>
         </div>
@@ -238,48 +261,51 @@ export function PortalTasks() {
               <div
                 key={task.id}
                 onClick={() => openTaskModal(task)}
-                className={`bg-white rounded-xl border border-gray-200 border-l-4 ${priority.border} p-4 cursor-pointer hover:shadow-lg hover:scale-[1.02] transition-all duration-200`}
+                className={`group bg-white rounded-[10px] border border-slate-200/80 border-l-4 ${priority.border} p-5 cursor-pointer hover:shadow-md hover:border-r-slate-300 hover:border-y-slate-300 transition-all duration-200 relative overflow-hidden`}
               >
-                <div className="flex items-start justify-between mb-3">
+                <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-2">
-                    <span className={`px-2 py-1 rounded-lg text-xs font-semibold ${status.bg} ${status.color}`}>
-                      <StatusIcon className="w-3 h-3 inline mr-1" />
+                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide ${status.bg} ${status.color}`}>
+                      <StatusIcon className="w-3 h-3 inline mr-0.5 mb-0.5" />
                       {task.status.replace("_", " ")}
                     </span>
-                    <span className={`px-2 py-1 rounded text-xs font-medium ${priority.badge}`}>
+                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide ${priority.badge}`}>
                       {task.priority}
                     </span>
                   </div>
-                  <ChevronRight className="w-5 h-5 text-gray-400" />
+                  <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-blue-500 transition-colors" />
                 </div>
 
-                <h3 className="text-sm font-semibold text-gray-900 mb-2">
+                <h3 className="text-[15px] font-semibold text-slate-900 tracking-tight mb-3">
                   {taskTypeLabels[task.task_type] || task.task_type}
                 </h3>
 
                 {task.customer_name && (
-                  <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
-                    <User className="w-4 h-4" />
-                    <span>{task.customer_name}</span>
+                  <div className="flex items-center gap-2 text-[13px] text-slate-700 font-medium mb-1.5">
+                    <User className="w-3.5 h-3.5 text-slate-400" />
+                    <span className="truncate">{task.customer_name}</span>
                     {task.customer_internet_id && (
-                      <span className="text-xs text-[#89A8B2]">({task.customer_internet_id})</span>
+                      <span className="text-[11px] text-blue-600 shrink-0">({task.customer_internet_id})</span>
                     )}
                   </div>
                 )}
 
                 {task.customer_area && (
-                  <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
-                    <MapPin className="w-4 h-4" />
-                    <span>{task.customer_area}</span>
+                  <div className="flex items-center gap-2 text-[12px] text-slate-500 font-medium mb-3">
+                    <MapPin className="w-3.5 h-3.5 text-slate-400" />
+                    <span className="truncate">{task.customer_area}</span>
                   </div>
                 )}
 
                 {task.due_date && (
-                  <div className={`flex items-center gap-2 text-sm ${overdue ? "text-red-600 font-medium" : "text-gray-500"}`}>
-                    <Calendar className="w-4 h-4" />
+                  <div className={`flex items-center gap-2 text-[12px] ${overdue
+                      ? "text-rose-600 font-semibold bg-rose-50 border border-rose-100 py-1.5 px-2.5 rounded-md w-fit"
+                      : "text-slate-500 font-medium border-t border-slate-100 pt-3 mt-1"
+                    }`}>
+                    <Calendar className="w-3.5 h-3.5" />
                     <span>
                       {new Date(task.due_date).toLocaleDateString()}
-                      {overdue && " (Overdue)"}
+                      {overdue && " • Overdue"}
                     </span>
                   </div>
                 )}
@@ -292,25 +318,34 @@ export function PortalTasks() {
       {/* Detail Modal */}
       {selectedTask && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-hidden">
+          <div className="bg-white rounded-[10px] border border-slate-200 shadow-xl w-full max-w-lg max-h-[90vh] overflow-hidden">
+
             {/* Modal Header */}
-            <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gradient-to-r from-[#89A8B2] to-[#6B8A94]">
-              <div className="flex items-center gap-3">
-                <ClipboardList className="w-6 h-6 text-white" />
-                <h3 className="text-lg font-semibold text-white">Task Details</h3>
+            <div className={`flex items-center justify-between p-5 border-b ${statusConfig[selectedTask.status]?.bg || "bg-slate-50"} transition-colors duration-300`}>
+              <div className="flex items-center gap-4">
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center bg-white shadow-sm border ${statusConfig[selectedTask.status]?.color?.replace("text-", "border-").replace("700", "100")}`}>
+                  <ClipboardList className={`w-5 h-5 ${statusConfig[selectedTask.status]?.color}`} />
+                </div>
+                <div>
+                  <h3 className="text-[16px] font-semibold text-slate-900 tracking-tight">Task Details</h3>
+                  <p className="text-[12px] font-medium text-slate-500 mt-0.5">
+                    {taskTypeLabels[selectedTask.task_type] || selectedTask.task_type}
+                  </p>
+                </div>
               </div>
               <button
                 onClick={() => setSelectedTask(null)}
-                className="p-1 hover:bg-white/20 rounded-lg transition-colors"
+                className="h-8 w-8 inline-flex items-center justify-center border border-slate-200/60 rounded-md text-slate-500 bg-white hover:bg-slate-50 hover:text-slate-800 shadow-sm transition-all duration-200"
               >
-                <X className="w-6 h-6 text-white" />
+                <X className="w-4 h-4" />
               </button>
             </div>
 
             {/* Modal Body */}
             <div className="p-4 overflow-y-auto max-h-[calc(90vh-130px)] space-y-4">
+
               {/* Task Info */}
-              <div className="bg-gray-50 rounded-xl p-4">
+              <div className="bg-slate-50 border border-slate-200 rounded-[10px] p-4">
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-lg font-bold text-gray-900">
                     {taskTypeLabels[selectedTask.task_type] || selectedTask.task_type}
@@ -319,7 +354,7 @@ export function PortalTasks() {
                     {selectedTask.priority.toUpperCase()}
                   </span>
                 </div>
-                
+
                 <div className="grid grid-cols-2 gap-3 text-sm">
                   <div>
                     <p className="text-gray-500">Status</p>
@@ -329,14 +364,21 @@ export function PortalTasks() {
                   </div>
                   <div>
                     <p className="text-gray-500">Due Date</p>
-                    <p className={`font-medium ${isOverdue(selectedTask.due_date) && selectedTask.status !== "completed" ? "text-red-600" : "text-gray-900"}`}>
-                      {selectedTask.due_date ? new Date(selectedTask.due_date).toLocaleString() : "Not set"}
+                    <p className={`font-medium ${isOverdue(selectedTask.due_date) && selectedTask.status !== "completed"
+                        ? "text-red-600"
+                        : "text-gray-900"
+                      }`}>
+                      {selectedTask.due_date
+                        ? new Date(selectedTask.due_date).toLocaleString()
+                        : "Not set"}
                     </p>
                   </div>
                   <div>
                     <p className="text-gray-500">Created</p>
                     <p className="font-medium text-gray-900">
-                      {selectedTask.created_at ? new Date(selectedTask.created_at).toLocaleDateString() : "—"}
+                      {selectedTask.created_at
+                        ? new Date(selectedTask.created_at).toLocaleDateString()
+                        : "—"}
                     </p>
                   </div>
                   {selectedTask.completed_at && (
@@ -371,7 +413,10 @@ export function PortalTasks() {
                     {selectedTask.customer_phone && (
                       <div className="flex justify-between items-center">
                         <span className="text-gray-600">Phone</span>
-                        <a href={`tel:${selectedTask.customer_phone}`} className="font-medium text-[#89A8B2] flex items-center gap-1">
+                        <a
+                          href={`tel:${selectedTask.customer_phone}`}
+                          className="font-medium text-[#89A8B2] flex items-center gap-1"
+                        >
                           <Phone className="w-3 h-3" />
                           {selectedTask.customer_phone}
                         </a>
@@ -393,7 +438,7 @@ export function PortalTasks() {
                 </div>
               )}
 
-              {/* Notes */}
+              {/* Task Notes */}
               {selectedTask.notes && (
                 <div className="bg-gray-50 rounded-xl p-4">
                   <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
@@ -404,7 +449,7 @@ export function PortalTasks() {
                 </div>
               )}
 
-              {/* Completion Notes (if completed) */}
+              {/* Completion Notes */}
               {selectedTask.completion_notes && (
                 <div className="bg-green-50 rounded-xl p-4">
                   <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
@@ -415,17 +460,17 @@ export function PortalTasks() {
                 </div>
               )}
 
-              {/* Update Form (if not completed) */}
+              {/* Update Form */}
               {selectedTask.status !== "completed" && selectedTask.status !== "cancelled" && (
                 <div className="bg-white border border-gray-200 rounded-xl p-4 space-y-4">
                   <h4 className="font-semibold text-gray-900">Update Task</h4>
-                  
+
                   <div>
                     <label className="text-sm font-medium text-gray-700">Status</label>
                     <select
                       value={completionForm.status}
                       onChange={(e) => setCompletionForm({ ...completionForm, status: e.target.value })}
-                      className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#89A8B2] focus:border-transparent"
+                      className="w-full mt-1 px-3 py-2 border border-slate-200 rounded-md focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                     >
                       <option value="pending">Pending</option>
                       <option value="in_progress">In Progress</option>
@@ -445,13 +490,14 @@ export function PortalTasks() {
                           onChange={(e) => setCompletionForm({ ...completionForm, completion_notes: e.target.value })}
                           placeholder="Describe what was done..."
                           rows={3}
-                          className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#89A8B2] focus:border-transparent resize-none"
+                          className="w-full mt-1 px-3 py-2 border border-slate-200 rounded-md focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none"
                         />
                       </div>
 
                       <div>
+                        {/* Fix: `Image` was renamed to `ImageIcon` in lucide-react v0.383+ */}
                         <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                          <Image className="w-4 h-4" />
+                          <ImageIcon className="w-4 h-4" />
                           Proof URL (optional)
                         </label>
                         <input
@@ -459,7 +505,7 @@ export function PortalTasks() {
                           value={completionForm.completion_proof}
                           onChange={(e) => setCompletionForm({ ...completionForm, completion_proof: e.target.value })}
                           placeholder="https://..."
-                          className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#89A8B2] focus:border-transparent"
+                          className="w-full mt-1 px-3 py-2 border border-slate-200 rounded-md focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                         />
                       </div>
                     </>
@@ -469,10 +515,10 @@ export function PortalTasks() {
             </div>
 
             {/* Modal Footer */}
-            <div className="flex items-center justify-end gap-2 p-4 border-t border-gray-200 bg-gray-50">
+            <div className="flex items-center justify-end gap-2 p-4 border-t border-slate-100 bg-slate-50">
               <button
                 onClick={() => setSelectedTask(null)}
-                className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors"
+                className="px-4 py-2 border border-slate-200 rounded-md text-sm font-medium hover:bg-white transition-colors"
               >
                 Close
               </button>
@@ -480,7 +526,7 @@ export function PortalTasks() {
                 <button
                   onClick={handleStatusUpdate}
                   disabled={updating}
-                  className="px-4 py-2 bg-[#89A8B2] text-white rounded-lg text-sm font-medium hover:bg-[#7a9aa4] transition-colors disabled:opacity-50"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-50"
                 >
                   {updating ? "Updating..." : "Update Task"}
                 </button>
@@ -489,6 +535,6 @@ export function PortalTasks() {
           </div>
         </div>
       )}
-    </>
+    </div>
   )
 }

@@ -37,7 +37,7 @@ interface CRUDPageProps<T> {
   }>
   onDataChange?: () => void
   validateBeforeSubmit?: (formData: Partial<T>) => string | null
-  useFormData?: boolean  // Enable multipart/form-data for file uploads
+  useFormData?: boolean
 }
 
 export function CRUDPage<T extends { id: string; is_active?: boolean }>({
@@ -62,12 +62,8 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
     password: string
     email: string
   } | null>(null)
-  const [stats, setStats] = useState({
-    total: 0,
-    active: 0,
-    inactive: 0,
-  })
-  const [fileData, setFileData] = useState<Record<string, File>>({})  // File storage for uploads
+  const [stats, setStats] = useState({ total: 0, active: 0, inactive: 0 })
+  const [fileData, setFileData] = useState<Record<string, File>>({})
 
   const fetchData = async () => {
     setIsLoading(true)
@@ -77,24 +73,13 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
         headers: { Authorization: `Bearer ${token}` },
       })
       setData(response.data)
-
-      // Calculate stats
       const total = response.data.length
       const active = response.data.filter((item: any) => item.is_active).length
-      setStats({
-        total,
-        active,
-        inactive: total - active,
-      })
-
-      if (onDataChange) {
-        onDataChange()
-      }
+      setStats({ total, active, inactive: total - active })
+      if (onDataChange) onDataChange()
     } catch (error) {
       console.error(`Failed to fetch ${title}`, error)
-      toast.error(`Failed to fetch ${title}`, {
-        style: { background: "#FEE2E2", color: "#EF4444" },
-      })
+      toast.error(`Failed to fetch ${title}`)
     } finally {
       setIsLoading(false)
     }
@@ -112,21 +97,15 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
         { is_active: !currentStatus },
         { headers: { Authorization: `Bearer ${token}` } },
       )
-      toast.success(`${title} status updated successfully`, {
-        style: { background: "#D1FAE5", color: "#10B981" },
-      })
+      toast.success(`${title} status updated successfully`)
       await fetchData()
     } catch (error) {
-      console.error(`Failed to update ${title} status`, error)
-      toast.error(`Failed to update ${title} status`, {
-        style: { background: "#FEE2E2", color: "#EF4444" },
-      })
+      toast.error(`Failed to update ${title} status`)
     }
   }
 
   const handleBulkStatusChange = async (newStatus: boolean) => {
     if (selectedRows.length === 0) return
-
     try {
       setIsLoading(true)
       const token = getToken()
@@ -141,17 +120,11 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
       )
       toast.success(
         `${selectedRows.length} ${title.toLowerCase()}${selectedRows.length > 1 ? "s" : ""} ${newStatus ? "activated" : "deactivated"} successfully`,
-        {
-          style: { background: "#D1FAE5", color: "#10B981" },
-        },
       )
       await fetchData()
       setSelectedRows([])
     } catch (error) {
-      console.error(`Failed to update ${title} status`, error)
-      toast.error(`Failed to update ${title} status`, {
-        style: { background: "#FEE2E2", color: "#EF4444" },
-      })
+      toast.error(`Failed to update ${title} status`)
     } finally {
       setIsLoading(false)
     }
@@ -160,7 +133,7 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
   const showModal = (item: T | null) => {
     setEditingItem(item)
     setFormData(item || {})
-    setFileData({})  // Clear file data when opening modal
+    setFileData({})
     setIsModalVisible(true)
   }
 
@@ -168,20 +141,16 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
     setIsModalVisible(false)
     setEditingItem(null)
     setFormData({})
-    setFileData({})  // Clear file data
+    setFileData({})
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    console.log("Form: ", formData);
-    console.log("FileData: ", fileData);  // Debug: show files
     e.preventDefault()
 
     if (validateBeforeSubmit) {
       const validationError = validateBeforeSubmit(formData)
       if (validationError) {
-        toast.error(validationError, {
-          style: { background: "#FEE2E2", color: "#EF4444" },
-        })
+        toast.error(validationError)
         return
       }
     }
@@ -191,68 +160,45 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
     try {
       const token = getToken()
       let response
-
-      // Prepare data - use FormData if files are present or useFormData is true
       const hasFiles = Object.keys(fileData).length > 0
-      console.log("useFormData:", useFormData, "hasFiles:", hasFiles);  // Debug
-
       let submitData: any = formData
-      let headers: Record<string, string> = { Authorization: `Bearer ${token}` }
-      let requestConfig: any = { headers }
+      let requestConfig: any = { headers: { Authorization: `Bearer ${token}` } }
 
       if (useFormData || hasFiles) {
         const formDataObj = new FormData()
-        // Append regular form fields
         Object.entries(formData).forEach(([key, value]) => {
           if (value !== null && value !== undefined) {
-            // Handle arrays (iterate and append primitives)
             if (Array.isArray(value)) {
               value.forEach((item) => {
-                // Only append primitives from arrays (skip objects)
-                if (typeof item !== 'object') {
-                  formDataObj.append(key, String(item));
-                }
-              });
+                if (typeof item !== "object") formDataObj.append(key, String(item))
+              })
+            } else if (value instanceof File || value instanceof Blob) {
+              formDataObj.append(key, value)
+            } else if (typeof value !== "object") {
+              formDataObj.append(key, String(value))
             }
-            // Handle Files/Blobs (if they somehow ended up in formData, though usually in fileData)
-            else if (value instanceof File || value instanceof Blob) {
-              formDataObj.append(key, value);
-            }
-            // Handle primitives
-            else if (typeof value !== 'object') {
-              formDataObj.append(key, String(value));
-            }
-            // Skip complex objects (like packages list) to avoid '[object Object]'
           }
         })
-        // Append files
         Object.entries(fileData).forEach(([key, file]) => {
-          console.log("Appending file:", key, file);  // Debug
           formDataObj.append(key, file)
         })
         submitData = formDataObj
-        // IMPORTANT: Don't set Content-Type - let axios/browser set it with boundary
-        // Also need to override the default transformRequest to prevent JSON serialization
         requestConfig = {
           headers: {
             Authorization: `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data',
-          }
+            "Content-Type": "multipart/form-data",
+          },
         }
       } else {
-        headers['Content-Type'] = 'application/json'
+        requestConfig.headers["Content-Type"] = "application/json"
       }
 
       if (editingItem) {
         response = await axiosInstance.put(`/${endpoint}/update/${editingItem.id}`, submitData, requestConfig)
-        toast.success(`${title} updated successfully`, {
-          style: { background: "#D1FAE5", color: "#10B981" },
-        })
+        toast.success(`${title} updated successfully`)
       } else {
         response = await axiosInstance.post(`/${endpoint}/add`, submitData, requestConfig)
-        toast.success(`${title} added successfully`, {
-          style: { background: "#D1FAE5", color: "#10B981" },
-        })
+        toast.success(`${title} added successfully`)
         if (response.data.credentials) {
           setNewEmployeeCredentials(response.data.credentials)
           setShowCredentialsModal(true)
@@ -261,12 +207,8 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
       await fetchData()
       handleCancel()
     } catch (error: any) {
-      console.error("Operation failed", error)
       const errorMsg = error.response?.data?.error || error.response?.data?.message || "Operation failed"
-      toast.error(errorMsg, {
-        style: { background: "#FEE2E2", color: "#EF4444" },
-        hideProgressBar: false,
-      })
+      toast.error(errorMsg)
     } finally {
       setIsLoading(false)
     }
@@ -280,15 +222,10 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
         await axiosInstance.delete(`/${endpoint}/delete/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
-        toast.success(`${title} deleted successfully`, {
-          style: { background: "#D1FAE5", color: "#10B981" },
-        })
+        toast.success(`${title} deleted successfully`)
         await fetchData()
       } catch (error) {
-        console.error("Delete operation failed", error)
-        toast.error("Delete operation failed", {
-          style: { background: "#FEE2E2", color: "#EF4444" },
-        })
+        toast.error("Delete operation failed")
       } finally {
         setIsLoading(false)
       }
@@ -298,11 +235,9 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
-    console.log('Updated Form data: ', formData);
   }
 
   const handleFileChange = (name: string, file: File | null) => {
-    console.log("handleFileChange called:", name, file);  // Debug
     if (file) {
       setFileData((prev) => ({ ...prev, [name]: file }))
     } else {
@@ -314,9 +249,7 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
     }
   }
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen((prev) => !prev)
-  }
+  const toggleSidebar = () => setIsSidebarOpen((prev) => !prev)
 
   const memoizedColumns = useMemo(() => {
     return [
@@ -325,44 +258,45 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
         header: "Status",
         accessorKey: "is_active",
         cell: (info: any) => (
-          <div className="flex items-center">
-            <button
-              onClick={() => handleToggleStatus(info.row.original.id, info.getValue())}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 transition-all ${info.getValue()
-                ? "bg-emerald-green/10 text-emerald-green hover:bg-emerald-green/20"
-                : "bg-coral-red/10 text-coral-red hover:bg-coral-red/20"
-                }`}
-            >
-              {info.getValue() ? (
-                <>
-                  <CheckCircle2 className="h-3.5 w-3.5" /> Active
-                </>
-              ) : (
-                <>
-                  <XCircle className="h-3.5 w-3.5" /> Inactive
-                </>
-              )}
-            </button>
-          </div>
+          /* ── STATUS BADGE: rounded-md pill, semantic color only on text/bg, no rounded-full ── */
+          <button
+            onClick={() => handleToggleStatus(info.row.original.id, info.getValue())}
+            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium transition-colors duration-150 ${
+              info.getValue()
+                ? "bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200"
+                : "bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-200"
+            }`}
+          >
+            {info.getValue() ? (
+              <>
+                <CheckCircle2 className="w-3 h-3" /> Active
+              </>
+            ) : (
+              <>
+                <XCircle className="w-3 h-3" /> Inactive
+              </>
+            )}
+          </button>
         ),
       },
       {
         header: "Actions",
         cell: (info: any) => (
-          <div className="flex items-center gap-2">
+          /* ── EDIT/DELETE: icon-only ghost buttons, color only on hover ── */
+          <div className="flex items-center gap-1">
             <button
               onClick={() => showModal(info.row.original)}
-              className="p-2 text-white bg-electric-blue rounded-md hover:bg-btn-hover transition-colors"
+              className="p-1.5 rounded-md text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors duration-150"
               title="Edit"
             >
-              <Pencil className="h-4 w-4" />
+              <Pencil className="w-4 h-4" />
             </button>
             <button
               onClick={() => handleDelete(info.row.original.id)}
-              className="p-2 text-white bg-coral-red rounded-md hover:bg-coral-red/80 transition-colors"
+              className="p-1.5 rounded-md text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors duration-150"
               title="Delete"
             >
-              <Trash2 className="h-4 w-4" />
+              <Trash2 className="w-4 h-4" />
             </button>
           </div>
         ),
@@ -370,187 +304,206 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
     ]
   }, [columns])
 
-  return (
-    <div className="flex h-screen bg-light-sky/50">
-      <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} setIsOpen={setIsSidebarOpen} />
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <Topbar toggleSidebar={toggleSidebar} />
-        <main
-          className={`flex-1 overflow-x-hidden overflow-y-auto bg-light-sky/50 p-0 sm:p-6 pt-20 transition-all duration-300 ${isSidebarOpen ? "ml-64" : "ml-0 lg:ml-20"
-            }`}
-        >
+  /* ── MODAL FOOTER: passed as prop so it renders in sticky bg-slate-50 border-t footer ── */
+  const modalFooter = (
+    <>
+      <button
+        type="button"
+        onClick={handleCancel}
+        className="px-4 py-2 text-[13px] font-medium text-slate-600 border border-slate-200 rounded-md hover:bg-slate-50 transition-colors duration-150"
+      >
+        Cancel
+      </button>
+      <button
+        type="submit"
+        form="crud-form"
+        disabled={isLoading}
+        className="px-4 py-2 text-[13px] font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors duration-150 flex items-center gap-2"
+      >
+        {isLoading ? (
+          "Processing..."
+        ) : editingItem ? (
+          <>
+            <Check className="w-4 h-4" /> Update {title}
+          </>
+        ) : (
+          <>
+            <Plus className="w-4 h-4" /> Create {title}
+          </>
+        )}
+      </button>
+    </>
+  )
 
-          <div className="container mx-auto">
-            {/* Breadcrumb */}
-            <div className="flex items-center text-sm text-slate-gray mb-6">
-              <LayoutDashboard className="h-4 w-4 mr-1" />
+  return (
+    /* ── APP SHELL: flex h-screen, bg-slate-100, no pt-20 hack ── */
+    <div className="flex h-screen bg-slate-100 overflow-hidden">
+      <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} setIsOpen={setIsSidebarOpen} />
+
+      {/* ── MAIN COLUMN: pl offset for sidebar, no ml-64 ── */}
+      <div
+        className={`flex-1 flex flex-col min-w-0 overflow-hidden transition-all duration-200 ${
+          isSidebarOpen ? "lg:pl-[260px]" : "lg:pl-[60px]"
+        }`}
+      >
+        {/* ── TOPBAR: flex-shrink-0 in normal flow, no fixed positioning needed ── */}
+        <div className="flex-shrink-0">
+          <Topbar toggleSidebar={toggleSidebar} />
+        </div>
+
+        <main className="flex-1 overflow-y-auto bg-slate-100 px-6 py-5">
+          <div className="max-w-[1400px] mx-auto">
+
+            {/* ── BREADCRUMB ── */}
+            <div className="flex items-center gap-1 text-[11px] text-slate-400 mb-5">
+              <LayoutDashboard className="w-3.5 h-3.5" />
               <span>Dashboard</span>
-              <ChevronRight className="h-4 w-4 mx-1" />
-              <span className="text-deep-ocean font-medium">{title} Management</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+              <span className="text-slate-600 font-medium">{title} Management</span>
             </div>
 
-            {/* Header Section */}
-            <div className="bg-white rounded-xl shadow-md p-6 mb-6">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-                <div>
-                  <h1 className="text-2xl md:text-3xl font-bold text-deep-ocean flex items-center gap-2">
-                    <Users className="h-7 w-7 text-electric-blue" />
-                    {title} Management
-                  </h1>
-                  <p className="text-slate-gray mt-1">Manage your {title.toLowerCase()} records efficiently</p>
+            {/* ── PAGE HEADER CARD: no shadow, rounded-[10px] ── */}
+            <div className="bg-white rounded-[10px] border border-slate-200 p-5 mb-5">
+
+              {/* Title row */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
+                <div className="flex items-center gap-3">
+                  {/* ── PAGE ICON: bg-blue-50 w-8 h-8 rounded-lg, icon w-4 h-4 ── */}
+                  <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Users className="w-4 h-4 text-blue-600" />
+                  </div>
+                  <div>
+                    <h1 className="text-[15px] font-medium text-slate-900">{title} Management</h1>
+                    <p className="text-[11px] text-slate-400 mt-0.5">
+                      Manage your {title.toLowerCase()} records
+                    </p>
+                  </div>
                 </div>
+
+                {/* ── PRIMARY ACTION BUTTON: bg-blue-600, rounded-md, w-4 h-4 icon ── */}
                 <button
                   onClick={() => showModal(null)}
-                  className="bg-electric-blue text-white px-4 py-2.5 rounded-lg hover:bg-btn-hover transition-colors flex items-center justify-center gap-2 shadow-sm self-start md:self-center"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-[13px] font-medium rounded-md hover:bg-blue-700 transition-colors duration-150 self-start sm:self-center flex-shrink-0"
                 >
-                  <Plus className="h-5 w-5" /> Add New {title}
+                  <Plus className="w-4 h-4" />
+                  Add New {title}
                 </button>
               </div>
 
-              {/* Stats Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <div className="bg-light-sky/50 rounded-lg p-4 border border-slate-gray/10">
+              {/* ── STAT STRIP: 3 identical bg-white cards — Skill 11 rule ── */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
+                {/* Total */}
+                <div className="bg-slate-50 rounded-[10px] border border-slate-200 p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-slate-gray text-sm">Total {title}s</p>
-                      <h3 className="text-2xl font-bold text-deep-ocean mt-1">{stats.total}</h3>
+                      <p className="text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em]">
+                        Total {title}s
+                      </p>
+                      <p className="text-[22px] font-semibold text-slate-900 tabular-nums leading-none mt-1.5">
+                        {stats.total}
+                      </p>
                     </div>
-                    <div className="bg-deep-ocean/10 p-3 rounded-full">
-                      <Users className="h-6 w-6 text-deep-ocean" />
+                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Users className="w-4 h-4 text-blue-600" />
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-emerald-green/5 rounded-lg p-4 border border-emerald-green/10">
+                {/* Active */}
+                <div className="bg-slate-50 rounded-[10px] border border-slate-200 p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-slate-gray text-sm">Active {title}s</p>
-                      <h3 className="text-2xl font-bold text-emerald-green mt-1">{stats.active}</h3>
+                      <p className="text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em]">
+                        Active {title}s
+                      </p>
+                      <p className="text-[22px] font-semibold text-slate-900 tabular-nums leading-none mt-1.5">
+                        {stats.active}
+                      </p>
                     </div>
-                    <div className="bg-emerald-green/10 p-3 rounded-full">
-                      <CheckCircle2 className="h-6 w-6 text-emerald-green" />
+                    <div className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-coral-red/5 rounded-lg p-4 border border-coral-red/10">
+                {/* Inactive */}
+                <div className="bg-slate-50 rounded-[10px] border border-slate-200 p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-slate-gray text-sm">Inactive {title}s</p>
-                      <h3 className="text-2xl font-bold text-coral-red mt-1">{stats.inactive}</h3>
+                      <p className="text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em]">
+                        Inactive {title}s
+                      </p>
+                      <p className="text-[22px] font-semibold text-slate-900 tabular-nums leading-none mt-1.5">
+                        {stats.inactive}
+                      </p>
                     </div>
-                    <div className="bg-coral-red/10 p-3 rounded-full">
-                      <XCircle className="h-6 w-6 text-coral-red" />
+                    <div className="w-8 h-8 bg-rose-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <XCircle className="w-4 h-4 text-rose-500" />
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Bulk Actions */}
+              {/* ── BULK ACTIONS BAR: only shown when rows selected ── */}
               {selectedRows.length > 0 && (
-                <div className="bg-electric-blue/5 border border-electric-blue/20 rounded-lg p-4 mb-6 flex flex-wrap items-center justify-between gap-4">
-                  <div className="flex items-center gap-2">
-                    <span className="text-deep-ocean font-medium">
-                      {selectedRows.length} {title.toLowerCase()}
-                      {selectedRows.length > 1 ? "s" : ""} selected
-                    </span>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
+                <div className="bg-blue-50 border border-blue-200 rounded-[10px] px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+                  <span className="text-[13px] font-medium text-blue-700">
+                    {selectedRows.length} {title.toLowerCase()}
+                    {selectedRows.length > 1 ? "s" : ""} selected
+                  </span>
+                  <div className="flex gap-2">
                     <button
                       onClick={() => handleBulkStatusChange(true)}
-                      disabled={selectedRows.length === 0 || isLoading}
-                      className="px-4 py-2 text-sm font-medium bg-emerald-green text-white rounded-md hover:bg-emerald-green/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-green disabled:opacity-50 transition-colors flex items-center gap-1.5"
+                      disabled={isLoading}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium bg-emerald-600 text-white rounded-md hover:bg-emerald-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors duration-150"
                     >
-                      <Check className="h-4 w-4" /> Activate
+                      <Check className="w-4 h-4" /> Activate
                     </button>
                     <button
                       onClick={() => handleBulkStatusChange(false)}
-                      disabled={selectedRows.length === 0 || isLoading}
-                      className="px-4 py-2 text-sm font-medium bg-coral-red text-white rounded-md hover:bg-coral-red/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-coral-red disabled:opacity-50 transition-colors flex items-center gap-1.5"
+                      disabled={isLoading}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium bg-rose-600 text-white rounded-md hover:bg-rose-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors duration-150"
                     >
-                      <X className="h-4 w-4" /> Deactivate
+                      <X className="w-4 h-4" /> Deactivate
                     </button>
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Table Section */}
-            <div className="mb-8">
-              <Table
-                data={data}
-                columns={memoizedColumns}
-                selectedRows={selectedRows}
-                setSelectedRows={setSelectedRows}
-                handleToggleStatus={handleToggleStatus}
-                isLoading={isLoading}
-              />
-            </div>
+            {/* ── TABLE SECTION ── */}
+            <Table
+              data={data}
+              columns={memoizedColumns}
+              selectedRows={selectedRows}
+              setSelectedRows={setSelectedRows}
+              handleToggleStatus={handleToggleStatus}
+              isLoading={isLoading}
+            />
+
           </div>
         </main>
       </div>
 
-      {/* Modal */}
+      {/* ── ADD/EDIT MODAL: form uses id="crud-form" so footer submit button works ── */}
       <Modal
         isVisible={isModalVisible}
         onClose={handleCancel}
         title={editingItem ? `Edit ${title}` : `Add New ${title}`}
         isLoading={isLoading}
+        footer={modalFooter}
       >
-        <form onSubmit={handleSubmit} className="bg-white">
-          <FormComponent formData={formData} handleInputChange={handleInputChange} handleFileChange={handleFileChange} isEditing={!!editingItem} />
-          <div className="mt-6 flex justify-end gap-3">
-            <button
-              type="button"
-              onClick={handleCancel}
-              className="px-4 py-2.5 border border-slate-gray/20 text-slate-gray rounded-lg hover:bg-light-sky/50 transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="px-4 py-2.5 bg-electric-blue text-white rounded-lg hover:bg-btn-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-electric-blue disabled:opacity-50 transition-colors flex items-center gap-2"
-            >
-              {isLoading ? (
-                <>
-                  <svg
-                    className="animate-spin h-5 w-5 text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                  Processing...
-                </>
-              ) : editingItem ? (
-                <>
-                  <Check className="h-5 w-5" /> Update {title}
-                </>
-              ) : (
-                <>
-                  <Plus className="h-5 w-5" /> Create {title}
-                </>
-              )}
-            </button>
-          </div>
+        <form id="crud-form" onSubmit={handleSubmit}>
+          <FormComponent
+            formData={formData}
+            handleInputChange={handleInputChange}
+            handleFileChange={handleFileChange}
+            isEditing={!!editingItem}
+          />
         </form>
       </Modal>
 
-      {/* Credentials Modal */}
+      {/* ── CREDENTIALS MODAL ── */}
       {newEmployeeCredentials && (
         <CredentialsModal
           isVisible={showCredentialsModal}

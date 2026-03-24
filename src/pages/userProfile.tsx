@@ -195,31 +195,31 @@ const UserProfile: React.FC = () => {
 
   if (isLoading && !userData) {
     return (
-      <div className="flex h-screen items-center justify-center bg-[#F1F0E8]">
+      <div className="flex h-screen items-center justify-center bg-[radial-gradient(circle_at_top_left,_#dbeafe_0,_#f8fafc_45%,_#eef2ff_100%)]">
         <div className="animate-pulse flex flex-col items-center">
-          <div className="h-16 w-16 rounded-full bg-[#89A8B2] mb-4"></div>
-          <div className="h-4 w-32 bg-[#B3C8CF] rounded mb-2"></div>
-          <div className="h-3 w-24 bg-[#E5E1DA] rounded"></div>
+          <div className="h-16 w-16 rounded-full bg-blue-200 mb-4"></div>
+          <div className="h-4 w-32 bg-slate-200 rounded mb-2"></div>
+          <div className="h-3 w-24 bg-slate-100 rounded"></div>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="flex h-screen bg-[#F1F0E8]">
+    <div className="flex h-screen bg-[radial-gradient(circle_at_top_left,_#dbeafe_0,_#f8fafc_45%,_#eef2ff_100%)]">
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} setIsOpen={setIsSidebarOpen} />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Topbar toggleSidebar={toggleSidebar} />
         <div className="flex-1 overflow-y-auto">
-          <div className="container mx-auto px-4 py-8 mt-16 max-w-4xl">
+          <div className="container mx-auto px-4 py-8 mt-16 max-w-5xl space-y-6">
 
             {/* Profile Header Card */}
-            <div className="bg-white shadow-lg rounded-2xl overflow-hidden border border-[#E5E1DA] mb-6">
-              <div className="px-8 py-8 bg-gradient-to-r from-[#2A5C8A] to-[#89A8B2] text-white">
+            <div className="bg-white shadow-sm rounded-[14px] overflow-hidden border border-slate-200">
+              <div className="px-8 py-8 bg-gradient-to-r from-slate-900 via-slate-800 to-blue-800 text-white">
                 <div className="flex flex-col sm:flex-row items-center gap-6">
                   {/* Profile Picture */}
                   <div className="relative group">
-                    <div className="w-28 h-28 rounded-full bg-white/20 flex items-center justify-center overflow-hidden border-4 border-white/30">
+                    <div className="w-28 h-28 rounded-full bg-white/15 flex items-center justify-center overflow-hidden border-4 border-white/25">
                       {getProfilePictureUrl() ? (
                         <img
                           src={getProfilePictureUrl()!}
@@ -233,10 +233,10 @@ const UserProfile: React.FC = () => {
                     <button
                       onClick={() => fileInputRef.current?.click()}
                       disabled={isUploadingPicture}
-                      className="absolute bottom-0 right-0 w-10 h-10 bg-white rounded-full flex items-center justify-center text-[#2A5C8A] shadow-lg hover:bg-slate-50 transition-colors border-2 border-[#2A5C8A]"
+                      className="absolute bottom-0 right-0 w-10 h-10 bg-white rounded-full flex items-center justify-center text-blue-700 shadow-md hover:bg-slate-50 transition-colors border-2 border-blue-700"
                     >
                       {isUploadingPicture ? (
-                        <div className="w-5 h-5 border-2 border-[#2A5C8A] border-t-transparent rounded-full animate-spin"></div>
+                        <div className="w-5 h-5 border-2 border-blue-700 border-t-transparent rounded-full animate-spin"></div>
                       ) : (
                         <Camera size={18} />
                       )}
@@ -255,8 +255,8 @@ const UserProfile: React.FC = () => {
                     <h2 className="text-3xl font-bold">
                       {userData?.first_name} {userData?.last_name}
                     </h2>
-                    <p className="text-white/80 text-lg mt-1">{userData?.username}</p>
-                    <span className="inline-flex items-center gap-2 mt-3 px-4 py-1.5 bg-white/20 rounded-full text-sm font-medium">
+                    <p className="text-white/85 text-lg mt-1">{userData?.username}</p>
+                    <span className="inline-flex items-center gap-2 mt-3 px-4 py-1.5 bg-white/15 border border-white/20 rounded-full text-sm font-medium">
                       <Shield size={14} />
                       {userData?.role?.replace('_', ' ').toUpperCase()}
                     </span>
@@ -266,16 +266,16 @@ const UserProfile: React.FC = () => {
             </div>
 
             {/* Profile Information Card */}
-            <div className="bg-white shadow-lg rounded-2xl overflow-hidden border border-[#E5E1DA] mb-6">
-              <div className="px-6 py-4 border-b border-[#E5E1DA] bg-gradient-to-r from-slate-50 to-white flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-[#2A5C8A] flex items-center gap-2">
-                  <User size={20} className="text-[#89A8B2]" />
+            <div className="bg-white shadow-sm rounded-[14px] overflow-hidden border border-slate-200">
+              <div className="px-6 py-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
+                  <User size={20} className="text-blue-600" />
                   Personal Information
                 </h3>
                 {!isEditing && (
                   <button
                     onClick={() => setIsEditing(true)}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg text-white bg-[#2A5C8A] hover:bg-[#1e4568] transition-colors shadow-sm"
+                    className="flex items-center gap-2 px-4 py-2 rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors"
                   >
                     <Edit2 size={16} />
                     Edit
@@ -283,7 +283,7 @@ const UserProfile: React.FC = () => {
                 )}
               </div>
 
-              <div className="p-6">
+              <div className="p-6 bg-white">
                 {isEditing ? (
                   <form onSubmit={handleSubmit} className="space-y-5">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -297,7 +297,7 @@ const UserProfile: React.FC = () => {
                           name="first_name"
                           value={formData.first_name || ''}
                           onChange={handleInputChange}
-                          className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#89A8B2] focus:border-transparent transition-all"
+                          className="w-full px-4 py-2.5 rounded-md border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                           disabled={isLoading}
                         />
                       </div>
@@ -311,7 +311,7 @@ const UserProfile: React.FC = () => {
                           name="last_name"
                           value={formData.last_name || ''}
                           onChange={handleInputChange}
-                          className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#89A8B2] focus:border-transparent transition-all"
+                          className="w-full px-4 py-2.5 rounded-md border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                           disabled={isLoading}
                         />
                       </div>
@@ -326,7 +326,7 @@ const UserProfile: React.FC = () => {
                         name="email"
                         value={formData.email || ''}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#89A8B2] focus:border-transparent transition-all"
+                        className="w-full px-4 py-2.5 rounded-md border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                         disabled={isLoading}
                       />
                     </div>
@@ -340,7 +340,7 @@ const UserProfile: React.FC = () => {
                         name="contact_number"
                         value={formData.contact_number || ''}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#89A8B2] focus:border-transparent transition-all"
+                        className="w-full px-4 py-2.5 rounded-md border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                         disabled={isLoading}
                       />
                     </div>
@@ -351,7 +351,7 @@ const UserProfile: React.FC = () => {
                           setFormData(userData)
                           setIsEditing(false)
                         }}
-                        className="flex items-center gap-2 px-5 py-2.5 border border-slate-200 rounded-xl text-slate-600 bg-white hover:bg-slate-50 transition-all"
+                        className="flex items-center gap-2 px-5 py-2.5 border border-slate-200 rounded-md text-slate-600 bg-white hover:bg-slate-50 transition-all"
                         disabled={isLoading}
                       >
                         <X size={16} />
@@ -359,7 +359,7 @@ const UserProfile: React.FC = () => {
                       </button>
                       <button
                         type="submit"
-                        className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-white bg-[#2A5C8A] hover:bg-[#1e4568] transition-all shadow-sm"
+                        className="flex items-center gap-2 px-5 py-2.5 rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-all"
                         disabled={isLoading}
                       >
                         {isLoading ? (
@@ -378,15 +378,15 @@ const UserProfile: React.FC = () => {
                   </form>
                 ) : (
                   <div className="space-y-4">
-                    <div className="flex items-center p-4 rounded-xl bg-slate-50 border border-slate-100">
-                      <Mail className="text-[#89A8B2] w-5 h-5 mr-4" />
+                    <div className="flex items-center p-4 rounded-[10px] bg-slate-50 border border-slate-200">
+                      <Mail className="text-blue-600 w-5 h-5 mr-4" />
                       <div>
                         <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">Email</p>
                         <p className="text-slate-800 font-medium">{userData?.email || 'Not provided'}</p>
                       </div>
                     </div>
-                    <div className="flex items-center p-4 rounded-xl bg-slate-50 border border-slate-100">
-                      <Phone className="text-[#89A8B2] w-5 h-5 mr-4" />
+                    <div className="flex items-center p-4 rounded-[10px] bg-slate-50 border border-slate-200">
+                      <Phone className="text-blue-600 w-5 h-5 mr-4" />
                       <div>
                         <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">Contact Number</p>
                         <p className="text-slate-800 font-medium">{userData?.contact_number || 'Not provided'}</p>
@@ -398,16 +398,16 @@ const UserProfile: React.FC = () => {
             </div>
 
             {/* Password Change Card */}
-            <div className="bg-white shadow-lg rounded-2xl overflow-hidden border border-[#E5E1DA]">
-              <div className="px-6 py-4 border-b border-[#E5E1DA] bg-gradient-to-r from-slate-50 to-white flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-[#2A5C8A] flex items-center gap-2">
-                  <Lock size={20} className="text-[#89A8B2]" />
+            <div className="bg-white shadow-sm rounded-[14px] overflow-hidden border border-slate-200">
+              <div className="px-6 py-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
+                  <Lock size={20} className="text-blue-600" />
                   Security
                 </h3>
                 {!showPasswordSection && (
                   <button
                     onClick={() => setShowPasswordSection(true)}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg text-[#2A5C8A] border border-[#2A5C8A] hover:bg-[#2A5C8A] hover:text-white transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 rounded-md text-blue-600 border border-blue-600 hover:bg-blue-600 hover:text-white transition-colors"
                   >
                     <Key size={16} />
                     Change Password
@@ -415,7 +415,7 @@ const UserProfile: React.FC = () => {
                 )}
               </div>
 
-              <div className="p-6">
+              <div className="p-6 bg-white">
                 {showPasswordSection ? (
                   <form onSubmit={handlePasswordChange} className="space-y-5 max-w-md">
                     <div>
@@ -429,7 +429,7 @@ const UserProfile: React.FC = () => {
                           name="current_password"
                           value={passwordData.current_password}
                           onChange={handlePasswordInputChange}
-                          className="w-full px-4 py-3 pr-12 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#89A8B2] focus:border-transparent transition-all"
+                          className="w-full px-4 py-2.5 pr-12 rounded-md border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                           required
                         />
                         <button
@@ -452,7 +452,7 @@ const UserProfile: React.FC = () => {
                           name="new_password"
                           value={passwordData.new_password}
                           onChange={handlePasswordInputChange}
-                          className="w-full px-4 py-3 pr-12 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#89A8B2] focus:border-transparent transition-all"
+                          className="w-full px-4 py-2.5 pr-12 rounded-md border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                           required
                           minLength={6}
                         />
@@ -476,7 +476,7 @@ const UserProfile: React.FC = () => {
                         name="confirm_password"
                         value={passwordData.confirm_password}
                         onChange={handlePasswordInputChange}
-                        className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#89A8B2] focus:border-transparent transition-all"
+                        className="w-full px-4 py-2.5 rounded-md border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                         required
                       />
                     </div>
@@ -487,7 +487,7 @@ const UserProfile: React.FC = () => {
                           setShowPasswordSection(false)
                           setPasswordData({ current_password: '', new_password: '', confirm_password: '' })
                         }}
-                        className="flex items-center gap-2 px-5 py-2.5 border border-slate-200 rounded-xl text-slate-600 bg-white hover:bg-slate-50 transition-all"
+                        className="flex items-center gap-2 px-5 py-2.5 border border-slate-200 rounded-md text-slate-600 bg-white hover:bg-slate-50 transition-all"
                         disabled={isChangingPassword}
                       >
                         <X size={16} />
@@ -495,7 +495,7 @@ const UserProfile: React.FC = () => {
                       </button>
                       <button
                         type="submit"
-                        className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-white bg-[#2A5C8A] hover:bg-[#1e4568] transition-all shadow-sm"
+                        className="flex items-center gap-2 px-5 py-2.5 rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-all"
                         disabled={isChangingPassword}
                       >
                         {isChangingPassword ? (
@@ -513,8 +513,8 @@ const UserProfile: React.FC = () => {
                     </div>
                   </form>
                 ) : (
-                  <div className="flex items-center p-4 rounded-xl bg-slate-50 border border-slate-100">
-                    <Key className="text-[#89A8B2] w-5 h-5 mr-4" />
+                  <div className="flex items-center p-4 rounded-[10px] bg-slate-50 border border-slate-200">
+                    <Key className="text-blue-600 w-5 h-5 mr-4" />
                     <div>
                       <p className="text-slate-800 font-medium">Password</p>
                       <p className="text-sm text-slate-500">••••••••••••</p>

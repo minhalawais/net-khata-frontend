@@ -15,6 +15,7 @@ import {
   Target,
   Award,
 } from "lucide-react"
+import HorizontalLogo from "../../assets/net_khata_horizontal.png"
 
 interface DashboardStats {
   pending_tasks: number
@@ -75,12 +76,12 @@ export function PortalDashboard() {
       <div className="space-y-4 animate-pulse">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="h-28 bg-gray-200 rounded-xl"></div>
+            <div key={i} className="h-28 bg-slate-200 rounded-[10px]"></div>
           ))}
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {[...Array(2)].map((_, i) => (
-            <div key={i} className="h-64 bg-gray-200 rounded-xl"></div>
+            <div key={i} className="h-64 bg-slate-200 rounded-[10px]"></div>
           ))}
         </div>
       </div>
@@ -92,43 +93,43 @@ export function PortalDashboard() {
       label: "Pending Tasks",
       value: stats?.pending_tasks || 0,
       icon: ClipboardList,
-      color: "bg-blue-500",
-      bgColor: "bg-blue-50",
+      color: "text-blue-600 bg-blue-100/50",
+      bgColor: "bg-white border border-slate-200/80 shadow-[0_2px_8px_-4px_rgba(0,0,0,0.05)]",
     },
     {
       label: "Open Complaints",
       value: stats?.open_complaints || 0,
       icon: AlertCircle,
-      color: "bg-orange-500",
-      bgColor: "bg-orange-50",
+      color: "text-amber-600 bg-amber-100/50",
+      bgColor: "bg-white border border-slate-200/80 shadow-[0_2px_8px_-4px_rgba(0,0,0,0.05)]",
     },
     {
       label: "Active Customers",
       value: stats?.managed_customers || 0,
       icon: Users,
-      color: "bg-green-500",
-      bgColor: "bg-green-50",
+      color: "text-emerald-600 bg-emerald-100/50",
+      bgColor: "bg-white border border-slate-200/80 shadow-[0_2px_8px_-4px_rgba(0,0,0,0.05)]",
     },
     {
       label: "Current Balance",
       value: `PKR ${(stats?.current_balance || 0).toLocaleString()}`,
       icon: Wallet,
-      color: "bg-purple-500",
-      bgColor: "bg-purple-50",
+      color: "text-slate-700 bg-slate-100",
+      bgColor: "bg-white border border-slate-200/80 shadow-[0_2px_8px_-4px_rgba(0,0,0,0.05)]",
     },
     {
       label: "Today's Collections",
       value: `PKR ${(stats?.todays_collections || 0).toLocaleString()}`,
       icon: TrendingUp,
-      color: "bg-teal-500",
-      bgColor: "bg-teal-50",
+      color: "text-blue-600 bg-blue-100/50",
+      bgColor: "bg-white border border-slate-200/80 shadow-[0_2px_8px_-4px_rgba(0,0,0,0.05)]",
     },
     {
       label: "Pending Recoveries",
       value: stats?.pending_recoveries || 0,
       icon: RefreshCw,
-      color: "bg-red-500",
-      bgColor: "bg-red-50",
+      color: "text-rose-600 bg-rose-100/50",
+      bgColor: "bg-white border border-slate-200/80 shadow-[0_2px_8px_-4px_rgba(0,0,0,0.05)]",
     },
   ]
 
@@ -159,12 +160,24 @@ export function PortalDashboard() {
       value: `${performance?.customer_retention_rate || 0}%`,
       subtext: `${performance?.active_customers || 0}/${performance?.total_managed_customers || 0} active`,
       icon: Users,
-      color: "text-purple-600",
+      color: "text-slate-600",
     },
   ]
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-7xl mx-auto">
+      {/* Brand Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white border border-slate-200/80 rounded-[12px] p-5 shadow-sm">
+        <div className="flex items-center gap-4">
+          <img src={HorizontalLogo} alt="Net Khata Logo" className="h-9 w-auto object-contain" />
+          <div className="h-8 w-px bg-slate-200 hidden sm:block"></div>
+          <div>
+            <h1 className="text-[18px] font-semibold text-slate-900 tracking-tight leading-none">Performance Dashboard</h1>
+            <p className="text-[12px] text-slate-500 mt-1.5">Overview of your tasks, complaints, and financials</p>
+          </div>
+        </div>
+      </div>
+
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
         {kpiCards.map((kpi, index) => {
@@ -172,16 +185,16 @@ export function PortalDashboard() {
           return (
             <div
               key={index}
-              className={`${kpi.bgColor} rounded-xl p-4 border border-gray-100 shadow-sm hover:shadow-md transition-shadow`}
+              className={`${kpi.bgColor} rounded-[12px] p-4 hover:border-blue-300 transition-all duration-300 group`}
             >
               <div className="flex items-start justify-between">
-                <div className={`${kpi.color} p-2 rounded-lg`}>
-                  <Icon className="w-5 h-5 text-white" />
+                <div className={`${kpi.color} w-8 h-8 rounded-[8px] flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+                  <Icon className="w-4 h-4 text-current" />
                 </div>
               </div>
               <div className="mt-3">
-                <p className="text-2xl font-bold text-gray-900">{kpi.value}</p>
-                <p className="text-sm text-gray-600 mt-1">{kpi.label}</p>
+                <p className="text-[20px] font-bold text-slate-900 tracking-tight leading-none mb-1.5">{kpi.value}</p>
+                <p className="text-[10px] font-medium text-slate-500 uppercase tracking-[0.06em]">{kpi.label}</p>
               </div>
             </div>
           )
@@ -189,33 +202,47 @@ export function PortalDashboard() {
       </div>
 
       {/* Performance Metrics */}
-      <div className="bg-white rounded-xl border border-gray-200 p-4 lg:p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-          <Target className="w-5 h-5 text-[#89A8B2]" />
+      <div className="bg-white rounded-[12px] border border-slate-200/80 p-4 lg:p-5 shadow-sm">
+        <h3 className="text-[13px] font-semibold text-slate-900 mb-4 flex items-center gap-2">
+          <Target className="w-4 h-4 text-blue-600" />
           Performance Metrics
         </h3>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {performanceCards.map((metric, index) => {
             const Icon = metric.icon
             return (
-              <div key={index} className="text-center p-4 bg-gray-50 rounded-lg">
-                <Icon className={`w-8 h-8 mx-auto mb-2 ${metric.color}`} />
-                <p className="text-2xl font-bold text-gray-900">{metric.value}</p>
-                <p className="text-sm font-medium text-gray-700 mt-1">{metric.label}</p>
-                <p className="text-xs text-gray-500 mt-1">{metric.subtext}</p>
+              <div key={index} className="text-center p-3.5 bg-slate-50/50 border border-slate-100 rounded-[10px] hover:bg-white hover:shadow-sm transition-all duration-300">
+                <Icon className={`w-6 h-6 mx-auto mb-2 ${metric.color} opacity-80`} />
+                <p className="text-[18px] font-bold text-slate-900 tracking-tight mb-0.5">{metric.value}</p>
+                <p className="text-[11px] font-medium text-slate-700">{metric.label}</p>
+                <p className="text-[10px] text-slate-500 mt-0.5">{metric.subtext}</p>
               </div>
             )
           })}
         </div>
       </div>
 
-      {/* Month Summary */}
-      <div className="bg-gradient-to-r from-[#89A8B2] to-[#6B8A94] rounded-xl p-4 lg:p-6 text-white">
-        <h3 className="text-lg font-semibold mb-2">This Month's Earnings</h3>
-        <p className="text-3xl font-bold">PKR {(stats?.month_earnings || 0).toLocaleString()}</p>
-        <p className="text-sm opacity-80 mt-1">
-          Including commissions, bonuses, and salary accruals
-        </p>
+      {/* Month Summary - Stunning Widget */}
+      <div className="relative overflow-hidden bg-blue-600 text-white border border-blue-700 rounded-[12px] p-5 shadow-sm">
+        {/* Dynamic Background Patterns */}
+        <div className="absolute top-0 right-0 -mr-8 -mt-8 w-48 h-48 rounded-full bg-blue-500/20 blur-2xl pointer-events-none"></div>
+        <div className="absolute bottom-0 right-1/4 w-32 h-32 rounded-full bg-indigo-500/20 blur-xl pointer-events-none"></div>
+
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
+          <div>
+            <h3 className="text-[12px] font-medium text-blue-100 mb-1.5 flex items-center gap-2">
+              <Award className="w-3.5 h-3.5" />
+              This Month's Earnings
+            </h3>
+            <p className="text-2xl lg:text-3xl font-bold tracking-tight">PKR {(stats?.month_earnings || 0).toLocaleString()}</p>
+            <p className="text-[11px] text-blue-200 mt-1.5 font-medium">
+              Including commissions, bonuses, and salary accruals.
+            </p>
+          </div>
+          <div className="w-10 h-10 rounded-[10px] bg-white/10 flex items-center justify-center border border-white/20 backdrop-blur-sm self-start md:self-center">
+            <Wallet className="w-5 h-5 text-white" />
+          </div>
+        </div>
       </div>
     </div>
   )

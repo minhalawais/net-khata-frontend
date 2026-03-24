@@ -30,7 +30,7 @@ export const ResolveComplaintModal: React.FC<ResolveComplaintModalProps> = ({ is
   return (
     <Modal isVisible={isOpen} onClose={onClose} title="Resolve Complaint">
       <div className="mt-6 space-y-4">
-        <label htmlFor="resolution-notes" className="block text-base font-medium text-[#2A5C8A]">
+        <label htmlFor="resolution-notes" className="block text-[11px] font-medium text-slate-600">
           Resolution Notes
         </label>
         <div className="relative">
@@ -39,42 +39,42 @@ export const ResolveComplaintModal: React.FC<ResolveComplaintModalProps> = ({ is
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             rows={4}
-            className="w-full px-4 py-3 text-[#4A5568] bg-white border border-[#EBF5FF] rounded-lg focus:border-[#3A86FF] focus:ring-2 focus:ring-[#3A86FF]/20 transition-colors duration-200 resize-none placeholder:text-[#4A5568]/60"
+            className="w-full px-3 py-2.5 text-[13px] text-slate-700 bg-white border border-slate-200 rounded-md focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/[0.12] hover:border-slate-300 transition-colors duration-150 resize-none placeholder:text-slate-400"
             placeholder="Enter the resolution details..."
           />
-          <div className="absolute bottom-3 right-3 text-sm text-[#4A5568]/60">{notes.length}/500</div>
+          <div className="absolute bottom-2.5 right-3 text-[11px] text-slate-400">{notes.length}/500</div>
         </div>
-        <p className="text-sm text-[#4A5568]/70">Please provide detailed notes about how the complaint was resolved</p>
+        <p className="text-[11px] text-slate-500">Please provide detailed notes about how the complaint was resolved.</p>
 
         <div className="mt-4">
-          <label htmlFor="resolution-proof" className="block text-base font-medium text-[#2A5C8A]">
+          <label htmlFor="resolution-proof" className="block text-[11px] font-medium text-slate-600">
             Resolution Proof
           </label>
           <div className="mt-2 flex items-center">
             <label
               htmlFor="resolution-proof"
-              className="flex items-center justify-center px-4 py-2 border border-[#EBF5FF] rounded-lg cursor-pointer bg-white text-[#4A5568] hover:bg-[#EBF5FF] transition-colors"
+              className="inline-flex items-center justify-center h-9 px-3 border border-slate-200 rounded-md cursor-pointer bg-white text-[12px] text-slate-600 hover:border-slate-300 hover:bg-slate-50 transition-colors duration-150"
             >
-              <Upload className="h-5 w-5 mr-2 text-[#3A86FF]" />
+              <Upload className="h-4 w-4 mr-2 text-blue-600" />
               <span>{resolutionProof ? resolutionProof.name : "Choose file"}</span>
               <input type="file" id="resolution-proof" onChange={handleFileChange} className="hidden" />
             </label>
           </div>
-          {resolutionProof && <p className="mt-2 text-sm text-[#10B981]">File selected: {resolutionProof.name}</p>}
+          {resolutionProof && <p className="mt-2 text-[11px] text-emerald-600">File selected: {resolutionProof.name}</p>}
         </div>
       </div>
 
-      <div className="mt-8 flex justify-end space-x-3">
+      <div className="mt-8 flex justify-end space-x-2">
         <button
           onClick={onClose}
-          className="px-6 py-2 bg-white text-[#4A5568] border border-[#EBF5FF] rounded-lg hover:bg-[#F8FAFC] transition-colors duration-200"
+          className="h-9 px-4 text-[13px] font-medium bg-white text-slate-600 border border-slate-200 rounded-md hover:border-slate-300 hover:bg-slate-50 transition-colors duration-150"
         >
           Cancel
         </button>
         <button
           onClick={handleConfirm}
           disabled={!notes.trim()}
-          className="px-6 py-2 bg-[#3A86FF] text-white rounded-lg hover:bg-[#2563EB] disabled:bg-[#3A86FF]/50 disabled:cursor-not-allowed transition-colors duration-200"
+          className="h-9 px-4 text-[13px] font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors duration-150"
         >
           Resolve Complaint
         </button>

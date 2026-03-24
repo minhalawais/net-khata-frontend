@@ -33,7 +33,7 @@ interface CRUDPageProps<T> {
   columns: ColumnDef<T>[]
   FormComponent: React.ComponentType<{
     formData: Partial<T>
-    handleInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void
+    handleInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void
     isEditing: boolean
     validateBeforeSubmit?: (formData: Partial<T>) => string | null
   }>
@@ -195,12 +195,12 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
       const token = getToken()
       const formDataToSend = new FormData()
 
-      Object.keys(formData).forEach((key) => {
-        if (formData[key] != null) {
-          if (key === "attachment" && formData[key] instanceof File) {
-            formDataToSend.append(key, formData[key], formData[key].name)
+      Object.entries(formData as Record<string, unknown>).forEach(([key, value]) => {
+        if (value != null) {
+          if (key === "attachment" && value instanceof File) {
+            formDataToSend.append(key, value, value.name)
           } else {
-            formDataToSend.append(key, formData[key])
+            formDataToSend.append(key, String(value))
           }
         }
       })
@@ -266,7 +266,7 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
     }
   }
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
@@ -278,15 +278,15 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
   const getStatusBadgeClass = (status: string) => {
     switch (status) {
       case "open":
-        return "bg-golden-amber/10 text-golden-amber"
+        return "bg-amber-50 text-amber-700 border border-amber-200"
       case "in_progress":
-        return "bg-electric-blue/10 text-electric-blue"
+        return "bg-blue-50 text-blue-700 border border-blue-200"
       case "resolved":
-        return "bg-emerald-green/10 text-emerald-green"
+        return "bg-emerald-50 text-emerald-700 border border-emerald-200"
       case "closed":
-        return "bg-slate-gray/10 text-slate-gray"
+        return "bg-slate-100 text-slate-600 border border-slate-200"
       default:
-        return "bg-slate-gray/10 text-slate-gray"
+        return "bg-slate-100 text-slate-600 border border-slate-200"
     }
   }
 
@@ -335,8 +335,8 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
             <button
               onClick={() => handleToggleStatus(info.row.original.id, info.getValue())}
               className={`px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 transition-all ${info.getValue()
-                  ? "bg-emerald-green/10 text-emerald-green hover:bg-emerald-green/20"
-                  : "bg-coral-red/10 text-coral-red hover:bg-coral-red/20"
+                  ? "bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100"
+                  : "bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100"
                 }`}
             >
               {info.getValue() ? (
@@ -358,21 +358,21 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
           <div className="flex items-center gap-2">
             <button
               onClick={() => showModal(info.row.original)}
-              className="p-2 text-white bg-electric-blue rounded-md hover:bg-btn-hover transition-colors"
+              className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors duration-150"
               title="Edit"
             >
               <Pencil className="h-4 w-4" />
             </button>
             <button
               onClick={() => handleDelete(info.row.original.id)}
-              className="p-2 text-white bg-coral-red rounded-md hover:bg-coral-red/80 transition-colors"
+              className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-colors duration-150"
               title="Delete"
             >
               <Trash2 className="h-4 w-4" />
             </button>
             <button
               onClick={() => navigate(`/complaints/${info.row.original.id}`)}
-              className="p-2 text-white bg-deep-ocean rounded-md hover:bg-deep-ocean/80 transition-colors"
+              className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-md transition-colors duration-150"
               title="View Details"
             >
               <Eye className="h-4 w-4" />
@@ -384,33 +384,33 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
   }, [columns])
 
   return (
-    <div className="flex h-screen bg-light-sky/50">
+    <div className="flex h-screen bg-slate-50 overflow-hidden">
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} setIsOpen={setIsSidebarOpen} />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Topbar toggleSidebar={toggleSidebar} />
         <main
-          className={`flex-1 overflow-x-hidden overflow-y-auto bg-light-sky/50 p-0 sm:p-6 pt-20 transition-all duration-300 ${isSidebarOpen ? "ml-64" : "ml-0 lg:ml-20"
+          className={`flex-1 overflow-x-hidden overflow-y-auto bg-slate-50 p-0 sm:p-6 pt-20 transition-all duration-300 ${isSidebarOpen ? "ml-64" : "ml-0 lg:ml-20"
             }`}
         >
 
-          <div className="container mx-auto">
+          <div className="max-w-[1400px] mx-auto space-y-4">
             {/* Breadcrumb */}
-            <div className="flex items-center text-sm text-slate-gray mb-6">
+            <div className="flex items-center text-[11px] text-slate-400">
               <LayoutDashboard className="h-4 w-4 mr-1" />
               <span>Dashboard</span>
               <ChevronRight className="h-4 w-4 mx-1" />
-              <span className="text-deep-ocean font-medium">{title} Management</span>
+              <span className="text-slate-700 font-medium">{title} Management</span>
             </div>
 
             {/* Header Section */}
-            <div className="bg-white rounded-xl shadow-md p-6 mb-6">
+            <div className="bg-white rounded-[10px] border border-slate-200 p-5">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                 <div>
-                  <h1 className="text-2xl md:text-3xl font-bold text-deep-ocean flex items-center gap-2">
-                    <MessageSquare className="h-7 w-7 text-electric-blue" />
+                  <h1 className="text-[15px] font-medium text-slate-900 flex items-center gap-2">
+                    <MessageSquare className="h-5 w-5 text-blue-600" />
                     {title} Management
                   </h1>
-                  <p className="text-slate-gray mt-1">Manage your {title.toLowerCase()} records efficiently</p>
+                  <p className="text-[11px] text-slate-400 mt-1">Manage your {title.toLowerCase()} records efficiently</p>
                 </div>
                 <div className="flex flex-wrap gap-3">
                   <button
@@ -425,13 +425,13 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
                       csvLink.download = `${title.toLowerCase()}.csv`
                       csvLink.click()
                     }}
-                    className="bg-golden-amber text-white px-4 py-2.5 rounded-lg hover:bg-golden-amber/90 transition-colors flex items-center gap-2 shadow-sm"
+                    className="h-9 px-4 text-[13px] font-medium text-slate-600 bg-white border border-slate-200 rounded-md hover:border-slate-300 hover:bg-slate-50 transition-colors duration-150 flex items-center gap-2"
                   >
                     <FileDown className="h-5 w-5" /> Export CSV
                   </button>
                   <button
                     onClick={() => showModal(null)}
-                    className="bg-electric-blue text-white px-4 py-2.5 rounded-lg hover:bg-btn-hover transition-colors flex items-center gap-2 shadow-sm"
+                    className="h-9 px-4 text-[13px] font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors duration-150 flex items-center gap-2"
                   >
                     <Plus className="h-5 w-5" /> Add New {title}
                   </button>
@@ -440,50 +440,50 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
 
               {/* Stats Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                <div className="bg-light-sky/50 rounded-lg p-4 border border-slate-gray/10">
+                <div className="bg-white rounded-[10px] p-4 border border-slate-200">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-slate-gray text-sm">Total {title}s</p>
-                      <h3 className="text-2xl font-bold text-deep-ocean mt-1">{stats.total}</h3>
+                      <p className="text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em]">Total {title}s</p>
+                      <h3 className="text-[22px] font-semibold text-slate-900 mt-1 tabular-nums">{stats.total}</h3>
                     </div>
-                    <div className="bg-deep-ocean/10 p-3 rounded-full">
-                      <MessageSquare className="h-6 w-6 text-deep-ocean" />
+                    <div className="bg-blue-50 p-2 rounded-lg">
+                      <MessageSquare className="h-4 w-4 text-blue-600" />
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-golden-amber/5 rounded-lg p-4 border border-golden-amber/10">
+                <div className="bg-white rounded-[10px] p-4 border border-slate-200">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-slate-gray text-sm">Open</p>
-                      <h3 className="text-2xl font-bold text-golden-amber mt-1">{stats.open}</h3>
+                      <p className="text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em]">Open</p>
+                      <h3 className="text-[22px] font-semibold text-slate-900 mt-1 tabular-nums">{stats.open}</h3>
                     </div>
-                    <div className="bg-golden-amber/10 p-3 rounded-full">
-                      <Clock className="h-6 w-6 text-golden-amber" />
+                    <div className="bg-blue-50 p-2 rounded-lg">
+                      <Clock className="h-4 w-4 text-blue-600" />
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-electric-blue/5 rounded-lg p-4 border border-electric-blue/10">
+                <div className="bg-white rounded-[10px] p-4 border border-slate-200">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-slate-gray text-sm">In Progress</p>
-                      <h3 className="text-2xl font-bold text-electric-blue mt-1">{stats.inProgress}</h3>
+                      <p className="text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em]">In Progress</p>
+                      <h3 className="text-[22px] font-semibold text-slate-900 mt-1 tabular-nums">{stats.inProgress}</h3>
                     </div>
-                    <div className="bg-electric-blue/10 p-3 rounded-full">
-                      <MessageSquare className="h-6 w-6 text-electric-blue" />
+                    <div className="bg-blue-50 p-2 rounded-lg">
+                      <MessageSquare className="h-4 w-4 text-blue-600" />
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-emerald-green/5 rounded-lg p-4 border border-emerald-green/10">
+                <div className="bg-white rounded-[10px] p-4 border border-slate-200">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-slate-gray text-sm">Resolved</p>
-                      <h3 className="text-2xl font-bold text-emerald-green mt-1">{stats.resolved}</h3>
+                      <p className="text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em]">Resolved</p>
+                      <h3 className="text-[22px] font-semibold text-slate-900 mt-1 tabular-nums">{stats.resolved}</h3>
                     </div>
-                    <div className="bg-emerald-green/10 p-3 rounded-full">
-                      <CheckCircle2 className="h-6 w-6 text-emerald-green" />
+                    <div className="bg-blue-50 p-2 rounded-lg">
+                      <CheckCircle2 className="h-4 w-4 text-blue-600" />
                     </div>
                   </div>
                 </div>
@@ -492,9 +492,9 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
 
               {/* Bulk Actions */}
               {selectedRows.length > 0 && (
-                <div className="bg-electric-blue/5 border border-electric-blue/20 rounded-lg p-4 mb-6 flex flex-wrap items-center justify-between gap-4">
+                <div className="bg-blue-50 border border-blue-200 rounded-[10px] p-4 mb-6 flex flex-wrap items-center justify-between gap-4">
                   <div className="flex items-center gap-2">
-                    <span className="text-deep-ocean font-medium">
+                    <span className="text-slate-700 text-[13px] font-medium">
                       {selectedRows.length} {title.toLowerCase()}
                       {selectedRows.length > 1 ? "s" : ""} selected
                     </span>
@@ -503,14 +503,14 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
                     <button
                       onClick={() => handleBulkStatusChange(true)}
                       disabled={selectedRows.length === 0 || isLoading}
-                      className="px-4 py-2 text-sm font-medium bg-emerald-green text-white rounded-md hover:bg-emerald-green/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-green disabled:opacity-50 transition-colors flex items-center gap-1.5"
+                      className="h-8 px-3 text-[12px] font-medium bg-emerald-600 text-white rounded-md hover:bg-emerald-700 disabled:opacity-60 transition-colors duration-150 flex items-center gap-1.5"
                     >
                       <CheckCircle2 className="h-4 w-4" /> Activate
                     </button>
                     <button
                       onClick={() => handleBulkStatusChange(false)}
                       disabled={selectedRows.length === 0 || isLoading}
-                      className="px-4 py-2 text-sm font-medium bg-coral-red text-white rounded-md hover:bg-coral-red/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-coral-red disabled:opacity-50 transition-colors flex items-center gap-1.5"
+                      className="h-8 px-3 text-[12px] font-medium bg-rose-600 text-white rounded-md hover:bg-rose-700 disabled:opacity-60 transition-colors duration-150 flex items-center gap-1.5"
                     >
                       <XCircle className="h-4 w-4" /> Deactivate
                     </button>
@@ -547,14 +547,14 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
             <button
               type="button"
               onClick={handleCancel}
-              className="px-4 py-2.5 border border-slate-gray/20 text-slate-gray rounded-lg hover:bg-light-sky/50 transition-colors"
+              className="h-9 px-4 text-[13px] font-medium border border-slate-200 text-slate-600 rounded-md hover:border-slate-300 hover:bg-slate-50 transition-colors duration-150"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isLoading}
-              className="px-4 py-2.5 bg-electric-blue text-white rounded-lg hover:bg-btn-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-electric-blue disabled:opacity-50 transition-colors flex items-center gap-2"
+              className="h-9 px-4 text-[13px] font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-60 transition-colors duration-150 flex items-center gap-2"
             >
               {isLoading ? (
                 <>

@@ -1,103 +1,73 @@
-/* Enhanced custom scrollbar styles with modern design */
+/*
+ * table.css — NetDaftar ERP · Slate + Blue
+ *
+ * This file contains ONLY the rules that Tailwind utilities cannot express:
+ *   1. Webkit scrollbar styling  (no Tailwind equivalent for -webkit-scrollbar-thumb)
+ *   2. Checkbox accent-color     (Tailwind's accent-* classes exist but have limited
+ *                                 cross-browser focus-ring support — kept here for safety)
+ *
+ * Everything else from the original table.css has been removed:
+ *   ✗ fadeInUp row animation           — entrance animations prohibited (Skill 07)
+ *   ✗ transform: translateX(2px) hover — layout jitter on rows (Skill 07)
+ *   ✗ transform: scale(1.1) checkbox   — layout jitter on inputs (Skill 07)
+ *   ✗ #f1f0e8, #89a8b2, #b3c8cf       — old warm palette (violates color system)
+ *   ✗ .table-row-animation             — see fadeInUp above
+ *   ✗ .table-cell-transition           — handled by Tailwind transition-colors
+ *   ✗ .table-row-hover                 — handled by Tailwind hover:bg-blue-50/40
+ *   ✗ table th/td min-width: 100px     — causes column layout issues on narrow screens
+ *   ✗ table th:first-child width: 60px — checkbox column is w-10 (40px) via Tailwind
+ */
+
+/* ── Scrollbar — webkit browsers (Chrome, Safari, Edge) ──────────────────────
+ *
+ * Tailwind has [scrollbar-width:thin] and [scrollbar-color:...] for Firefox
+ * via arbitrary properties, but webkit scrollbar pseudo-elements cannot be
+ * expressed as Tailwind utilities. These rules handle Chrome/Safari/Edge.
+ *
+ * Color tokens used:
+ *   thumb:       slate-300  #CBD5E1   (matches --border-strong token)
+ *   thumb hover: slate-400  #94A3B8   (one stop darker on hover)
+ *   track:       slate-50   #F8FAFC   (matches --bg-page token)
+ *
+ * Size: 6px — thin enough to not intrude on content, thick enough to grab.
+ * The original was 8px (too prominent) with a gradient (not allowed).
+ */
+
 .custom-scrollbar::-webkit-scrollbar {
-  height: 8px;
-  width: 8px;
-  background-color: #f1f0e8;
+  height: 6px;
+  width: 6px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #89a8b2 0%, #b3c8cf 100%);
-  border-radius: 8px;
-  transition: background 0.3s ease;
+  background-color: #CBD5E1; /* slate-300 */
+  border-radius: 9999px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #7a96a0 0%, #a3b8bf 100%);
+  background-color: #94A3B8; /* slate-400 */
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  background-color: #f1f0e8;
-  border-radius: 8px;
+  background-color: #F8FAFC; /* slate-50 */
 }
 
-/* Enhanced animation for table rows with smooth entrance */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
+/* ── Checkbox accent color ────────────────────────────────────────────────────
+ *
+ * Sets the filled color of checkboxes to blue-600 (#2563EB) — the system's
+ * primary accent. This ensures checked state matches the rest of the UI.
+ *
+ * The original used #89a8b2 (old teal palette). Corrected to blue-600.
+ * focus-visible outline uses the system focus ring color.
+ *
+ * No hover transform — transform on checkboxes creates layout jitter.
+ */
 
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.table-row-animation {
-  animation: fadeInUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
-
-/* Improved checkbox styling with better accessibility */
-input[type="checkbox"] {
+.table-checkbox {
+  accent-color: #2563EB; /* blue-600 */
   cursor: pointer;
-  width: 18px;
-  height: 18px;
-  accent-color: #89a8b2;
-  transition: all 0.2s ease;
 }
 
-input[type="checkbox"]:hover {
-  transform: scale(1.1);
-}
-
-input[type="checkbox"]:focus {
-  outline: 2px solid #89a8b2;
+.table-checkbox:focus-visible {
+  outline: 2px solid #2563EB;        /* blue-600 */
   outline-offset: 2px;
-}
-
-/* Responsive table adjustments for mobile */
-@media (max-width: 768px) {
-  .table-container {
-    max-height: calc(100vh - 220px);
-  }
-
-  .custom-scrollbar::-webkit-scrollbar {
-    height: 6px;
-    width: 6px;
-  }
-}
-
-/* Smooth transitions for interactive elements */
-.table-cell-transition {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.table-row-hover:hover {
-  background-color: rgba(139, 168, 178, 0.05);
-  transform: translateX(2px);
-}
-
-/* Table layout fixes to prevent column width changes during scroll */
-table {
-  width: 100%;
-}
-
-table th,
-table td {
-  min-width: 100px;
-  overflow: clip;
-}
-
-/* Ensure checkbox column has consistent width */
-table th:first-child,
-table td:first-child {
-  width: 60px;
-  min-width: 60px;
-  max-width: 60px;
-}
-
-/* Actions column styling */
-table th:last-child,
-table td:last-child {
-  width: auto;
 }

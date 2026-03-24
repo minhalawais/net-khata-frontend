@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { useState, useEffect } from "react"
-import { Barcode, Truck, Package, DollarSign, Hash, Wifi, Monitor, Cpu, Radio, Plug, Paperclip, Tag, Box, Layers, ShoppingBag } from 'lucide-react'
+import { Barcode, Truck, Package, Wifi, Monitor, Cpu, Radio, Plug, Paperclip, Box, Layers } from 'lucide-react'
 
 interface InventoryFormProps {
   formData: any
@@ -60,28 +60,41 @@ export function InventoryForm({ formData, handleInputChange, isEditing, supplier
     "Others",
   ]
 
+  const labelClass = "block text-[11px] font-medium text-slate-600 mb-1.5"
+  const controlClass = "w-full h-9 pl-9 pr-9 border border-slate-200 rounded-md bg-white text-[13px] text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/[0.12] focus:border-blue-500 hover:border-slate-300 transition-colors duration-150 appearance-none"
+  const inputClass = "w-full h-9 pl-9 pr-3 border border-slate-200 rounded-md bg-white text-[13px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/[0.12] focus:border-blue-500 hover:border-slate-300 transition-colors duration-150"
+
+  const renderTextField = (
+    label: string,
+    name: string,
+    value: string,
+    icon: React.ReactNode,
+    placeholder: string,
+    required = false,
+  ) => (
+    <div>
+      <label className={labelClass}>{label}</label>
+      <div className="relative">
+        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">{icon}</div>
+        <input
+          type="text"
+          name={name}
+          value={value}
+          onChange={handleAttributeChange}
+          placeholder={placeholder}
+          className={inputClass}
+          required={required}
+        />
+      </div>
+    </div>
+  )
+
   const renderTypeSpecificFields = () => {
     switch (selectedItemType) {
       case "EtherNet Cable":
         return (
           <div className="space-y-4">
-            <label className="block text-sm font-medium text-slate-gray">Cable Type</label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Paperclip className="h-5 w-5 text-slate-gray/60" />
-              </div>
-              <input
-                type="text"
-                name="type"
-                value={attributes.type || ""}
-                onChange={handleAttributeChange}
-                placeholder="Enter cable type"
-                className="w-full pl-10 pr-4 py-2.5 border border-slate-gray/30 rounded-lg shadow-sm 
-                         bg-white text-slate-gray placeholder-slate-gray/50 
-                         focus:ring-2 focus:ring-electric-blue focus:border-transparent 
-                         transition-all duration-200"
-              />
-            </div>
+            {renderTextField("Cable Type", "type", attributes.type || "", <Paperclip className="h-4 w-4" />, "Enter cable type")}
           </div>
         )
 
@@ -91,64 +104,9 @@ export function InventoryForm({ formData, handleInputChange, isEditing, supplier
       case "STB":
         return (
           <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-gray mb-1">Serial Number</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Barcode className="h-5 w-5 text-slate-gray/60" />
-                </div>
-                <input
-                  type="text"
-                  name="serial_number"
-                  value={attributes.serial_number || ""}
-                  onChange={handleAttributeChange}
-                  placeholder="Enter serial number"
-                  className="w-full pl-10 pr-4 py-2.5 border border-slate-gray/30 rounded-lg shadow-sm 
-                           bg-white text-slate-gray placeholder-slate-gray/50 
-                           focus:ring-2 focus:ring-electric-blue focus:border-transparent 
-                           transition-all duration-200"
-                  required
-                />
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-gray mb-1">Type</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Cpu className="h-5 w-5 text-slate-gray/60" />
-                </div>
-                <input
-                  type="text"
-                  name="type"
-                  value={attributes.type || ""}
-                  onChange={handleAttributeChange}
-                  placeholder="Enter device type"
-                  className="w-full pl-10 pr-4 py-2.5 border border-slate-gray/30 rounded-lg shadow-sm 
-                           bg-white text-slate-gray placeholder-slate-gray/50 
-                           focus:ring-2 focus:ring-electric-blue focus:border-transparent 
-                           transition-all duration-200"
-                />
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-gray mb-1">Model</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Monitor className="h-5 w-5 text-slate-gray/60" />
-                </div>
-                <input
-                  type="text"
-                  name="model"
-                  value={attributes.model || ""}
-                  onChange={handleAttributeChange}
-                  placeholder="Enter model"
-                  className="w-full pl-10 pr-4 py-2.5 border border-slate-gray/30 rounded-lg shadow-sm 
-                           bg-white text-slate-gray placeholder-slate-gray/50 
-                           focus:ring-2 focus:ring-electric-blue focus:border-transparent 
-                           transition-all duration-200"
-                />
-              </div>
-            </div>
+            {renderTextField("Serial Number", "serial_number", attributes.serial_number || "", <Barcode className="h-4 w-4" />, "Enter serial number", true)}
+            {renderTextField("Type", "type", attributes.type || "", <Cpu className="h-4 w-4" />, "Enter device type")}
+            {renderTextField("Model", "model", attributes.model || "", <Monitor className="h-4 w-4" />, "Enter model")}
           </div>
         )
 
@@ -157,45 +115,28 @@ export function InventoryForm({ formData, handleInputChange, isEditing, supplier
       case "Node":
         return (
           <div className="space-y-4">
-            <label className="block text-sm font-medium text-slate-gray mb-1">Type</label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Wifi className="h-5 w-5 text-slate-gray/60" />
-              </div>
-              <input
-                type="text"
-                name="type"
-                value={attributes.type || ""}
-                onChange={handleAttributeChange}
-                placeholder="Enter type"
-                className="w-full pl-10 pr-4 py-2.5 border border-slate-gray/30 rounded-lg shadow-sm 
-                         bg-white text-slate-gray placeholder-slate-gray/50 
-                         focus:ring-2 focus:ring-electric-blue focus:border-transparent 
-                         transition-all duration-200"
-              />
-            </div>
+            {renderTextField("Type", "type", attributes.type || "", <Wifi className="h-4 w-4" />, "Enter type")}
           </div>
         )
 
       case "Switches":
         return (
           <div className="space-y-4">
-            <label className="block text-sm font-medium text-slate-gray mb-1">Switch Type</label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Wifi className="h-5 w-5 text-slate-gray/60" />
+            <div>
+              <label className={labelClass}>Switch Type</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                  <Wifi className="h-4 w-4" />
+                </div>
+                <input
+                  type="text"
+                  name="switch_type"
+                  value={attributes.switch_type || ""}
+                  onChange={(e) => handleAttributeChange({ target: { name: "type", value: e.target.value } } as React.ChangeEvent<HTMLInputElement>)}
+                  placeholder="Enter switch type"
+                  className={inputClass}
+                />
               </div>
-              <input
-                type="text"
-                name="switch_type"
-                value={attributes.switch_type || ""}
-                onChange={(e) => handleAttributeChange({ target: { name: "type", value: e.target.value } })}
-                placeholder="Enter switch type"
-                className="w-full pl-10 pr-4 py-2.5 border border-slate-gray/30 rounded-lg shadow-sm 
-                         bg-white text-slate-gray placeholder-slate-gray/50 
-                         focus:ring-2 focus:ring-electric-blue focus:border-transparent 
-                         transition-all duration-200"
-              />
             </div>
           </div>
         )
@@ -203,133 +144,24 @@ export function InventoryForm({ formData, handleInputChange, isEditing, supplier
       case "Dish":
         return (
           <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-gray mb-1">MAC Address</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Barcode className="h-5 w-5 text-slate-gray/60" />
-                </div>
-                <input
-                  type="text"
-                  name="mac_address"
-                  value={attributes.mac_address || ""}
-                  onChange={handleAttributeChange}
-                  placeholder="Enter MAC address"
-                  className="w-full pl-10 pr-4 py-2.5 border border-slate-gray/30 rounded-lg shadow-sm 
-                           bg-white text-slate-gray placeholder-slate-gray/50 
-                           focus:ring-2 focus:ring-electric-blue focus:border-transparent 
-                           transition-all duration-200"
-                  required
-                />
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-gray mb-1">Type</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Radio className="h-5 w-5 text-slate-gray/60" />
-                </div>
-                <input
-                  type="text"
-                  name="type"
-                  value={attributes.type || ""}
-                  onChange={handleAttributeChange}
-                  placeholder="Enter dish type"
-                  className="w-full pl-10 pr-4 py-2.5 border border-slate-gray/30 rounded-lg shadow-sm 
-                           bg-white text-slate-gray placeholder-slate-gray/50 
-                           focus:ring-2 focus:ring-electric-blue focus:border-transparent 
-                           transition-all duration-200"
-                />
-              </div>
-            </div>
+            {renderTextField("MAC Address", "mac_address", attributes.mac_address || "", <Barcode className="h-4 w-4" />, "Enter MAC address", true)}
+            {renderTextField("Type", "type", attributes.type || "", <Radio className="h-4 w-4" />, "Enter dish type")}
           </div>
         )
 
       case "Adopter":
         return (
           <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-gray mb-1">Volt</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Plug className="h-5 w-5 text-slate-gray/60" />
-                </div>
-                <input
-                  type="text"
-                  name="volt"
-                  value={attributes.volt || ""}
-                  onChange={handleAttributeChange}
-                  placeholder="Enter volt"
-                  className="w-full pl-10 pr-4 py-2.5 border border-slate-gray/30 rounded-lg shadow-sm 
-                           bg-white text-slate-gray placeholder-slate-gray/50 
-                           focus:ring-2 focus:ring-electric-blue focus:border-transparent 
-                           transition-all duration-200"
-                />
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-gray mb-1">Amp</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Plug className="h-5 w-5 text-slate-gray/60" />
-                </div>
-                <input
-                  type="text"
-                  name="amp"
-                  value={attributes.amp || ""}
-                  onChange={handleAttributeChange}
-                  placeholder="Enter amp"
-                  className="w-full pl-10 pr-4 py-2.5 border border-slate-gray/30 rounded-lg shadow-sm 
-                           bg-white text-slate-gray placeholder-slate-gray/50 
-                           focus:ring-2 focus:ring-electric-blue focus:border-transparent 
-                           transition-all duration-200"
-                />
-              </div>
-            </div>
+            {renderTextField("Volt", "volt", attributes.volt || "", <Plug className="h-4 w-4" />, "Enter volt")}
+            {renderTextField("Amp", "amp", attributes.amp || "", <Plug className="h-4 w-4" />, "Enter amp")}
           </div>
         )
 
       case "Cable Ties":
         return (
           <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-gray mb-1">Type</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Paperclip className="h-5 w-5 text-slate-gray/60" />
-                </div>
-                <input
-                  type="text"
-                  name="type"
-                  value={attributes.type || ""}
-                  onChange={handleAttributeChange}
-                  placeholder="Enter tie type"
-                  className="w-full pl-10 pr-4 py-2.5 border border-slate-gray/30 rounded-lg shadow-sm 
-                           bg-white text-slate-gray placeholder-slate-gray/50 
-                           focus:ring-2 focus:ring-electric-blue focus:border-transparent 
-                           transition-all duration-200"
-                />
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-gray mb-1">Model</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Package className="h-5 w-5 text-slate-gray/60" />
-                </div>
-                <input
-                  type="text"
-                  name="model"
-                  value={attributes.model || ""}
-                  onChange={handleAttributeChange}
-                  placeholder="Enter model"
-                  className="w-full pl-10 pr-4 py-2.5 border border-slate-gray/30 rounded-lg shadow-sm 
-                           bg-white text-slate-gray placeholder-slate-gray/50 
-                           focus:ring-2 focus:ring-electric-blue focus:border-transparent 
-                           transition-all duration-200"
-                />
-              </div>
-            </div>
+            {renderTextField("Type", "type", attributes.type || "", <Paperclip className="h-4 w-4" />, "Enter tie type")}
+            {renderTextField("Model", "model", attributes.model || "", <Package className="h-4 w-4" />, "Enter model")}
           </div>
         )
 
@@ -339,17 +171,14 @@ export function InventoryForm({ formData, handleInputChange, isEditing, supplier
   }
 
   return (
-    <div className="bg-white rounded-xl p-6 shadow-sm space-y-6">
-      <h2 className="text-2xl font-bold text-deep-ocean mb-6 border-b border-slate-gray/10 pb-2">
-        {isEditing ? "Edit Inventory Item" : "Add New Inventory Item"}
-      </h2>
+    <div className="space-y-6">
 
       {/* Item Type */}
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-slate-gray">Item Type</label>
+        <label className={labelClass}>Item Type <span className="text-rose-500 ml-0.5">*</span></label>
         <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Box className="h-5 w-5 text-slate-gray/60" />
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+            <Box className="h-4 w-4" />
           </div>
           <select
             name="item_type"
@@ -358,10 +187,7 @@ export function InventoryForm({ formData, handleInputChange, isEditing, supplier
               handleInputChange(e)
               setSelectedItemType(e.target.value)
             }}
-            className="w-full pl-10 pr-4 py-2.5 border border-slate-gray/30 rounded-lg shadow-sm 
-                     bg-white text-slate-gray appearance-none
-                     focus:ring-2 focus:ring-electric-blue focus:border-transparent 
-                     transition-all duration-200"
+            className={controlClass}
             required
           >
             <option value="">Select Item Type</option>
@@ -372,12 +198,8 @@ export function InventoryForm({ formData, handleInputChange, isEditing, supplier
             ))}
           </select>
           <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-            <svg className="h-5 w-5 text-slate-gray/60" viewBox="0 0 20 20" fill="currentColor">
-              <path
-                fillRule="evenodd"
-                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                clipRule="evenodd"
-              />
+            <svg className="w-3.5 h-3.5 text-slate-400" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6 8L10 12L14 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
         </div>
@@ -385,27 +207,26 @@ export function InventoryForm({ formData, handleInputChange, isEditing, supplier
 
       {/* Type-specific fields */}
       {selectedItemType && (
-        <div className="bg-light-sky/20 p-5 rounded-lg">
-          <h3 className="text-lg font-medium text-deep-ocean mb-4">Item Specifications</h3>
+        <div className="bg-slate-50 border border-slate-200 p-4 rounded-[10px]">
+          <div className="flex items-center gap-2 pl-2.5 border-l-2 border-slate-300 mb-4">
+            <span className="text-[10px] font-medium text-slate-400 uppercase tracking-[0.08em]">Item Specifications</span>
+          </div>
           {renderTypeSpecificFields()}
         </div>
       )}
 
       {/* Vendor */}
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-slate-gray">Vendor</label>
+        <label className={labelClass}>Vendor <span className="text-rose-500 ml-0.5">*</span></label>
         <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Truck className="h-5 w-5 text-slate-gray/60" />
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+            <Truck className="h-4 w-4" />
           </div>
           <select
             name="vendor"
             value={formData.vendor || ""}
             onChange={handleInputChange}
-            className="w-full pl-10 pr-4 py-2.5 border border-slate-gray/30 rounded-lg shadow-sm 
-                     bg-white text-slate-gray appearance-none
-                     focus:ring-2 focus:ring-electric-blue focus:border-transparent 
-                     transition-all duration-200"
+            className={controlClass}
             required
           >
             <option value="">Select Vendor</option>
@@ -416,12 +237,8 @@ export function InventoryForm({ formData, handleInputChange, isEditing, supplier
             ))}
           </select>
           <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-            <svg className="h-5 w-5 text-slate-gray/60" viewBox="0 0 20 20" fill="currentColor">
-              <path
-                fillRule="evenodd"
-                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                clipRule="evenodd"
-              />
+            <svg className="w-3.5 h-3.5 text-slate-400" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6 8L10 12L14 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
         </div>
@@ -431,10 +248,10 @@ export function InventoryForm({ formData, handleInputChange, isEditing, supplier
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Quantity */}
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-slate-gray">Quantity</label>
+          <label className={labelClass}>Quantity <span className="text-rose-500 ml-0.5">*</span></label>
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Layers className="h-5 w-5 text-slate-gray/60" />
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+              <Layers className="h-4 w-4" />
             </div>
             <input
               type="number"
@@ -443,10 +260,7 @@ export function InventoryForm({ formData, handleInputChange, isEditing, supplier
               onChange={handleInputChange}
               placeholder="Enter quantity"
               min="1"
-              className="w-full pl-10 pr-4 py-2.5 border border-slate-gray/30 rounded-lg shadow-sm 
-                       bg-white text-slate-gray placeholder-slate-gray/50 
-                       focus:ring-2 focus:ring-electric-blue focus:border-transparent 
-                       transition-all duration-200"
+              className={inputClass}
               required
             />
           </div>
@@ -454,10 +268,10 @@ export function InventoryForm({ formData, handleInputChange, isEditing, supplier
 
         {/* Unit Price */}
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-slate-gray">Unit Price</label>
+          <label className={labelClass}>Unit Price</label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <span className="text-slate-gray/60 font-medium">PKR</span>
+              <span className="text-[11px] text-slate-400 font-medium">PKR</span>
             </div>
             <input
               type="number"
@@ -467,10 +281,7 @@ export function InventoryForm({ formData, handleInputChange, isEditing, supplier
               placeholder="Enter unit price"
               step="0.01"
               min="0"
-              className="w-full pl-10 pr-4 py-2.5 border border-slate-gray/30 rounded-lg shadow-sm 
-                       bg-white text-slate-gray placeholder-slate-gray/50 
-                       focus:ring-2 focus:ring-electric-blue focus:border-transparent 
-                       transition-all duration-200"
+              className="w-full h-9 pl-10 pr-3 border border-slate-200 rounded-md bg-white text-[13px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/[0.12] focus:border-blue-500 hover:border-slate-300 transition-colors duration-150"
             />
           </div>
         </div>

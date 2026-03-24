@@ -186,7 +186,7 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
       let response
       
       // Prepare data for submission (convert File objects to file paths)
-      const submissionData = { ...formData }
+      const submissionData: any = { ...formData }
       
       // Handle file fields - ensure they are strings (file paths), not File objects
       if (submissionData.payment_proof instanceof File) {
@@ -274,8 +274,8 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
               onClick={() => handleToggleStatus(info.row.original.id, info.getValue())}
               className={`px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 transition-all ${
                 info.getValue()
-                  ? "bg-emerald-green/10 text-emerald-green hover:bg-emerald-green/20"
-                  : "bg-coral-red/10 text-coral-red hover:bg-coral-red/20"
+                  ? "bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100"
+                  : "bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100"
               }`}
             >
               {info.getValue() ? (
@@ -297,14 +297,14 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
           <div className="flex items-center gap-2">
             <button
               onClick={() => showModal(info.row.original)}
-              className="p-2 text-white bg-electric-blue rounded-md hover:bg-btn-hover transition-colors"
+              className="p-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
               title="Edit"
             >
               <Pencil className="h-4 w-4" />
             </button>
             <button
               onClick={() => handleDelete(info.row.original.id)}
-              className="p-2 text-white bg-coral-red rounded-md hover:bg-coral-red/80 transition-colors"
+              className="p-2 text-white bg-rose-600 rounded-md hover:bg-rose-700 transition-colors"
               title="Delete"
             >
               <Trash2 className="h-4 w-4" />
@@ -316,38 +316,38 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
   }, [columns])
 
   return (
-    <div className="flex h-screen bg-light-sky/50">
+    <div className="flex h-screen bg-[radial-gradient(circle_at_top_left,_#dbeafe_0,_#f8fafc_45%,_#eef2ff_100%)]">
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} setIsOpen={setIsSidebarOpen} />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Topbar toggleSidebar={toggleSidebar} />
         <main
-  className={`flex-1 overflow-x-hidden overflow-y-auto bg-light-sky/50 p-0 sm:p-6 pt-20 transition-all duration-300 ${
+  className={`flex-1 overflow-x-hidden overflow-y-auto bg-transparent p-0 sm:p-6 pt-20 transition-all duration-300 ${
     isSidebarOpen ? "ml-64" : "ml-0 lg:ml-20"
   }`}
 >
 
           <div className="container mx-auto">
             {/* Breadcrumb */}
-            <div className="flex items-center text-sm text-slate-gray mb-6">
+            <div className="flex items-center text-sm text-slate-500 mb-6">
               <LayoutDashboard className="h-4 w-4 mr-1" />
               <span>Dashboard</span>
               <ChevronRight className="h-4 w-4 mx-1" />
-              <span className="text-deep-ocean font-medium">{title} Management</span>
+              <span className="text-slate-900 font-medium">{title} Management</span>
             </div>
 
             {/* Header Section */}
-            <div className="bg-white rounded-xl shadow-md p-6 mb-6">
+            <div className="bg-white rounded-[12px] border border-slate-200 p-6 mb-6">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                 <div>
-                  <h1 className="text-2xl md:text-3xl font-bold text-deep-ocean flex items-center gap-2">
-                    <Users className="h-7 w-7 text-electric-blue" />
+                  <h1 className="text-2xl md:text-3xl font-bold text-slate-900 flex items-center gap-2">
+                    <Users className="h-7 w-7 text-blue-600" />
                     {title} Management
                   </h1>
-                  <p className="text-slate-gray mt-1">Manage your {title.toLowerCase()} records efficiently</p>
+                  <p className="text-slate-500 mt-1">Manage your {title.toLowerCase()} records efficiently</p>
                 </div>
                 <button
                   onClick={() => showModal(null)}
-                  className="bg-electric-blue text-white px-4 py-2.5 rounded-lg hover:bg-btn-hover transition-colors flex items-center justify-center gap-2 shadow-sm self-start md:self-center"
+                  className="bg-blue-600 text-white px-4 py-2.5 rounded-md hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 self-start md:self-center"
                 >
                   <Plus className="h-5 w-5" /> Add New {title}
                 </button>
@@ -355,38 +355,38 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
 
               {/* Stats Cards */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <div className="bg-light-sky/50 rounded-lg p-4 border border-slate-gray/10">
+                <div className="bg-slate-50 rounded-[10px] p-4 border border-slate-200">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-slate-gray text-sm">Total {title}s</p>
-                      <h3 className="text-2xl font-bold text-deep-ocean mt-1">{stats.total}</h3>
+                      <p className="text-slate-500 text-sm">Total {title}s</p>
+                      <h3 className="text-2xl font-bold text-slate-900 mt-1">{stats.total}</h3>
                     </div>
-                    <div className="bg-deep-ocean/10 p-3 rounded-full">
-                      <Users className="h-6 w-6 text-deep-ocean" />
+                    <div className="bg-slate-200 p-3 rounded-full">
+                      <Users className="h-6 w-6 text-slate-700" />
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-emerald-green/5 rounded-lg p-4 border border-emerald-green/10">
+                <div className="bg-emerald-50 rounded-[10px] p-4 border border-emerald-200">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-slate-gray text-sm">Active {title}s</p>
-                      <h3 className="text-2xl font-bold text-emerald-green mt-1">{stats.active}</h3>
+                      <p className="text-slate-500 text-sm">Active {title}s</p>
+                      <h3 className="text-2xl font-bold text-emerald-700 mt-1">{stats.active}</h3>
                     </div>
-                    <div className="bg-emerald-green/10 p-3 rounded-full">
-                      <CheckCircle2 className="h-6 w-6 text-emerald-green" />
+                    <div className="bg-emerald-100 p-3 rounded-full">
+                      <CheckCircle2 className="h-6 w-6 text-emerald-700" />
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-coral-red/5 rounded-lg p-4 border border-coral-red/10">
+                <div className="bg-rose-50 rounded-[10px] p-4 border border-rose-200">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-slate-gray text-sm">Inactive {title}s</p>
-                      <h3 className="text-2xl font-bold text-coral-red mt-1">{stats.inactive}</h3>
+                      <p className="text-slate-500 text-sm">Inactive {title}s</p>
+                      <h3 className="text-2xl font-bold text-rose-700 mt-1">{stats.inactive}</h3>
                     </div>
-                    <div className="bg-coral-red/10 p-3 rounded-full">
-                      <XCircle className="h-6 w-6 text-coral-red" />
+                    <div className="bg-rose-100 p-3 rounded-full">
+                      <XCircle className="h-6 w-6 text-rose-700" />
                     </div>
                   </div>
                 </div>
@@ -394,9 +394,9 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
 
               {/* Bulk Actions */}
               {selectedRows.length > 0 && (
-                <div className="bg-electric-blue/5 border border-electric-blue/20 rounded-lg p-4 mb-6 flex flex-wrap items-center justify-between gap-4">
+                <div className="bg-blue-50 border border-blue-200 rounded-[10px] p-4 mb-6 flex flex-wrap items-center justify-between gap-4">
                   <div className="flex items-center gap-2">
-                    <span className="text-deep-ocean font-medium">
+                    <span className="text-slate-900 font-medium">
                       {selectedRows.length} {title.toLowerCase()}
                       {selectedRows.length > 1 ? "s" : ""} selected
                     </span>
@@ -405,14 +405,14 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
                     <button
                       onClick={() => handleBulkStatusChange(true)}
                       disabled={selectedRows.length === 0 || isLoading}
-                      className="px-4 py-2 text-sm font-medium bg-emerald-green text-white rounded-md hover:bg-emerald-green/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-green disabled:opacity-50 transition-colors flex items-center gap-1.5"
+                      className="px-4 py-2 text-sm font-medium bg-emerald-600 text-white rounded-md hover:bg-emerald-700 disabled:opacity-50 transition-colors flex items-center gap-1.5"
                     >
                       <Check className="h-4 w-4" /> Activate
                     </button>
                     <button
                       onClick={() => handleBulkStatusChange(false)}
                       disabled={selectedRows.length === 0 || isLoading}
-                      className="px-4 py-2 text-sm font-medium bg-coral-red text-white rounded-md hover:bg-coral-red/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-coral-red disabled:opacity-50 transition-colors flex items-center gap-1.5"
+                      className="px-4 py-2 text-sm font-medium bg-rose-600 text-white rounded-md hover:bg-rose-700 disabled:opacity-50 transition-colors flex items-center gap-1.5"
                     >
                       <X className="h-4 w-4" /> Deactivate
                     </button>
@@ -449,14 +449,14 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
             <button
               type="button"
               onClick={handleCancel}
-              className="px-4 py-2.5 border border-slate-gray/20 text-slate-gray rounded-lg hover:bg-light-sky/50 transition-colors"
+              className="px-4 py-2.5 border border-slate-200 text-slate-600 rounded-md hover:bg-slate-50 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isLoading}
-              className="px-4 py-2.5 bg-electric-blue text-white rounded-lg hover:bg-btn-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-electric-blue disabled:opacity-50 transition-colors flex items-center gap-2"
+              className="px-4 py-2.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center gap-2"
             >
               {isLoading ? (
                 <>

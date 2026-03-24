@@ -4,16 +4,8 @@ import type React from "react"
 import { useState, useEffect, useMemo, useCallback } from "react"
 import type { ColumnDef } from "@tanstack/react-table"
 import {
-  Plus,
-  Pencil,
-  Trash2,
-  CheckCircle2,
-  XCircle,
-  LayoutDashboard,
-  ChevronRight,
-  DollarSign,
-  FileDown,
-  Clock,
+  Plus, Pencil, Trash2, CheckCircle2, XCircle, LayoutDashboard,
+  ChevronRight, DollarSign, FileDown, Clock,
 } from "lucide-react"
 import { Table } from "./table/PaymentTable.tsx"
 import { Modal } from "./modal.tsx"
@@ -42,28 +34,25 @@ interface CRUDPageProps<T> {
 type Summary = { total: number; active: number; pending: number; totalAmount: number }
 
 export function CRUDPage<T extends { id: string; is_active?: boolean }>({
-  title,
-  endpoint,
-  columns,
-  FormComponent,
-  onDataChange,
-  validateBeforeSubmit,
-  refreshTrigger = 0,
+  title, endpoint, columns, FormComponent, onDataChange,
+  validateBeforeSubmit, refreshTrigger = 0,
 }: CRUDPageProps<T>) {
   const [data, setData] = useState<T[]>([])
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [editingItem, setEditingItem] = useState<T | null>(null)
   const [formData, setFormData] = useState<Partial<T>>({})
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [isSidebarHovered, setIsSidebarHovered] = useState(false)
   const [selectedRows, setSelectedRows] = useState<string[]>([])
   const [isLoading, setIsLoading] = useState(false)
-
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 20 })
   const [pageCount, setPageCount] = useState<number>(0)
   const [sorting, setSorting] = useState<{ id: string; desc: boolean }[]>([])
   const [globalSearch, setGlobalSearch] = useState("")
   const [columnFilters, setColumnFilters] = useState<{ id: string; value: string }[]>([])
   const [stats, setStats] = useState<Summary>({ total: 0, active: 0, pending: 0, totalAmount: 0 })
+
+  const sidebarExpanded = isSidebarOpen || isSidebarHovered
 
   const fetchSummary = useCallback(async () => {
     try {
@@ -72,14 +61,8 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
         headers: { Authorization: `Bearer ${token}` },
       })
       const s = res.data as Summary
-      setStats({
-        total: s.total || 0,
-        active: s.active || 0,
-        pending: s.pending || 0,
-        totalAmount: s.totalAmount || 0,
-      })
+      setStats({ total: s.total || 0, active: s.active || 0, pending: s.pending || 0, totalAmount: s.totalAmount || 0 })
     } catch (e) {
-      // Fallback silently; don't block page
       console.warn("Failed to fetch summary", e)
     }
   }, [endpoint, refreshTrigger])
@@ -90,47 +73,32 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
       const token = getToken()
       const sort = sorting[0]
       const params: Record<string, any> = {
-        page: pagination.pageIndex + 1, // backend 1-based
+        page: pagination.pageIndex + 1,
         page_size: pagination.pageSize,
         sort_by: sort?.id,
         sort_dir: sort?.desc ? "desc" : "asc",
         q: globalSearch || undefined,
       }
-      // column filters to query params (key=value)
-      columnFilters.forEach((f) => {
-        if (f.value) params[`filter_${f.id}`] = f.value
-      })
-
+      columnFilters.forEach((f) => { if (f.value) params[`filter_${f.id}`] = f.value })
       const res = await axiosInstance.get(`/${endpoint}/page`, {
         headers: { Authorization: `Bearer ${token}` },
         params,
       })
-      // Expected shape: { items: T[], total: number }
       setData(res.data.items || [])
       const total = res.data.total || 0
       setPageCount(Math.ceil(total / pagination.pageSize))
-      if (!stats.total || refreshTrigger > 0) {
-        // try lazy summary fill if backend doesn't provide /summary
-        setStats((prev) => ({ ...prev, total }))
-      }
+      if (!stats.total || refreshTrigger > 0) setStats((prev) => ({ ...prev, total }))
       if (onDataChange) onDataChange()
     } catch (error) {
       console.error(`Failed to fetch ${title}`, error)
-      toast.error(`Failed to fetch ${title}`, {
-        style: { background: "#FEE2E2", color: "#EF4444" },
-      })
+      toast.error(`Failed to fetch ${title}`)
     } finally {
       setIsLoading(false)
     }
   }, [endpoint, title, sorting, globalSearch, columnFilters, pagination, onDataChange, stats.total, refreshTrigger])
 
-  useEffect(() => {
-    fetchSummary()
-  }, [fetchSummary])
-
-  useEffect(() => {
-    fetchPage()
-  }, [fetchPage])
+  useEffect(() => { fetchSummary() }, [fetchSummary])
+  useEffect(() => { fetchPage() }, [fetchPage])
 
   const handleToggleStatus = async (id: string, currentStatus: boolean) => {
     try {
@@ -140,55 +108,34 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
         { is_active: !currentStatus },
         { headers: { Authorization: `Bearer ${token}` } },
       )
-      toast.success(`${title} status updated successfully`, {
-        style: { background: "#D1FAE5", color: "#10B981" },
-      })
+      toast.success(`${title} status updated successfully`)
       await fetchPage()
     } catch (error) {
-      console.error(`Failed to update ${title} status`, error)
-      toast.error(`Failed to update ${title} status`, {
-        style: { background: "#FEE2E2", color: "#EF4444" },
-      })
+      toast.error(`Failed to update ${title} status`)
     }
   }
 
   const handleBulkStatusChange = async (newStatus: boolean) => {
     if (selectedRows.length === 0) return
-
     try {
       setIsLoading(true)
       const token = getToken()
       await Promise.all(
         selectedRows.map((id) =>
-          axiosInstance.put(
-            `/${endpoint}/update/${id}`,
-            { is_active: newStatus },
-            { headers: { Authorization: `Bearer ${token}` } },
-          ),
+          axiosInstance.put(`/${endpoint}/update/${id}`, { is_active: newStatus }, { headers: { Authorization: `Bearer ${token}` } }),
         ),
       )
-      toast.success(
-        `${selectedRows.length} ${title.toLowerCase()}${selectedRows.length > 1 ? "s" : ""} ${
-          newStatus ? "activated" : "deactivated"
-        } successfully`,
-        {
-          style: { background: "#D1FAE5", color: "#10B981" },
-        },
-      )
+      toast.success(`${selectedRows.length} ${title.toLowerCase()}${selectedRows.length > 1 ? "s" : ""} ${newStatus ? "activated" : "deactivated"} successfully`)
       await fetchPage()
       setSelectedRows([])
     } catch (error) {
-      console.error(`Failed to update ${title} status`, error)
-      toast.error(`Failed to update ${title} status`, {
-        style: { background: "#FEE2E2", color: "#EF4444" },
-      })
+      toast.error(`Failed to update ${title} status`)
     } finally {
       setIsLoading(false)
     }
   }
 
   const showModal = (item: T | null) => {
-    console.log("showModal", item)
     setEditingItem(item)
     setFormData(item || {})
     setIsModalVisible(true)
@@ -205,63 +152,31 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
     setIsLoading(true)
     try {
       const token = getToken()
-
-      // Create FormData for file uploads
       const formDataToSend = new FormData()
-
-      // Append all form data with proper type conversion
       Object.keys(formData).forEach((key) => {
-        if (formData[key] !== undefined && formData[key] !== null) {
-          const value = formData[key]
-
-          // Handle file separately
+        if ((formData as any)[key] !== undefined && (formData as any)[key] !== null) {
+          const value = (formData as any)[key]
           if (key === "payment_proof" && value instanceof File) {
             formDataToSend.append(key, value)
-          }
-          // Convert boolean strings to actual booleans
-          else if (key === "is_active") {
-            if (typeof value === "string") {
-              formDataToSend.append(key, value.toLowerCase() === "true" ? "true" : "false")
-            } else {
-              formDataToSend.append(key, value ? "true" : "false")
-            }
-          }
-          // Handle other fields
-          else {
+          } else if (key === "is_active") {
+            formDataToSend.append(key, typeof value === "string" ? (value.toLowerCase() === "true" ? "true" : "false") : value ? "true" : "false")
+          } else {
             formDataToSend.append(key, value.toString())
           }
         }
       })
-
-      let response
+      const headers = { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" }
       if (editingItem) {
-        response = await axiosInstance.put(`/${endpoint}/update/${editingItem.id}`, formDataToSend, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        })
-        toast.success(`${title} updated successfully`, {
-          style: { background: "#D1FAE5", color: "#10B981" },
-        })
+        await axiosInstance.put(`/${endpoint}/update/${editingItem.id}`, formDataToSend, { headers })
+        toast.success(`${title} updated successfully`)
       } else {
-        response = await axiosInstance.post(`/${endpoint}/add`, formDataToSend, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        })
-        toast.success(`${title} added successfully`, {
-          style: { background: "#D1FAE5", color: "#10B981" },
-        })
+        await axiosInstance.post(`/${endpoint}/add`, formDataToSend, { headers })
+        toast.success(`${title} added successfully`)
       }
       fetchPage()
       handleCancel()
     } catch (error) {
-      console.error("Operation failed", error)
-      toast.error("Operation failed:" + error.toString(), {
-        style: { background: "#FEE2E2", color: "#EF4444" },
-      })
+      toast.error("Operation failed")
     } finally {
       setIsLoading(false)
     }
@@ -272,18 +187,11 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
       try {
         setIsLoading(true)
         const token = getToken()
-        await axiosInstance.delete(`/${endpoint}/delete/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        toast.success(`${title} deleted successfully`, {
-          style: { background: "#D1FAE5", color: "#10B981" },
-        })
+        await axiosInstance.delete(`/${endpoint}/delete/${id}`, { headers: { Authorization: `Bearer ${token}` } })
+        toast.success(`${title} deleted successfully`)
         await fetchPage()
       } catch (error) {
-        console.error("Delete operation failed", error)
-        toast.error("Delete operation failed", {
-          style: { background: "#FEE2E2", color: "#EF4444" },
-        })
+        toast.error("Delete operation failed")
       } finally {
         setIsLoading(false)
       }
@@ -295,323 +203,253 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
+  const handleExport = async () => {
+    try {
+      const token = getToken()
+      const sort = sorting[0]
+      const params: Record<string, any> = {
+        sort_by: sort?.id, sort_dir: sort?.desc ? "desc" : "asc", q: globalSearch || undefined,
+      }
+      columnFilters.forEach((f) => { if (f.value) params[`filter_${f.id}`] = f.value })
+      const res = await axiosInstance.get(`/${endpoint}/export`, {
+        headers: { Authorization: `Bearer ${token}` }, params, responseType: "blob",
+      })
+      const url = URL.createObjectURL(res.data)
+      const a = document.createElement("a")
+      a.href = url; a.download = `${title.toLowerCase()}-export.csv`
+      document.body.appendChild(a); a.click(); a.remove()
+      URL.revokeObjectURL(url)
+    } catch (e) {
+      toast.error("Export failed")
+    }
+  }
+
   const toggleSidebar = () => setIsSidebarOpen((prev) => !prev)
 
   const memoizedColumns = useMemo(() => {
     return [
       ...columns,
       {
-        header: "Status",
+        header: "Active",
         accessorKey: "is_active",
         cell: (info: any) => (
-          <div className="flex items-center">
-            <button
-              onClick={() => handleToggleStatus(info.row.original.id, info.getValue())}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 transition-all ${
-                info.getValue()
-                  ? "bg-emerald-green/10 text-emerald-green hover:bg-emerald-green/20"
-                  : "bg-coral-red/10 text-coral-red hover:bg-coral-red/20"
-              }`}
-            >
-              {info.getValue() ? (
-                <>
-                  <CheckCircle2 className="h-3.5 w-3.5" /> Active
-                </>
-              ) : (
-                <>
-                  <XCircle className="h-3.5 w-3.5" /> Inactive
-                </>
-              )}
-            </button>
-          </div>
+          /* ── STATUS BADGE: rounded not rounded-full ── */
+          <button
+            onClick={() => handleToggleStatus(info.row.original.id, info.getValue())}
+            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium transition-colors duration-150 ${
+              info.getValue()
+                ? "bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100"
+                : "bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100"
+            }`}
+          >
+            {info.getValue()
+              ? <><CheckCircle2 className="w-3 h-3" /> Active</>
+              : <><XCircle className="w-3 h-3" /> Inactive</>}
+          </button>
         ),
       },
       {
         header: "Actions",
         cell: (info: any) => (
-          <div className="flex items-center gap-2">
+          /* ── EDIT/DELETE: icon-only ghost buttons ── */
+          <div className="flex items-center gap-1">
             <button
               onClick={() => showModal(info.row.original)}
-              className="p-2 text-white bg-electric-blue rounded-md hover:bg-btn-hover transition-colors"
+              className="p-1.5 rounded-md text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors duration-150"
               title="Edit"
             >
-              <Pencil className="h-4 w-4" />
+              <Pencil className="w-4 h-4" />
             </button>
             <button
               onClick={() => handleDelete(info.row.original.id)}
-              className="p-2 text-white bg-coral-red rounded-md hover:bg-coral-red/80 transition-colors"
+              className="p-1.5 rounded-md text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors duration-150"
               title="Delete"
             >
-              <Trash2 className="h-4 w-4" />
+              <Trash2 className="w-4 h-4" />
             </button>
           </div>
         ),
       },
     ]
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [columns])
 
-  const handleExport = async () => {
-    try {
-      const token = getToken()
-      const sort = sorting[0]
-      const params: Record<string, any> = {
-        sort_by: sort?.id,
-        sort_dir: sort?.desc ? "desc" : "asc",
-        q: globalSearch || undefined,
-      }
-      columnFilters.forEach((f) => {
-        if (f.value) params[`filter_${f.id}`] = f.value
-      })
-      const res = await axiosInstance.get(`/${endpoint}/export`, {
-        headers: { Authorization: `Bearer ${token}` },
-        params,
-        responseType: "blob",
-      })
-      const url = URL.createObjectURL(res.data)
-      const a = document.createElement("a")
-      a.href = url
-      a.download = `${title.toLowerCase()}-export.csv`
-      document.body.appendChild(a)
-      a.click()
-      a.remove()
-      URL.revokeObjectURL(url)
-    } catch (e) {
-      toast.error("Export failed", { style: { background: "#FEE2E2", color: "#EF4444" } })
-    }
-  }
+  /* ── MODAL FOOTER: sticky bg-slate-50 border-t ── */
+  const modalFooter = (
+    <>
+      <button
+        type="button" onClick={handleCancel}
+        className="px-4 py-2 text-[13px] font-medium text-slate-600 border border-slate-200 rounded-md hover:bg-slate-50 transition-colors duration-150"
+      >
+        Cancel
+      </button>
+      <button
+        type="submit" form="payment-form" disabled={isLoading}
+        className="px-4 py-2 text-[13px] font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors duration-150 flex items-center gap-2"
+      >
+        {isLoading ? "Processing..." : editingItem
+          ? <><Pencil className="w-4 h-4" /> Update {title}</>
+          : <><Plus className="w-4 h-4" /> Create {title}</>}
+      </button>
+    </>
+  )
 
   return (
-    <div className="flex h-screen bg-light-sky/50">
-      <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} setIsOpen={setIsSidebarOpen} />
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <Topbar toggleSidebar={toggleSidebar} />
-        <main
-  className={`flex-1 overflow-x-hidden overflow-y-auto bg-light-sky/50 p-0 sm:p-6 pt-20 transition-all duration-300 ${
-    isSidebarOpen ? "ml-64" : "ml-0 lg:ml-20"
-  }`}
->
+    /* ── APP SHELL ── */
+    <div className="flex h-screen bg-slate-100 overflow-hidden">
+      <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} setIsOpen={setIsSidebarOpen} onHoverChange={setIsSidebarHovered} />
 
-          <div className="container mx-auto">
-            {/* Breadcrumb */}
-            <div className="flex items-center text-sm text-slate-gray mb-6">
-              <LayoutDashboard className="h-4 w-4 mr-1" />
+      <div className={`flex-1 flex flex-col min-w-0 overflow-hidden transition-all duration-200 ${sidebarExpanded ? "lg:pl-[260px]" : "lg:pl-[60px]"}`}>
+        <div className="flex-shrink-0">
+          <Topbar toggleSidebar={toggleSidebar} sidebarExpanded={sidebarExpanded} />
+        </div>
+
+        <main className="flex-1 overflow-y-auto bg-slate-100 px-6 py-5">
+          <div className="max-w-[1400px] mx-auto">
+
+            {/* ── BREADCRUMB ── */}
+            <div className="flex items-center gap-1 text-[11px] text-slate-400 mb-5">
+              <LayoutDashboard className="w-3.5 h-3.5" />
               <span>Dashboard</span>
-              <ChevronRight className="h-4 w-4 mx-1" />
-              <span className="text-deep-ocean font-medium">{title} Management</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+              <span className="text-slate-600 font-medium">{title} Management</span>
             </div>
 
-            {/* Header Section */}
-            <div className="bg-white rounded-xl shadow-md p-6 mb-6">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-                <div>
-                  <h1 className="text-2xl md:text-3xl font-bold text-deep-ocean flex items-center gap-2">
-                    <DollarSign className="h-7 w-7 text-electric-blue" />
-                    {title} Management
-                  </h1>
-                  <p className="text-slate-gray mt-1">Manage your {title.toLowerCase()} records efficiently</p>
+            {/* ── PAGE HEADER CARD ── */}
+            <div className="bg-white rounded-[10px] border border-slate-200 p-5 mb-5">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <DollarSign className="w-4 h-4 text-blue-600" />
+                  </div>
+                  <div>
+                    <h1 className="text-[15px] font-medium text-slate-900">{title} Management</h1>
+                    <p className="text-[11px] text-slate-400 mt-0.5">Manage your {title.toLowerCase()} records</p>
+                  </div>
                 </div>
-                <div className="flex flex-wrap gap-3">
+                <div className="flex flex-wrap gap-2 self-start sm:self-center">
+                  {/* ── EXPORT: secondary ghost ── */}
                   <button
                     onClick={handleExport}
-                    className="bg-golden-amber text-white px-4 py-2.5 rounded-lg hover:bg-golden-amber/90 transition-colors flex items-center gap-2 shadow-sm"
+                    className="inline-flex items-center gap-2 px-4 py-2 text-[13px] font-medium text-slate-600 border border-slate-200 rounded-md hover:bg-slate-50 transition-colors duration-150"
                   >
-                    <FileDown className="h-5 w-5" /> Export CSV
+                    <FileDown className="w-4 h-4" /> Export CSV
                   </button>
+                  {/* ── ADD NEW: primary ── */}
                   <button
                     onClick={() => showModal(null)}
-                    className="bg-electric-blue text-white px-4 py-2.5 rounded-lg hover:bg-btn-hover transition-colors flex items-center gap-2 shadow-sm"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-[13px] font-medium rounded-md hover:bg-blue-700 transition-colors duration-150"
                   >
-                    <Plus className="h-5 w-5" /> Add New {title}
+                    <Plus className="w-4 h-4" /> Add New {title}
                   </button>
                 </div>
               </div>
 
-              {/* Stats Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-              <div className="bg-light-sky/50 rounded-lg p-4 border border-slate-gray/10">
+              {/* ── STAT STRIP: 4 cards, bg-slate-50, distinct icon colors ── */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
+                <div className="bg-slate-50 rounded-[10px] border border-slate-200 p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-slate-gray text-sm">Total {title}s</p>
-                      <h3 className="text-2xl font-bold text-deep-ocean mt-1">{stats.total}</h3>
+                      <p className="text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em]">Total {title}s</p>
+                      <p className="text-[22px] font-semibold text-slate-900 tabular-nums leading-none mt-1.5">{stats.total}</p>
                     </div>
-                    <div className="bg-deep-ocean/10 p-3 rounded-full">
-                      <DollarSign className="h-6 w-6 text-deep-ocean" />
+                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <DollarSign className="w-4 h-4 text-blue-600" />
                     </div>
                   </div>
                 </div>
-
-                <div className="bg-emerald-green/5 rounded-lg p-4 border border-emerald-green/10">
+                <div className="bg-slate-50 rounded-[10px] border border-slate-200 p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-slate-gray text-sm">Active {title}s</p>
-                      <h3 className="text-2xl font-bold text-emerald-green mt-1">{stats.active}</h3>
+                      <p className="text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em]">Active {title}s</p>
+                      <p className="text-[22px] font-semibold text-slate-900 tabular-nums leading-none mt-1.5">{stats.active}</p>
                     </div>
-                    <div className="bg-emerald-green/10 p-3 rounded-full">
-                      <CheckCircle2 className="h-6 w-6 text-emerald-green" />
+                    <div className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                     </div>
                   </div>
                 </div>
-
-                <div className="bg-amber-500/5 rounded-lg p-4 border border-amber-500/10">
+                <div className="bg-slate-50 rounded-[10px] border border-slate-200 p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-slate-gray text-sm">Pending {title}s</p>
-                      <h3 className="text-2xl font-bold text-amber-600 mt-1">{stats.pending}</h3>
+                      <p className="text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em]">Pending {title}s</p>
+                      <p className="text-[22px] font-semibold text-slate-900 tabular-nums leading-none mt-1.5">{stats.pending}</p>
                     </div>
-                    <div className="bg-amber-500/10 p-3 rounded-full">
-                      <Clock className="h-6 w-6 text-amber-600" />
+                    <div className="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Clock className="w-4 h-4 text-amber-600" />
                     </div>
                   </div>
                 </div>
-
-                <div className="bg-electric-blue/5 rounded-lg p-4 border border-electric-blue/10">
+                <div className="bg-slate-50 rounded-[10px] border border-slate-200 p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-slate-gray text-sm">Total Amount</p>
-                      <h3 className="text-2xl font-bold text-electric-blue mt-1">
-                        PKR{stats.totalAmount.toLocaleString()}
-                      </h3>
+                      <p className="text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em]">Total Amount</p>
+                      <p className="text-[22px] font-semibold text-slate-900 tabular-nums leading-none mt-1.5">
+                        <span className="text-[13px] text-slate-400 mr-0.5">PKR</span>
+                        {stats.totalAmount.toLocaleString()}
+                      </p>
                     </div>
-                    <div className="bg-electric-blue/10 p-3 rounded-full">
-                      <DollarSign className="h-6 w-6 text-electric-blue" />
+                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <DollarSign className="w-4 h-4 text-blue-600" />
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Bulk Actions */}
+              {/* ── BULK ACTIONS ── */}
               {selectedRows.length > 0 && (
-                <div className="bg-electric-blue/5 border border-electric-blue/20 rounded-lg p-4 mb-6 flex flex-wrap items-center justify-between gap-4">
-                  <div className="flex items-center gap-2">
-                    <span className="text-deep-ocean font-medium">
-                      {selectedRows.length} {title.toLowerCase()}
-                      {selectedRows.length > 1 ? "s" : ""} selected
-                    </span>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    <button
-                      onClick={() => handleBulkStatusChange(true)}
-                      disabled={selectedRows.length === 0 || isLoading}
-                      className="px-4 py-2 text-sm font-medium bg-emerald-green text-white rounded-md hover:bg-emerald-green/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-green disabled:opacity-50 transition-colors flex items-center gap-1.5"
-                    >
-                      <CheckCircle2 className="h-4 w-4" /> Activate
+                <div className="bg-blue-50 border border-blue-200 rounded-[10px] px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+                  <span className="text-[13px] font-medium text-blue-700">
+                    {selectedRows.length} {title.toLowerCase()}{selectedRows.length > 1 ? "s" : ""} selected
+                  </span>
+                  <div className="flex gap-2">
+                    <button onClick={() => handleBulkStatusChange(true)} disabled={isLoading}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium bg-emerald-600 text-white rounded-md hover:bg-emerald-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors duration-150">
+                      <CheckCircle2 className="w-4 h-4" /> Activate
                     </button>
-                    <button
-                      onClick={() => handleBulkStatusChange(false)}
-                      disabled={selectedRows.length === 0 || isLoading}
-                      className="px-4 py-2 text-sm font-medium bg-coral-red text-white rounded-md hover:bg-coral-red/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-coral-red disabled:opacity-50 transition-colors flex items-center gap-1.5"
-                    >
-                      <XCircle className="h-4 w-4" /> Deactivate
+                    <button onClick={() => handleBulkStatusChange(false)} disabled={isLoading}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium bg-rose-600 text-white rounded-md hover:bg-rose-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors duration-150">
+                      <XCircle className="w-4 h-4" /> Deactivate
                     </button>
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Table Section */}
-            <div className="mb-8">
+            {/* ── TABLE ── */}
             <Table
-  data={data}
-  columns={memoizedColumns}
-  selectedRows={selectedRows}
-  setSelectedRows={setSelectedRows}
-  handleToggleStatus={handleToggleStatus}
-  isLoading={isLoading}
-  manualPagination={true} // Explicitly set to true
-  pageCount={pageCount}
-  pagination={pagination}
-  onPaginationChange={(p) => {
-    setPagination(p)
-    // The fetchPage useEffect will trigger due to pagination dependency change
-  }}
-  sorting={sorting}
-  onSortingChange={(s) => setSorting(s as any)}
-  onGlobalFilterChangeExternal={(value) => {
-    setGlobalSearch(value)
-    setPagination((p) => ({ ...p, pageIndex: 0 }))
-  }}
-  onColumnFiltersChangeExternal={(filters) => {
-    setColumnFilters(filters as any)
-    setPagination((p) => ({ ...p, pageIndex: 0 }))
-  }}
-/>
-            </div>
+              data={data}
+              columns={memoizedColumns}
+              selectedRows={selectedRows}
+              setSelectedRows={setSelectedRows}
+              handleToggleStatus={handleToggleStatus}
+              isLoading={isLoading}
+              manualPagination={true}
+              pageCount={pageCount}
+              pagination={pagination}
+              onPaginationChange={(p) => setPagination(p)}
+              sorting={sorting}
+              onSortingChange={(s) => setSorting(s as any)}
+              onGlobalFilterChangeExternal={(value) => { setGlobalSearch(value); setPagination((p) => ({ ...p, pageIndex: 0 })) }}
+              onColumnFiltersChangeExternal={(filters) => { setColumnFilters(filters as any); setPagination((p) => ({ ...p, pageIndex: 0 })) }}
+            />
+
           </div>
         </main>
       </div>
 
-      {/* Modal */}
+      {/* ── ADD/EDIT MODAL ── */}
       <Modal
-        isVisible={isModalVisible}
-        onClose={handleCancel}
+        isVisible={isModalVisible} onClose={handleCancel}
         title={editingItem ? `Edit ${title}` : `Add New ${title}`}
-        isLoading={isLoading}
+        isLoading={isLoading} footer={modalFooter}
       >
-        <form onSubmit={handleSubmit}>
+        <form id="payment-form" onSubmit={handleSubmit}>
           <FormComponent formData={formData} handleInputChange={handleInputChange} isEditing={!!editingItem} />
-          <div className="mt-6 flex justify-end gap-3">
-            <button
-              type="button"
-              onClick={handleCancel}
-              className="px-4 py-2.5 border border-slate-gray/20 text-slate-gray rounded-lg hover:bg-light-sky/50 transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="px-4 py-2.5 bg-electric-blue text-white rounded-lg hover:bg-btn-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-electric-blue disabled:opacity-50 transition-colors flex items-center gap-2"
-            >
-              {isLoading ? (
-                <>
-                  <svg
-                    className="animate-spin h-5 w-5 text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                  Processing...
-                </>
-              ) : editingItem ? (
-                <>
-                  <Pencil className="h-5 w-5" /> Update {title}
-                </>
-              ) : (
-                <>
-                  <Plus className="h-5 w-5" /> Create {title}
-                </>
-              )}
-            </button>
-          </div>
         </form>
       </Modal>
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
+
+      <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false}
+        newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" />
     </div>
   )
 }

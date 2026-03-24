@@ -83,19 +83,19 @@ export function InternalTransferForm({ formData, handleInputChange, isEditing }:
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* From Account */}
         <div className="space-y-2">
-          <label htmlFor="from_account_id" className="block text-sm font-medium text-deep-ocean">
+          <label htmlFor="from_account_id" className="block text-sm font-medium text-slate-700">
             From Account
           </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Building className="h-5 w-5 text-slate-gray/60" />
+              <Building className="h-5 w-5 text-slate-400" />
             </div>
             <select
               id="from_account_id"
               name="from_account_id"
               value={formData.from_account_id || ""}
               onChange={handleInputChange}
-              className="w-full pl-10 pr-10 py-2.5 border border-slate-gray/20 rounded-lg bg-light-sky/30 text-deep-ocean placeholder-slate-gray/50 focus:outline-none focus:ring-2 focus:ring-electric-blue/30 focus:border-transparent transition-all duration-200 appearance-none"
+              className="w-full pl-10 pr-10 py-2.5 border border-slate-200 rounded-md bg-white text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 appearance-none"
               required
             >
               <option value="">Select Source Account</option>
@@ -106,26 +106,26 @@ export function InternalTransferForm({ formData, handleInputChange, isEditing }:
               ))}
             </select>
             <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-              <ChevronDown className="h-5 w-5 text-slate-gray/60" />
+              <ChevronDown className="h-5 w-5 text-slate-400" />
             </div>
           </div>
         </div>
 
         {/* To Account */}
         <div className="space-y-2">
-          <label htmlFor="to_account_id" className="block text-sm font-medium text-deep-ocean">
+          <label htmlFor="to_account_id" className="block text-sm font-medium text-slate-700">
             To Account
           </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Building className="h-5 w-5 text-slate-gray/60" />
+              <Building className="h-5 w-5 text-slate-400" />
             </div>
             <select
               id="to_account_id"
               name="to_account_id"
               value={formData.to_account_id || ""}
               onChange={handleInputChange}
-              className={`w-full pl-10 pr-10 py-2.5 border ${errors.to_account_id ? "border-coral-red" : "border-slate-gray/20"} rounded-lg bg-light-sky/30 text-deep-ocean placeholder-slate-gray/50 focus:outline-none focus:ring-2 focus:ring-electric-blue/30 focus:border-transparent transition-all duration-200 appearance-none`}
+              className={`w-full pl-10 pr-10 py-2.5 border ${errors.to_account_id ? "border-rose-400" : "border-slate-200"} rounded-md bg-white text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 appearance-none`}
               required
             >
               <option value="">Select Destination Account</option>
@@ -136,22 +136,22 @@ export function InternalTransferForm({ formData, handleInputChange, isEditing }:
               ))}
             </select>
             <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-              <ChevronDown className="h-5 w-5 text-slate-gray/60" />
+              <ChevronDown className="h-5 w-5 text-slate-400" />
             </div>
           </div>
-          {errors.to_account_id && <p className="text-coral-red text-xs mt-1">{errors.to_account_id}</p>}
+          {errors.to_account_id && <p className="text-rose-600 text-xs mt-1">{errors.to_account_id}</p>}
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Amount */}
         <div className="space-y-2">
-          <label htmlFor="amount" className="block text-sm font-medium text-deep-ocean">
+          <label htmlFor="amount" className="block text-sm font-medium text-slate-700">
             Amount
           </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <span className="text-slate-gray/60 font-medium">PKR</span>
+              <span className="text-slate-400 font-medium">PKR</span>
             </div>
             <input
               type="number"
@@ -161,12 +161,12 @@ export function InternalTransferForm({ formData, handleInputChange, isEditing }:
               onChange={handleInputChange}
               max={getSourceBalance()}
               placeholder="Enter amount"
-              className="w-full pl-10 pr-4 py-2.5 border border-slate-gray/20 rounded-lg bg-light-sky/30 text-deep-ocean placeholder-slate-gray/50 focus:outline-none focus:ring-2 focus:ring-electric-blue/30 focus:border-transparent transition-all duration-200"
+              className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-md bg-white text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200"
               required
             />
           </div>
           {formData.from_account_id && (
-              <p className="text-xs text-slate-gray mt-1">
+              <p className="text-xs text-slate-500 mt-1">
                   Available Balance: PKR {getSourceBalance()?.toLocaleString()}
               </p>
           )}
@@ -174,12 +174,12 @@ export function InternalTransferForm({ formData, handleInputChange, isEditing }:
 
         {/* Date */}
         <div className="space-y-2">
-          <label htmlFor="transfer_date" className="block text-sm font-medium text-deep-ocean">
+          <label htmlFor="transfer_date" className="block text-sm font-medium text-slate-700">
             Transfer Date
           </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Calendar className="h-5 w-5 text-slate-gray/60" />
+              <Calendar className="h-5 w-5 text-slate-400" />
             </div>
             <input
               type="date"
@@ -187,7 +187,7 @@ export function InternalTransferForm({ formData, handleInputChange, isEditing }:
               name="transfer_date"
               value={formData.transfer_date || ""}
               onChange={handleInputChange}
-              className="w-full pl-10 pr-4 py-2.5 border border-slate-gray/20 rounded-lg bg-light-sky/30 text-deep-ocean placeholder-slate-gray/50 focus:outline-none focus:ring-2 focus:ring-electric-blue/30 focus:border-transparent transition-all duration-200"
+              className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-md bg-white text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200"
               required
             />
           </div>
@@ -196,12 +196,12 @@ export function InternalTransferForm({ formData, handleInputChange, isEditing }:
 
       {/* Description */}
       <div className="space-y-2">
-        <label htmlFor="description" className="block text-sm font-medium text-deep-ocean">
+        <label htmlFor="description" className="block text-sm font-medium text-slate-700">
           Description
         </label>
         <div className="relative">
           <div className="absolute top-3 left-3 flex items-start pointer-events-none">
-            <FileText className="h-5 w-5 text-slate-gray/60" />
+            <FileText className="h-5 w-5 text-slate-400" />
           </div>
           <textarea
             id="description"
@@ -210,19 +210,19 @@ export function InternalTransferForm({ formData, handleInputChange, isEditing }:
             onChange={handleInputChange}
             placeholder="Enter transfer description"
             rows={2}
-            className="w-full pl-10 pr-4 py-2.5 border border-slate-gray/20 rounded-lg bg-light-sky/30 text-deep-ocean placeholder-slate-gray/50 focus:outline-none focus:ring-2 focus:ring-electric-blue/30 focus:border-transparent transition-all duration-200 resize-y"
+            className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-md bg-white text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 resize-y"
           />
         </div>
       </div>
 
       {/* Reference Number */}
       <div className="space-y-2">
-        <label htmlFor="reference_number" className="block text-sm font-medium text-deep-ocean">
+        <label htmlFor="reference_number" className="block text-sm font-medium text-slate-700">
           Reference Number (Optional)
         </label>
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Hash className="h-5 w-5 text-slate-gray/60" />
+            <Hash className="h-5 w-5 text-slate-400" />
           </div>
           <input
             type="text"
@@ -231,7 +231,7 @@ export function InternalTransferForm({ formData, handleInputChange, isEditing }:
             value={formData.reference_number || ""}
             onChange={handleInputChange}
             placeholder="Enter reference number"
-            className="w-full pl-10 pr-4 py-2.5 border border-slate-gray/20 rounded-lg bg-light-sky/30 text-deep-ocean placeholder-slate-gray/50 focus:outline-none focus:ring-2 focus:ring-electric-blue/30 focus:border-transparent transition-all duration-200"
+            className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-md bg-white text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200"
           />
         </div>
       </div>

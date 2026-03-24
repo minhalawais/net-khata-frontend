@@ -18,14 +18,32 @@ export const CompleteTaskModal: React.FC<CompleteTaskModalProps> = ({ isOpen, on
     setNotes("")
   }
 
+  const footer = (
+    <>
+      <button
+        onClick={onClose}
+        className="h-9 px-4 text-[13px] font-medium text-slate-600 border border-slate-200 rounded-md hover:bg-slate-50 transition-colors duration-150"
+      >
+        Cancel
+      </button>
+      <button
+        onClick={handleConfirm}
+        disabled={!notes.trim()}
+        className="h-9 px-4 text-[13px] font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors duration-150"
+      >
+        Complete Task
+      </button>
+    </>
+  )
+
   return (
-    <Modal isVisible={isOpen} onClose={onClose} title="Complete Task">
-      <div className="mt-6 space-y-4">
-        <div className="space-y-2">
-          <p className="text-sm font-medium text-[#4A5568]">
+    <Modal isVisible={isOpen} onClose={onClose} title="Complete Task" footer={footer}>
+      <div className="space-y-4">
+        <div className="space-y-1.5">
+          <p className="text-[13px] font-medium text-slate-700">
             Please provide any final notes or comments about the task completion.
           </p>
-          <p className="text-xs text-[#4A5568]/70">
+          <p className="text-[11px] text-slate-500">
             Include any important details about the resolution or any follow-up actions required.
           </p>
         </div>
@@ -36,45 +54,10 @@ export const CompleteTaskModal: React.FC<CompleteTaskModalProps> = ({ isOpen, on
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Enter completion notes..."
             rows={4}
-            className="
-              w-full
-              px-4
-              py-3
-              text-sm
-              border
-              border-[#EBF5FF]
-              rounded-lg
-              placeholder-[#4A5568]/60
-              text-[#4A5568]
-              focus:border-[#3A86FF]
-              focus:ring-2
-              focus:ring-[#3A86FF]/20
-              transition-colors
-              duration-200
-              resize-none
-              disabled:bg-[#F8FAFC]
-              disabled:text-[#4A5568]/50
-              disabled:cursor-not-allowed
-            "
+            className="w-full px-3 py-2.5 text-[13px] border border-slate-200 rounded-md placeholder:text-slate-400 text-slate-700 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/[0.12] hover:border-slate-300 transition-colors duration-150 resize-none"
           />
-          <div className="absolute bottom-3 right-3 text-xs text-[#4A5568]/60">{notes.length}/500</div>
+          <div className="absolute bottom-2.5 right-3 text-[11px] text-slate-400">{notes.length}/500</div>
         </div>
-      </div>
-
-      <div className="mt-8 flex justify-end space-x-3">
-        <button
-          onClick={onClose}
-          className="px-5 py-2 text-sm font-medium text-[#4A5568] bg-white border border-[#EBF5FF] rounded-lg hover:bg-[#F8FAFC] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#3A86FF] transition-colors duration-200"
-        >
-          Cancel
-        </button>
-        <button
-          onClick={handleConfirm}
-          disabled={!notes.trim()}
-          className="px-5 py-2 text-sm font-medium text-white bg-[#3A86FF] rounded-lg hover:bg-[#2563EB] disabled:bg-[#3A86FF]/50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#3A86FF] transition-colors duration-200"
-        >
-          Complete Task
-        </button>
       </div>
     </Modal>
   )

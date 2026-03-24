@@ -10,33 +10,22 @@ interface AreaZoneFormProps {
 }
 
 export function AreaZoneForm({ formData, handleInputChange, isEditing }: AreaZoneFormProps) {
-  const inputClasses = `
-    w-full 
-    pl-10 
-    pr-4 
-    py-3 
-    border 
-    border-[#EBF5FF] 
-    rounded-lg 
-    shadow-sm 
-    bg-white 
-    text-[#4A5568] 
-    placeholder-[#4A5568]/60
-    focus:ring-2 
-    focus:ring-[#3A86FF]/30 
-    focus:border-[#3A86FF] 
-    transition-all 
-    duration-200
-  `
+  const inputClasses =
+    "w-full h-9 pl-9 pr-3 border border-slate-200 rounded-md bg-white text-[13px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/[0.12] hover:border-slate-300 transition-colors duration-150"
 
-  const labelClasses = "block text-sm font-medium text-[#2A5C8A] mb-1"
-  const iconClasses = "h-5 w-5 text-[#4A5568]/60"
+  const textareaClasses =
+    "w-full min-h-[110px] pl-9 pr-3 py-2.5 border border-slate-200 rounded-md bg-white text-[13px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/[0.12] hover:border-slate-300 transition-colors duration-150 resize-none"
+
+  const labelClasses = "block text-[11px] font-medium text-slate-600 mb-1.5"
+  const iconClasses = "h-4 w-4 text-slate-400"
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Area/Zone Name */}
       <div className="space-y-2">
-        <label className={labelClasses}>Area/Zone Name</label>
+        <label className={labelClasses}>
+          Area/Zone Name <span className="text-rose-500 ml-0.5">*</span>
+        </label>
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <Map className={iconClasses} />
@@ -57,7 +46,7 @@ export function AreaZoneForm({ formData, handleInputChange, isEditing }: AreaZon
       <div className="space-y-2">
         <label className={labelClasses}>Description</label>
         <div className="relative">
-          <div className="absolute top-3 left-3 pointer-events-none">
+          <div className="absolute top-2.5 left-3 pointer-events-none">
             <ClipboardList className={iconClasses} />
           </div>
           <textarea
@@ -66,7 +55,7 @@ export function AreaZoneForm({ formData, handleInputChange, isEditing }: AreaZon
             onChange={handleInputChange}
             placeholder="Enter area/zone description"
             rows={3}
-            className={`${inputClasses} resize-y min-h-[120px]`}
+            className={textareaClasses}
           />
         </div>
       </div>

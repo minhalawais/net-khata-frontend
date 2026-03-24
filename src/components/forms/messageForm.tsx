@@ -1,8 +1,7 @@
 import React, { useEffect, useState, Fragment } from 'react';
-import axios from 'axios';
 import { getToken } from '../../utils/auth.ts';
 import { Combobox, Transition } from '@headlessui/react';
-import { FaChevronDown, FaSearch, FaCheck } from 'react-icons/fa';
+import { FaChevronDown, FaCheck } from 'react-icons/fa';
 import axiosInstance from '../../utils/axiosConfig.ts';
 
 interface MessageFormProps {
@@ -66,21 +65,26 @@ export function MessageForm({ formData, handleInputChange, isEditing }: MessageF
     } as React.ChangeEvent<HTMLInputElement>);
   };
 
+  const labelClass = 'block text-[11px] font-medium text-slate-600 mb-1.5';
+  const controlClass = 'w-full h-9 px-3 border border-slate-200 rounded-md bg-white text-[13px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/[0.12] hover:border-slate-300 transition-colors duration-150';
+
   return (
-    <div className="mt-2 space-y-4">
-      <Combobox value={selectedCustomers} onChange={handleCustomerChange} multiple>
+    <div className="space-y-4">
+      <div>
+        <label className={labelClass}>Recipients <span className="text-rose-500 ml-0.5">*</span></label>
+        <Combobox value={selectedCustomers} onChange={handleCustomerChange} multiple>
         <div className="relative">
-          <div className="relative w-full cursor-default overflow-hidden rounded-lg bg-white text-left shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3A86FF] focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-[#3A86FF] border border-[#EBF5FF]">
+          <div className="relative w-full cursor-default overflow-hidden rounded-md bg-white text-left border border-slate-200 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/[0.12] hover:border-slate-300 transition-colors duration-150">
             <Combobox.Input
-              className="w-full border-none py-2 pl-3 pr-10 text-sm leading-5 text-[#4A5568] focus:ring-0"
+              className="w-full h-9 border-none py-0 pl-3 pr-9 text-[13px] leading-5 text-slate-700 placeholder:text-slate-400 focus:ring-0"
               displayValue={(customers: Customer[]) =>
                 customers.map(c => `${c.first_name} ${c.last_name}`).join(', ')
               }
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Select recipients..."
             />
-            <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">
-              <FaChevronDown className="h-5 w-5 text-[#4A5568]" aria-hidden="true" />
+            <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2.5">
+              <FaChevronDown className="h-3.5 w-3.5 text-slate-400" aria-hidden="true" />
             </Combobox.Button>
           </div>
           <Transition
@@ -90,18 +94,18 @@ export function MessageForm({ formData, handleInputChange, isEditing }: MessageF
             leaveTo="opacity-0"
             afterLeave={() => setQuery('')}
           >
-            <Combobox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-              <div className="px-4 py-2">
+            <Combobox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-[13px] border border-slate-200 focus:outline-none">
+              <div className="px-3 py-2 border-b border-slate-100">
                 <button
                   onClick={selectAllCustomers}
-                  className="text-sm text-[#3A86FF] hover:text-[#2563EB]"
+                  className="text-[12px] font-medium text-blue-600 hover:text-blue-700 transition-colors duration-150"
                   type="button"
                 >
                   Select All
                 </button>
               </div>
               {filteredCustomers.length === 0 && query !== '' ? (
-                <div className="relative cursor-default select-none py-2 px-4 text-[#4A5568]">
+                <div className="relative cursor-default select-none py-3 px-3 text-slate-400 text-[12px]">
                   Nothing found.
                 </div>
               ) : (
@@ -109,8 +113,8 @@ export function MessageForm({ formData, handleInputChange, isEditing }: MessageF
                   <Combobox.Option
                     key={customer.id}
                     className={({ active }) =>
-                      `relative cursor-default select-none py-2 pl-10 pr-4 ${
-                        active ? 'bg-[#3A86FF] text-white' : 'text-[#4A5568]'
+                      `relative cursor-default select-none py-2 pl-9 pr-3 ${
+                        active ? 'bg-blue-50 text-slate-700' : 'text-slate-600'
                       }`
                     }
                     value={customer}
@@ -127,10 +131,10 @@ export function MessageForm({ formData, handleInputChange, isEditing }: MessageF
                         {selected ? (
                           <span
                             className={`absolute inset-y-0 left-0 flex items-center pl-3 ${
-                              active ? 'text-white' : 'text-[#3A86FF]'
+                              active ? 'text-blue-600' : 'text-blue-600'
                             }`}
                           >
-                            <FaCheck className="h-5 w-5" aria-hidden="true" />
+                            <FaCheck className="h-3.5 w-3.5" aria-hidden="true" />
                           </span>
                         ) : null}
                       </>
@@ -142,35 +146,44 @@ export function MessageForm({ formData, handleInputChange, isEditing }: MessageF
           </Transition>
         </div>
       </Combobox>
+      </div>
 
-      <input
-        type="text"
-        name="subject"
-        value={formData.subject || ''}
-        onChange={handleInputChange}
-        placeholder="Subject"
-        className="w-full p-3 border border-[#EBF5FF] rounded-lg shadow-sm focus:ring-2 focus:ring-[#3A86FF] focus:border-transparent transition-all duration-200 text-[#4A5568]"
-        required
-      />
-      <textarea
-        name="content"
-        value={formData.content || ''}
-        onChange={handleInputChange}
-        placeholder="Message Content"
-        className="w-full p-3 min-h-[120px] border border-[#EBF5FF] rounded-lg shadow-sm focus:ring-2 focus:ring-[#3A86FF] focus:border-transparent transition-all duration-200 resize-y text-[#4A5568]"
-        rows={5}
-        required
-      />
+      <div>
+        <label className={labelClass}>Subject <span className="text-rose-500 ml-0.5">*</span></label>
+        <input
+          type="text"
+          name="subject"
+          value={formData.subject || ''}
+          onChange={handleInputChange}
+          placeholder="Subject"
+          className={controlClass}
+          required
+        />
+      </div>
+
+      <div>
+        <label className={labelClass}>Message Content <span className="text-rose-500 ml-0.5">*</span></label>
+        <textarea
+          name="content"
+          value={formData.content || ''}
+          onChange={handleInputChange}
+          placeholder="Message Content"
+          className="w-full px-3 py-2.5 min-h-[120px] border border-slate-200 rounded-md bg-white text-[13px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/[0.12] hover:border-slate-300 transition-colors duration-150 resize-none"
+          rows={5}
+          required
+        />
+      </div>
+
       {isEditing && (
-        <div className="flex items-center">
+        <div className="flex items-center gap-2 pt-1">
           <input
             type="checkbox"
             name="is_read"
             checked={formData.is_read || false}
             onChange={handleInputChange}
-            className="mr-2 h-4 w-4 rounded border-[#EBF5FF] text-[#3A86FF] focus:ring-[#3A86FF]"
+            className="h-3.5 w-3.5 rounded border-slate-300 text-blue-600 focus:ring-2 focus:ring-blue-500/[0.12]"
           />
-          <label htmlFor="is_read" className="text-[#4A5568]">Mark as Read</label>
+          <label htmlFor="is_read" className="text-[13px] text-slate-600">Mark as Read</label>
         </div>
       )}
     </div>

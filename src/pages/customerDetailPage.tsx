@@ -337,10 +337,10 @@ const CustomerDetail: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[#F1F0E8]">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-[#89A8B2] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-[#5a7a84] font-medium">Loading customer profile...</p>
+      <div className="flex items-center justify-center min-h-screen bg-slate-50">
+        <div className="text-center bg-white border border-slate-200 rounded-[10px] p-6">
+          <div className="w-10 h-10 border-2 border-slate-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-3"></div>
+          <p className="text-[13px] text-slate-600 font-medium">Loading customer profile...</p>
         </div>
       </div>
     )
@@ -348,11 +348,11 @@ const CustomerDetail: React.FC = () => {
 
   if (!customer) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[#F1F0E8]">
-        <div className="text-center bg-white p-8 rounded-2xl shadow-lg border border-[#E5E1DA]">
-          <AlertCircle className="w-16 h-16 text-[#89A8B2] mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-[#2A5C8A] mb-2">Customer Not Found</h2>
-          <p className="text-[#5a7a84]">The requested customer profile could not be loaded.</p>
+      <div className="flex items-center justify-center min-h-screen bg-slate-50">
+        <div className="text-center bg-white p-8 rounded-[10px] shadow-sm border border-slate-200 max-w-md">
+          <AlertCircle className="w-14 h-14 text-amber-500 mx-auto mb-3" />
+          <h2 className="text-[15px] font-medium text-slate-900 mb-2">Customer Not Found</h2>
+          <p className="text-[13px] text-slate-500">The requested customer profile could not be loaded.</p>
         </div>
       </div>
     )
@@ -362,61 +362,61 @@ const CustomerDetail: React.FC = () => {
   // ENHANCED OVERVIEW TAB
   // ============================================
   const renderOverviewTab = () => (
-    <div className="space-y-8">
+    <div className="space-y-4">
       {/* Quick Stats Row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white rounded-2xl p-5 shadow-sm border border-[#E5E1DA]">
+        <div className="bg-white rounded-[10px] p-4 shadow-sm border border-slate-200">
           <div className="flex items-center justify-between mb-3">
-            <div className="w-10 h-10 bg-[#B3C8CF] rounded-xl flex items-center justify-center">
-              <DollarSign className="w-5 h-5 text-white" />
+            <div className="w-8 h-8 bg-blue-50 rounded-md flex items-center justify-center">
+              <DollarSign className="w-4 h-4 text-blue-600" />
             </div>
-            <span className="text-xs font-medium bg-[#E5E1DA] text-[#5a7a84] px-2 py-1 rounded-full">Lifetime</span>
+            <span className="text-[10px] font-medium bg-slate-100 text-slate-500 px-2 py-0.5 rounded">Lifetime</span>
           </div>
-          <p className="text-2xl font-bold text-[#2A5C8A]">PKR {customer.financialMetrics.totalAmountPaid.toLocaleString()}</p>
-          <p className="text-[#89A8B2] text-sm mt-1">Total Paid</p>
+          <p className="text-[22px] font-semibold text-slate-900">PKR {customer.financialMetrics.totalAmountPaid.toLocaleString()}</p>
+          <p className="text-slate-500 text-[11px] mt-1">Total Paid</p>
         </div>
 
-        <div className="bg-white rounded-2xl p-5 shadow-sm border border-[#E5E1DA]">
+        <div className="bg-white rounded-[10px] p-4 shadow-sm border border-slate-200">
           <div className="flex items-center justify-between mb-3">
-            <div className="w-10 h-10 bg-[#89A8B2] rounded-xl flex items-center justify-center">
-              <TrendingUp className="w-5 h-5 text-white" />
+            <div className="w-8 h-8 bg-blue-50 rounded-md flex items-center justify-center">
+              <TrendingUp className="w-4 h-4 text-blue-600" />
             </div>
-            <span className="text-xs font-medium bg-[#E5E1DA] text-[#5a7a84] px-2 py-1 rounded-full">Score</span>
+            <span className="text-[10px] font-medium bg-slate-100 text-slate-500 px-2 py-0.5 rounded">Score</span>
           </div>
-          <p className="text-2xl font-bold text-[#2A5C8A]">{customer.financialMetrics.paymentReliabilityScore.toFixed(0)}%</p>
-          <p className="text-[#89A8B2] text-sm mt-1">Payment Reliability</p>
+          <p className="text-[22px] font-semibold text-slate-900">{customer.financialMetrics.paymentReliabilityScore.toFixed(0)}%</p>
+          <p className="text-slate-500 text-[11px] mt-1">Payment Reliability</p>
         </div>
 
-        <div className="bg-white rounded-2xl p-5 shadow-sm border border-[#E5E1DA]">
+        <div className="bg-white rounded-[10px] p-4 shadow-sm border border-slate-200">
           <div className="flex items-center justify-between mb-3">
-            <div className="w-10 h-10 bg-amber-500 rounded-xl flex items-center justify-center">
-              <AlertTriangle className="w-5 h-5 text-white" />
+            <div className="w-8 h-8 bg-amber-50 rounded-md flex items-center justify-center">
+              <AlertTriangle className="w-4 h-4 text-amber-600" />
             </div>
-            <span className="text-xs font-medium bg-[#E5E1DA] text-[#5a7a84] px-2 py-1 rounded-full">Due</span>
+            <span className="text-[10px] font-medium bg-slate-100 text-slate-500 px-2 py-0.5 rounded">Due</span>
           </div>
-          <p className="text-2xl font-bold text-[#2A5C8A]">PKR {customer.financialMetrics.outstandingBalance.toLocaleString()}</p>
-          <p className="text-[#89A8B2] text-sm mt-1">Outstanding</p>
+          <p className="text-[22px] font-semibold text-slate-900">PKR {customer.financialMetrics.outstandingBalance.toLocaleString()}</p>
+          <p className="text-slate-500 text-[11px] mt-1">Outstanding</p>
         </div>
 
-        <div className="bg-white rounded-2xl p-5 shadow-sm border border-[#E5E1DA]">
+        <div className="bg-white rounded-[10px] p-4 shadow-sm border border-slate-200">
           <div className="flex items-center justify-between mb-3">
-            <div className="w-10 h-10 bg-[#89A8B2] rounded-xl flex items-center justify-center">
-              <Clock className="w-5 h-5 text-white" />
+            <div className="w-8 h-8 bg-blue-50 rounded-md flex items-center justify-center">
+              <Clock className="w-4 h-4 text-blue-600" />
             </div>
-            <span className="text-xs font-medium bg-[#E5E1DA] text-[#5a7a84] px-2 py-1 rounded-full">Active</span>
+            <span className="text-[10px] font-medium bg-slate-100 text-slate-500 px-2 py-0.5 rounded">Active</span>
           </div>
-          <p className="text-2xl font-bold text-[#2A5C8A]">{customer.serviceStatistics.serviceDuration}</p>
-          <p className="text-[#89A8B2] text-sm mt-1">Days as Customer</p>
+          <p className="text-[22px] font-semibold text-slate-900">{customer.serviceStatistics.serviceDuration}</p>
+          <p className="text-slate-500 text-[11px] mt-1">Days as Customer</p>
         </div>
       </div>
 
       {/* Main Info Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Contact Information Card */}
-        <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-[#E5E1DA] overflow-hidden">
-          <div className="px-6 py-4 border-b border-[#E5E1DA] bg-[#F1F0E8]">
-            <h3 className="text-lg font-semibold text-[#2A5C8A] flex items-center gap-2">
-              <User className="w-5 h-5 text-[#89A8B2]" />
+        <div className="lg:col-span-2 bg-white rounded-[10px] shadow-sm border border-slate-200 overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-100 bg-slate-50">
+            <h3 className="text-[13px] font-medium text-slate-900 flex items-center gap-2">
+              <User className="w-4 h-4 text-blue-600" />
               Personal Information
             </h3>
           </div>
@@ -456,10 +456,10 @@ const CustomerDetail: React.FC = () => {
         </div>
 
         {/* Service Info Card */}
-        <div className="bg-white rounded-2xl shadow-sm border border-[#E5E1DA] overflow-hidden">
-          <div className="px-6 py-4 border-b border-[#E5E1DA] bg-[#F1F0E8]">
-            <h3 className="text-lg font-semibold text-[#2A5C8A] flex items-center gap-2">
-              <Wifi className="w-5 h-5 text-[#89A8B2]" />
+        <div className="bg-white rounded-[10px] shadow-sm border border-slate-200 overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-100 bg-slate-50">
+            <h3 className="text-[13px] font-medium text-slate-900 flex items-center gap-2">
+              <Wifi className="w-4 h-4 text-blue-600" />
               Service Details
             </h3>
           </div>
@@ -477,7 +477,7 @@ const CustomerDetail: React.FC = () => {
               <div className="space-y-2">
                 {customer.packages && customer.packages.length > 0 ? (
                   customer.packages.map((pkg) => (
-                    <div key={pkg.id} className="flex items-center justify-between p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
+                    <div key={pkg.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-md border border-slate-200">
                       <div className="flex items-center gap-2">
                         <Package className="h-4 w-4 text-blue-600" />
                         <span className="text-slate-700 font-medium text-sm">{pkg.service_plan_name}</span>
@@ -526,55 +526,55 @@ const CustomerDetail: React.FC = () => {
       <div className="space-y-6">
         {/* Financial Summary Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white rounded-2xl p-5 shadow-sm border border-[#E5E1DA]">
+          <div className="bg-white rounded-[10px] p-4 shadow-sm border border-slate-200">
             <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 bg-[#B3C8CF] rounded-xl flex items-center justify-center">
-                <DollarSign className="w-5 h-5 text-white" />
+              <div className="w-8 h-8 bg-blue-50 rounded-md flex items-center justify-center">
+                <DollarSign className="w-4 h-4 text-blue-600" />
               </div>
             </div>
-            <p className="text-2xl font-bold text-[#2A5C8A]">PKR {totalInvoiced.toLocaleString()}</p>
-            <p className="text-[#89A8B2] text-sm mt-1">Total Invoiced</p>
+            <p className="text-[22px] font-semibold text-slate-900">PKR {totalInvoiced.toLocaleString()}</p>
+            <p className="text-slate-500 text-[11px] mt-1">Total Invoiced</p>
           </div>
 
-          <div className="bg-white rounded-2xl p-5 shadow-sm border border-[#E5E1DA]">
+          <div className="bg-white rounded-[10px] p-4 shadow-sm border border-slate-200">
             <div className="flex items-center gap-3 mb-3">
               <div className="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center">
                 <CheckCircle className="w-5 h-5 text-white" />
               </div>
             </div>
-            <p className="text-2xl font-bold text-[#2A5C8A]">PKR {totalPaid.toLocaleString()}</p>
-            <p className="text-[#89A8B2] text-sm mt-1">Total Paid</p>
+            <p className="text-[22px] font-semibold text-slate-900">PKR {totalPaid.toLocaleString()}</p>
+            <p className="text-slate-500 text-[11px] mt-1">Total Paid</p>
           </div>
 
-          <div className="bg-white rounded-2xl p-5 shadow-sm border border-[#E5E1DA]">
+          <div className="bg-white rounded-[10px] p-4 shadow-sm border border-slate-200">
             <div className="flex items-center gap-3 mb-3">
               <div className="w-10 h-10 bg-amber-500 rounded-xl flex items-center justify-center">
                 <AlertTriangle className="w-5 h-5 text-white" />
               </div>
             </div>
-            <p className="text-2xl font-bold text-[#2A5C8A]">PKR {outstanding.toLocaleString()}</p>
-            <p className="text-[#89A8B2] text-sm mt-1">Outstanding</p>
+            <p className="text-[22px] font-semibold text-slate-900">PKR {outstanding.toLocaleString()}</p>
+            <p className="text-slate-500 text-[11px] mt-1">Outstanding</p>
           </div>
 
-          <div className="bg-white rounded-2xl p-5 shadow-sm border border-[#E5E1DA]">
+          <div className="bg-white rounded-[10px] p-4 shadow-sm border border-slate-200">
             <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 bg-[#89A8B2] rounded-xl flex items-center justify-center">
-                <Activity className="w-5 h-5 text-white" />
+              <div className="w-8 h-8 bg-blue-50 rounded-md flex items-center justify-center">
+                <Activity className="w-4 h-4 text-blue-600" />
               </div>
             </div>
-            <p className="text-2xl font-bold text-[#2A5C8A]">{customer.financialMetrics.paymentReliabilityScore.toFixed(0)}%</p>
-            <p className="text-[#89A8B2] text-sm mt-1">Reliability Score</p>
+            <p className="text-[22px] font-semibold text-slate-900">{customer.financialMetrics.paymentReliabilityScore.toFixed(0)}%</p>
+            <p className="text-slate-500 text-[11px] mt-1">Reliability Score</p>
           </div>
         </div>
 
         {/* Invoices Table */}
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
-          <div className="px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
-              <CreditCard className="w-5 h-5 text-[#89A8B2]" />
+        <div className="bg-white rounded-[10px] shadow-sm border border-slate-200 overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
+            <h3 className="text-[13px] font-medium text-slate-900 flex items-center gap-2">
+              <CreditCard className="w-4 h-4 text-blue-600" />
               Invoice History
             </h3>
-            <span className="text-sm text-slate-500">{invoices.length} invoices</span>
+            <span className="text-[11px] text-slate-500">{invoices.length} invoices</span>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -605,7 +605,7 @@ const CustomerDetail: React.FC = () => {
                     <td className="px-4 py-4 whitespace-nowrap text-right">
                       <button
                         onClick={(e) => { e.stopPropagation(); setSelectedInvoice(invoice); }}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#2A5C8A] hover:bg-[#1e4568] text-white text-xs font-medium rounded-lg transition-colors"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-medium rounded-md transition-colors"
                       >
                         <Eye className="w-3.5 h-3.5" /> View
                       </button>
@@ -618,13 +618,13 @@ const CustomerDetail: React.FC = () => {
         </div>
 
         {/* Payments Table */}
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
-          <div className="px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
-              <DollarSign className="w-5 h-5 text-[#89A8B2]" />
+        <div className="bg-white rounded-[10px] shadow-sm border border-slate-200 overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
+            <h3 className="text-[13px] font-medium text-slate-900 flex items-center gap-2">
+              <DollarSign className="w-4 h-4 text-blue-600" />
               Payment History
             </h3>
-            <span className="text-sm text-slate-500">{payments.length} payments</span>
+            <span className="text-[11px] text-slate-500">{payments.length} payments</span>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -655,7 +655,7 @@ const CustomerDetail: React.FC = () => {
                     <td className="px-4 py-4 whitespace-nowrap text-right">
                       <button
                         onClick={(e) => { e.stopPropagation(); setSelectedPayment(payment); }}
-                        className="inline-flex items-center gap-1.5 text-[#2A5C8A] hover:text-[#1e4568] text-sm font-medium transition-colors"
+                        className="inline-flex items-center gap-1.5 text-blue-600 hover:text-blue-700 text-[12px] font-medium transition-colors"
                       >
                         <FileText className="w-3.5 h-3.5" /> View
                       </button>
@@ -679,43 +679,43 @@ const CustomerDetail: React.FC = () => {
     <div className="space-y-6">
       {/* Support Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white rounded-2xl p-5 shadow-sm border border-[#E5E1DA]">
+        <div className="bg-white rounded-[10px] p-4 shadow-sm border border-slate-200">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-10 h-10 bg-amber-500 rounded-xl flex items-center justify-center">
               <AlertCircle className="w-5 h-5 text-white" />
             </div>
           </div>
-          <p className="text-2xl font-bold text-[#2A5C8A]">{customer.supportAnalysis.totalComplaints}</p>
-          <p className="text-[#89A8B2] text-sm mt-1">Total Complaints</p>
+          <p className="text-[22px] font-semibold text-slate-900">{customer.supportAnalysis.totalComplaints}</p>
+          <p className="text-slate-500 text-[11px] mt-1">Total Complaints</p>
         </div>
 
-        <div className="bg-white rounded-2xl p-5 shadow-sm border border-[#E5E1DA]">
+        <div className="bg-white rounded-[10px] p-4 shadow-sm border border-slate-200">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center">
               <CheckCircle className="w-5 h-5 text-white" />
             </div>
           </div>
-          <p className="text-2xl font-bold text-[#2A5C8A]">{complaints.filter(c => c.status === 'resolved').length}</p>
-          <p className="text-[#89A8B2] text-sm mt-1">Resolved</p>
+          <p className="text-[22px] font-semibold text-slate-900">{complaints.filter(c => c.status === 'resolved').length}</p>
+          <p className="text-slate-500 text-[11px] mt-1">Resolved</p>
         </div>
 
-        <div className="bg-white rounded-2xl p-5 shadow-sm border border-[#E5E1DA]">
+        <div className="bg-white rounded-[10px] p-4 shadow-sm border border-slate-200">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 bg-[#89A8B2] rounded-xl flex items-center justify-center">
-              <ClipboardList className="w-5 h-5 text-white" />
+            <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center">
+              <ClipboardList className="w-5 h-5 text-blue-600" />
             </div>
           </div>
-          <p className="text-2xl font-bold text-[#2A5C8A]">{tasks.filter(t => t.status !== 'completed').length}</p>
-          <p className="text-[#89A8B2] text-sm mt-1">Pending Tasks</p>
+          <p className="text-[22px] font-semibold text-slate-900">{tasks.filter(t => t.status !== 'completed').length}</p>
+          <p className="text-slate-500 text-[11px] mt-1">Pending Tasks</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Complaints */}
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
-          <div className="px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white">
-            <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
-              <PhoneCall className="w-5 h-5 text-[#89A8B2]" />
+        <div className="bg-white rounded-[10px] shadow-sm border border-slate-200 overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-100 bg-slate-50">
+            <h3 className="text-[13px] font-medium text-slate-900 flex items-center gap-2">
+              <PhoneCall className="w-4 h-4 text-blue-600" />
               Support Tickets
             </h3>
           </div>
@@ -743,10 +743,10 @@ const CustomerDetail: React.FC = () => {
         </div>
 
         {/* Tasks */}
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
-          <div className="px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white">
-            <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
-              <Wrench className="w-5 h-5 text-[#89A8B2]" />
+        <div className="bg-white rounded-[10px] shadow-sm border border-slate-200 overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-100 bg-slate-50">
+            <h3 className="text-[13px] font-medium text-slate-900 flex items-center gap-2">
+              <Wrench className="w-4 h-4 text-blue-600" />
               Technical Tasks
             </h3>
           </div>
@@ -788,10 +788,10 @@ const CustomerDetail: React.FC = () => {
     <div className="space-y-6">
       {/* Inventory Table */}
       {inventory.length > 0 && (
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
-          <div className="px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white">
-            <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
-              <Box className="w-5 h-5 text-[#89A8B2]" />
+        <div className="bg-white rounded-[10px] shadow-sm border border-slate-200 overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-100 bg-slate-50">
+            <h3 className="text-[13px] font-medium text-slate-900 flex items-center gap-2">
+              <Box className="w-4 h-4 text-blue-600" />
               Assigned Inventory
             </h3>
           </div>
@@ -823,16 +823,16 @@ const CustomerDetail: React.FC = () => {
       )}
 
       {/* Equipment Details Grid */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
-        <div className="px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white">
-          <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
-            <Tool className="w-5 h-5 text-[#89A8B2]" />
+      <div className="bg-white rounded-[10px] shadow-sm border border-slate-200 overflow-hidden">
+        <div className="px-6 py-4 border-b border-slate-100 bg-slate-50">
+          <h3 className="text-[13px] font-medium text-slate-900 flex items-center gap-2">
+            <Tool className="w-4 h-4 text-blue-600" />
             Equipment Details
           </h3>
         </div>
         <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {/* Router */}
-          <div className="p-5 bg-gradient-to-br from-slate-50 to-white rounded-xl border border-slate-200">
+          <div className="p-5 bg-slate-50 rounded-[10px] border border-slate-200">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
                 <Router className="w-5 h-5 text-blue-600" />
@@ -852,7 +852,7 @@ const CustomerDetail: React.FC = () => {
           </div>
 
           {/* Dish */}
-          <div className="p-5 bg-gradient-to-br from-slate-50 to-white rounded-xl border border-slate-200">
+          <div className="p-5 bg-slate-50 rounded-[10px] border border-slate-200">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center">
                 <Disc className="w-5 h-5 text-indigo-600" />
@@ -872,7 +872,7 @@ const CustomerDetail: React.FC = () => {
           </div>
 
           {/* Cables */}
-          <div className="p-5 bg-gradient-to-br from-slate-50 to-white rounded-xl border border-slate-200">
+          <div className="p-5 bg-slate-50 rounded-[10px] border border-slate-200">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center">
                 <Cable className="w-5 h-5 text-emerald-600" />
@@ -900,10 +900,10 @@ const CustomerDetail: React.FC = () => {
   // ============================================
   const renderDocumentsTab = () => (
     <div className="space-y-6">
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
-        <div className="px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white">
-          <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
-            <FileText className="w-5 h-5 text-[#89A8B2]" />
+      <div className="bg-white rounded-[10px] shadow-sm border border-slate-200 overflow-hidden">
+        <div className="px-6 py-4 border-b border-slate-100 bg-slate-50">
+          <h3 className="text-[13px] font-medium text-slate-900 flex items-center gap-2">
+            <FileText className="w-4 h-4 text-blue-600" />
             Identity Documents
           </h3>
         </div>
@@ -954,10 +954,10 @@ const CustomerDetail: React.FC = () => {
       </div>
 
       {/* Agreement Document Section */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
-        <div className="px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white">
-          <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
-            <FileText className="w-5 h-5 text-[#89A8B2]" />
+      <div className="bg-white rounded-[10px] shadow-sm border border-slate-200 overflow-hidden">
+        <div className="px-6 py-4 border-b border-slate-100 bg-slate-50">
+          <h3 className="text-[13px] font-medium text-slate-900 flex items-center gap-2">
+            <FileText className="w-4 h-4 text-blue-600" />
             Customer Agreement Document
           </h3>
         </div>
@@ -976,14 +976,14 @@ const CustomerDetail: React.FC = () => {
               <div className="flex gap-3">
                 <button
                   onClick={() => window.open(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000'}/${customer.agreement_document}`, '_blank')}
-                  className="inline-flex items-center gap-2 px-4 py-2.5 border border-slate-200 hover:border-[#89A8B2] text-slate-700 hover:text-[#2A5C8A] rounded-xl font-medium transition-colors"
+                  className="inline-flex items-center gap-2 h-9 px-4 border border-slate-200 hover:border-slate-300 text-slate-600 hover:text-slate-900 rounded-md text-[12px] font-medium transition-colors"
                 >
                   <Eye className="w-4 h-4" /> View
                 </button>
                 <a
                   href={`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000'}/${customer.agreement_document}`}
                   download
-                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#2A5C8A] hover:bg-[#1e4568] text-white rounded-xl font-medium transition-colors"
+                  className="inline-flex items-center gap-2 h-9 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-[12px] font-medium transition-colors"
                 >
                   <Download className="w-4 h-4" /> Download PDF
                 </a>
@@ -1017,42 +1017,44 @@ const CustomerDetail: React.FC = () => {
   // MAIN RETURN - ENHANCED LAYOUT
   // ============================================
   return (
-    <div className="flex h-screen bg-[#F1F0E8]">
-      <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+    <div className="flex h-screen bg-slate-50 overflow-hidden">
+      <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} setIsOpen={setIsSidebarOpen} />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Topbar toggleSidebar={toggleSidebar} />
-        <main className="flex-1 overflow-y-auto mt-12">
+        <main className={`flex-1 overflow-x-hidden overflow-y-auto bg-slate-50 p-0 sm:p-6 pt-20 transition-all duration-300 ${
+            isSidebarOpen ? "ml-64" : "ml-0 lg:ml-20"
+          }`}>
           {/* Hero Header */}
-          <div className="bg-gradient-to-r from-[#2A5C8A] via-[#3a6d9a] to-[#89A8B2] px-6 py-8">
-            <div className="max-w-7xl mx-auto">
+          <div className="bg-white border border-slate-200 rounded-[10px] p-5">
+            <div className="max-w-[1400px] mx-auto">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div className="flex items-center gap-5">
                   {/* Avatar */}
-                  <div className="w-20 h-20 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-white text-3xl font-bold shadow-lg border border-white/30">
+                  <div className="w-14 h-14 rounded-[10px] bg-blue-50 flex items-center justify-center text-blue-600 text-[18px] font-semibold border border-blue-200">
                     {customer.first_name.charAt(0)}{customer.last_name.charAt(0)}
                   </div>
                   <div>
-                    <h1 className="text-2xl md:text-3xl font-bold text-white">
+                    <h1 className="text-[15px] md:text-[18px] font-medium text-slate-900">
                       {customer.first_name} {customer.last_name}
                     </h1>
                     <div className="flex flex-wrap items-center gap-3 mt-2">
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/20 backdrop-blur-sm text-white text-sm font-medium rounded-full">
+                      <span className="inline-flex items-center gap-1.5 px-2 py-1 bg-blue-50 text-blue-700 text-[11px] font-medium rounded border border-blue-200">
                         <Wifi className="w-3.5 h-3.5" /> {customer.internet_id}
                       </span>
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/20 backdrop-blur-sm text-white text-sm font-medium rounded-full">
+                      <span className="inline-flex items-center gap-1.5 px-2 py-1 bg-slate-100 text-slate-600 text-[11px] font-medium rounded border border-slate-200">
                         <MapPin className="w-3.5 h-3.5" /> {customer.area}
                       </span>
-                      <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-semibold ${customer.is_active
-                        ? 'bg-emerald-400/30 text-emerald-100 border border-emerald-400/50'
-                        : 'bg-red-400/30 text-red-100 border border-red-400/50'
+                      <div className={`inline-flex items-center gap-1.5 px-2 py-1 rounded text-[11px] font-medium border ${customer.is_active
+                        ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                        : 'bg-rose-50 text-rose-700 border-rose-200'
                         }`}>
-                        <span className={`w-2 h-2 rounded-full ${customer.is_active ? 'bg-emerald-400' : 'bg-red-400'}`}></span>
+                        <span className={`w-2 h-2 rounded-full ${customer.is_active ? 'bg-emerald-500' : 'bg-rose-500'}`}></span>
                         {customer.is_active ? 'Active' : 'Inactive'}
                       </div>
                     </div>
                   </div>
                 </div>
-                <div className="text-white/80 text-sm">
+                <div className="text-slate-500 text-[11px]">
                   Customer since {new Date(customer.installation_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long' })}
                 </div>
               </div>
@@ -1060,9 +1062,9 @@ const CustomerDetail: React.FC = () => {
           </div>
 
           {/* Navigation Tabs */}
-          <div className="sticky top-0 z-10 bg-white border-b border-[#E5E1DA] shadow-sm">
-            <div className="max-w-7xl mx-auto px-6">
-              <div className="flex overflow-x-auto scrollbar-hide -mb-px">
+          <div className="sticky top-0 z-10 bg-slate-50 py-4">
+            <div className="max-w-[1400px] mx-auto">
+              <div className="flex overflow-x-auto rounded-[10px] border border-slate-200 bg-white p-1">
                 {sections.map((section) => {
                   const Icon = section.icon
                   const isActive = activeTab === section.id
@@ -1070,12 +1072,12 @@ const CustomerDetail: React.FC = () => {
                     <button
                       key={section.id}
                       onClick={() => setActiveTab(section.id)}
-                      className={`flex items-center gap-2 px-5 py-4 text-sm font-medium border-b-2 transition-all duration-200 whitespace-nowrap ${isActive
-                        ? "border-[#89A8B2] text-[#2A5C8A] bg-[#F1F0E8]"
-                        : "border-transparent text-[#5a7a84] hover:text-[#2A5C8A] hover:border-[#B3C8CF]"
+                      className={`flex items-center gap-2 px-4 py-2 text-[12px] font-medium rounded-md transition-all duration-150 whitespace-nowrap ${isActive
+                        ? "bg-blue-50 text-blue-700"
+                        : "text-slate-500 hover:text-slate-700 hover:bg-slate-50"
                         }`}
                     >
-                      <Icon className="w-4 h-4" />
+                      <Icon className="w-3.5 h-3.5" />
                       {section.name}
                     </button>
                   )
@@ -1085,7 +1087,7 @@ const CustomerDetail: React.FC = () => {
           </div>
 
           {/* Content */}
-          <div className="max-w-7xl mx-auto px-6 py-8 pb-16">
+          <div className="max-w-[1400px] mx-auto py-0 sm:py-2 pb-16">
             {renderContent()}
           </div>
         </main>

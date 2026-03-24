@@ -55,14 +55,14 @@ const ComplaintManagement: React.FC = () => {
         accessorKey: "status",
         cell: (info) => (
           <span
-            className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+            className={`inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-full border 
             ${info.getValue() === "open"
-                ? "bg-yellow-100 text-yellow-800"
+                ? "bg-amber-50 text-amber-700 border-amber-200"
                 : info.getValue() === "in_progress"
-                  ? "bg-blue-100 text-blue-800"
+                  ? "bg-blue-50 text-blue-700 border-blue-200"
                   : info.getValue() === "resolved"
-                    ? "bg-green-100 text-green-800"
-                    : "bg-gray-100 text-gray-800"
+                    ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                    : "bg-slate-100 text-slate-600 border-slate-200"
               }`}
           >
             {info.getValue() as string}
@@ -87,7 +87,7 @@ const ComplaintManagement: React.FC = () => {
         header: "Remarks",
         accessorKey: "remarks",
         cell: (info) => (
-          <span className="truncate max-w-xs" title={info.getValue() as string}>
+          <span className="truncate max-w-xs text-[13px] text-slate-600" title={info.getValue() as string}>
             {info.getValue() as string}
           </span>
         ),
@@ -118,7 +118,7 @@ const ComplaintManagement: React.FC = () => {
                 }
               }
             }}
-            className="px-2 py-1 bg-[#89A8B2] text-white text-sm rounded-md shadow-md hover:bg-[#B3C8CF] transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105"
+            className="h-8 px-3 text-[12px] font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-md hover:bg-blue-100 transition-colors duration-150"
             disabled={!info.getValue()}
           >
             {info.getValue() ? "View Attachment" : "No Attachment"}

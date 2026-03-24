@@ -101,37 +101,25 @@ export function TaskForm({ formData, handleInputChange, isEditing }: TaskFormPro
     handleInputChange(syntheticEvent)
   }
 
-  const inputClasses = `
-    w-full px-4 py-2.5 rounded-lg border border-[#EBF5FF] bg-white text-[#4A5568]
-    placeholder-[#4A5568]/60 focus:border-[#3A86FF] focus:ring-2 focus:ring-[#3A86FF]/20
-    transition-colors duration-200 text-sm
-  `
-
-  const iconInputClasses = `
-    w-full pl-10 pr-4 py-2.5 rounded-lg border border-[#EBF5FF] bg-white text-[#4A5568]
-    placeholder-[#4A5568]/60 focus:border-[#3A86FF] focus:ring-2 focus:ring-[#3A86FF]/20
-    transition-colors duration-200 text-sm
-  `
-
-  const selectClasses = `
-    w-full pl-10 pr-10 py-2.5 rounded-lg border border-[#EBF5FF] bg-white text-[#4A5568]
-    focus:border-[#3A86FF] focus:ring-2 focus:ring-[#3A86FF]/20 transition-colors duration-200 text-sm
-    appearance-none bg-no-repeat
-    bg-[url('data:image/svg+xml;charset=US-ASCII,<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 8L10 12L14 8" stroke="%234A5568" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>')]
-    bg-right-4 bg-center-y
-  `
-
-  const labelClasses = "block text-sm font-medium text-[#2A5C8A] mb-1"
-  const iconClasses = "h-5 w-5 text-[#4A5568]/60"
+  const inputClasses = "w-full h-9 px-3 rounded-md border border-slate-200 bg-white text-[13px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/[0.12] hover:border-slate-300 transition-colors duration-150"
+  const iconInputClasses = "w-full h-9 pl-9 pr-3 rounded-md border border-slate-200 bg-white text-[13px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/[0.12] hover:border-slate-300 transition-colors duration-150"
+  const selectClasses = "w-full h-9 pl-9 pr-9 rounded-md border border-slate-200 bg-white text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/[0.12] hover:border-slate-300 transition-colors duration-150 appearance-none"
+  const labelClasses = "block text-[11px] font-medium text-slate-600 mb-1.5"
+  const iconClasses = "h-4 w-4 text-slate-400"
 
   return (
     <div className="space-y-6">
       {/* Task Type */}
       <div>
-        <label className={labelClasses}>Task Type *</label>
+        <label className={labelClasses}>Task Type <span className="text-rose-500 ml-0.5">*</span></label>
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <Tag className={iconClasses} />
+          </div>
+          <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+            <svg className="w-3.5 h-3.5 text-slate-400" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6 8L10 12L14 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
           </div>
           <select
             name="task_type"
@@ -153,10 +141,10 @@ export function TaskForm({ formData, handleInputChange, isEditing }: TaskFormPro
       <div>
         <label className={labelClasses}>Customer (Optional)</label>
         {isLoadingCustomers ? (
-          <div className="w-full pl-10 pr-10 py-2.5 border border-slate-gray/20 rounded-lg bg-light-sky/30 text-deep-ocean">
+          <div className="w-full h-9 px-3 border border-slate-200 rounded-md bg-white text-slate-700">
             <div className="flex items-center justify-center">
-              <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-electric-blue"></div>
-              <span className="ml-2 text-slate-gray/60">Loading customers...</span>
+              <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-600 border-t-transparent"></div>
+              <span className="ml-2 text-[12px] text-slate-500">Loading customers...</span>
             </div>
           </div>
         ) : (
@@ -173,10 +161,15 @@ export function TaskForm({ formData, handleInputChange, isEditing }: TaskFormPro
       {/* Priority and Due Date */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className={labelClasses}>Priority *</label>
+          <label className={labelClasses}>Priority <span className="text-rose-500 ml-0.5">*</span></label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <AlertCircle className={iconClasses} />
+            </div>
+            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+              <svg className="w-3.5 h-3.5 text-slate-400" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 8L10 12L14 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
             </div>
             <select
               name="priority"
@@ -194,7 +187,7 @@ export function TaskForm({ formData, handleInputChange, isEditing }: TaskFormPro
         </div>
 
         <div>
-          <label className={labelClasses}>Due Date & Time *</label>
+          <label className={labelClasses}>Due Date & Time <span className="text-rose-500 ml-0.5">*</span></label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Calendar className={iconClasses} />
@@ -213,10 +206,15 @@ export function TaskForm({ formData, handleInputChange, isEditing }: TaskFormPro
 
       {/* Status */}
       <div>
-        <label className={labelClasses}>Status *</label>
+        <label className={labelClasses}>Status <span className="text-rose-500 ml-0.5">*</span></label>
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <Clock className={iconClasses} />
+          </div>
+          <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+            <svg className="w-3.5 h-3.5 text-slate-400" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6 8L10 12L14 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
           </div>
           <select
             name="status"
@@ -235,29 +233,29 @@ export function TaskForm({ formData, handleInputChange, isEditing }: TaskFormPro
 
       {/* Assign To (Multiple Employees) */}
       <div>
-        <label className={labelClasses}>Assign To (Select Multiple) *</label>
-        <div className="border border-[#EBF5FF] rounded-lg p-3 bg-white max-h-48 overflow-y-auto">
+        <label className={labelClasses}>Assign To (Select Multiple) <span className="text-rose-500 ml-0.5">*</span></label>
+        <div className="border border-slate-200 rounded-md p-3 bg-white max-h-52 overflow-y-auto">
           {employees.length === 0 ? (
-            <p className="text-slate-gray text-sm">Loading employees...</p>
+            <p className="text-[12px] text-slate-500">Loading employees...</p>
           ) : (
             <div className="space-y-2">
               {employees.map((employee) => (
                 <label
                   key={employee.id}
-                  className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-colors ${
+                  className={`flex items-center gap-3 p-2 rounded-md cursor-pointer border transition-colors duration-150 ${
                     selectedEmployees.includes(employee.id)
-                      ? 'bg-electric-blue/10 border border-electric-blue/30'
-                      : 'hover:bg-light-sky/50'
+                      ? 'bg-blue-50 border-blue-200'
+                      : 'bg-white border-transparent hover:bg-blue-50/40'
                   }`}
                 >
                   <input
                     type="checkbox"
                     checked={selectedEmployees.includes(employee.id)}
                     onChange={() => handleEmployeeToggle(employee.id)}
-                    className="w-4 h-4 text-electric-blue border-slate-gray/30 rounded focus:ring-electric-blue"
+                    className="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-2 focus:ring-blue-500/[0.12]"
                   />
-                  <Users className="h-4 w-4 text-slate-gray/60" />
-                  <span className="text-sm text-deep-ocean">
+                  <Users className="h-4 w-4 text-slate-400" />
+                  <span className="text-[13px] text-slate-700">
                     {employee.first_name} {employee.last_name}
                   </span>
                 </label>
@@ -266,7 +264,7 @@ export function TaskForm({ formData, handleInputChange, isEditing }: TaskFormPro
           )}
         </div>
         {selectedEmployees.length > 0 && (
-          <p className="text-xs text-slate-gray mt-1">
+          <p className="text-[11px] text-slate-400 mt-1.5">
             {selectedEmployees.length} employee(s) selected
           </p>
         )}
@@ -281,7 +279,7 @@ export function TaskForm({ formData, handleInputChange, isEditing }: TaskFormPro
           onChange={handleInputChange}
           placeholder="Enter any additional notes..."
           rows={4}
-          className={`${inputClasses} resize-none`}
+          className="w-full px-3 py-2.5 text-[13px] text-slate-700 bg-white border border-slate-200 rounded-md placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/[0.12] hover:border-slate-300 transition-colors duration-150 resize-none"
         />
       </div>
     </div>

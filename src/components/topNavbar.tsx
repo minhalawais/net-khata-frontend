@@ -1,10 +1,10 @@
 "use client"
 
 import type React from "react"
-import { useState, useEffect } from "react"
-import { Menu, Bell, User, ChevronDown, Settings, LogOut } from "lucide-react"
+import { useState, useEffect, useMemo, useRef } from "react"
+import { Menu, Bell, ChevronDown, Settings, LogOut, User } from "lucide-react"
 import { getToken, removeToken } from "../utils/auth.ts"
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import axiosInstance from "../utils/axiosConfig.ts"
 import NetKhataLogo from "../assets/NetKhataLogo.tsx"
 
@@ -14,20 +14,31 @@ interface TopbarProps {
 
 export const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false)
-  const [userData, setUserData] = useState<any>(null)
-  const navigate = useNavigate()
+  const [userData, setUserData]           = useState<any>(null)
+  const dropdownRef                       = useRef<HTMLDivElement>(null)
+  const navigate                          = useNavigate()
+  const location                          = useLocation()
 
   useEffect(() => {
     fetchUserData()
   }, [])
 
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsProfileOpen(false)
+      }
+    }
+    document.addEventListener("mousedown", handler)
+    return () => document.removeEventListener("mousedown", handler)
+  }, [])
+
   const fetchUserData = async () => {
     try {
-      const token = getToken()
+      const token    = getToken()
       const response = await axiosInstance.get("/user/profile", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       })
       setUserData(response.data)
     } catch (error) {
@@ -41,7 +52,6 @@ export const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
     } catch (error) {
       console.error("Logout API call failed", error)
     } finally {
-      // Always clear token and redirect, even if API fails
       removeToken()
       localStorage.clear()
       setIsProfileOpen(false)
@@ -49,69 +59,236 @@ export const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
     }
   }
 
+  // Build initials from user data
+  const initials = userData
+    ? `${userData.first_name?.[0] ?? ""}${userData.last_name?.[0] ?? ""}`.toUpperCase()
+    : "?"
+
+  const displayName = useMemo(() => {
+    const first = userData?.first_name ?? ""
+    const last  = userData?.last_name ?? ""
+    const name = `${first} ${last}`.trim()
+    return name || "User"
+  }, [userData])
+
+  const routeLabel = useMemo(() => {
+    const segments = location.pathname.split("/").filter(Boolean)
+    if (!segments.length) return "Dashboard"
+    const last = segments[segments.length - 1]
+    return last.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
+  }, [location.pathname])
+
+  // ─── Render ──────────────────────────────────────────────────────────────────
+
   return (
-    <nav className="bg-white shadow-sm fixed w-full z-40 border-b border-[#EBF5FF]">
-      <div className="max-w mx-2 px-2 sm:px-2 lg:px-2">
-        <div className="flex items-center justify-between h-14">
-          <div className="flex items-center">
-            <button
-              onClick={toggleSidebar}
-              className="p-2 rounded-md text-[#4A5568] hover:bg-[#EBF5FF] transition-colors duration-200 mr-2"
-            >
-              <Menu className="h-5 w-5" />
-            </button>
+    /*
+     * Skill 01 + 02 — Topbar is NOT fixed.
+     * It is a flex-shrink-0 element inside the right-column flex container.
+     * Fixed positioning was the cause of pt-20 everywhere. With flex-shrink-0
+     * the topbar participates in normal flow — no padding hacks needed.
+     *
+     * h-14 matches the sidebar logo row height so they align visually.
+     * bg-white border-b border-slate-200 — no shadow-sm (no decorative shadows).
+     */
+    <header className="
+      h-14 flex-shrink-0 bg-white border-b border-[0.5px] border-slate-200
+      flex items-center justify-between px-5
+    ">
 
-            <div className="h-10 w-48 -mt-1 flex items-center">
-              <NetKhataLogo variant="landscape" />
-            </div>
-          </div>
+      {/* Left: hamburger + persistent logo + route context */}
+      <div className="flex items-center gap-3 min-w-0">
 
-          <div className="flex items-center space-x-6">
-            <button className="relative p-2 text-[#4A5568] hover:bg-[#EBF5FF] rounded-full transition-colors duration-200">
-              <Bell className="h-5 w-5" />
-              <span className="absolute top-0 right-0 h-2 w-2 bg-[#EF4444] rounded-full"></span>
-            </button>
+        {/*
+         * Skill 02 — hamburger: p-1.5 icon-button pattern
+         * text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-md
+         * NOT: p-2 hover:bg-[#EBF5FF] rounded-md text-[#4A5568]
+         */}
+        <button
+          onClick={toggleSidebar}
+          className="
+            p-1.5 text-slate-500 hover:text-slate-700 hover:bg-slate-100
+            rounded-md transition-colors duration-150
+          "
+          aria-label="Toggle sidebar"
+        >
+          <Menu className="w-4 h-4" />
+        </button>
 
-            <div className="relative">
-              <button
-                className="flex items-center space-x-3 text-[#4A5568] hover:bg-[#EBF5FF] p-2 rounded-lg transition-colors duration-200"
-                onClick={() => setIsProfileOpen(!isProfileOpen)}
-              >
-                <div className="w-8 h-8 bg-[#3A86FF]/10 rounded-full flex items-center justify-center">
-                  <User className="h-5 w-5 text-[#3A86FF]" />
-                </div>
-                <div className="hidden md:block text-left">
-                  <p className="text-sm font-medium text-[#2A5C8A]">
-                    {userData?.first_name} {userData?.last_name}
-                  </p>
-                  <p className="text-xs text-[#4A5568]/70">{userData?.role}</p>
-                </div>
-                <ChevronDown className="h-4 w-4 text-[#4A5568]/80" />
-              </button>
+        {/*
+         * Keep brand identity visible at all times.
+         * Compact height avoids visual competition with page content.
+         */}
+        <div className="flex items-center h-7 w-[126px] overflow-hidden flex-shrink-0">
+          <NetKhataLogo variant="landscape" className="w-full h-full" />
+        </div>
 
-              {isProfileOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-1 z-50 border border-[#EBF5FF]">
-                  <button
-                    onClick={() => { navigate('/profile'); setIsProfileOpen(false); }}
-                    className="flex items-center w-full px-4 py-2 text-sm text-[#4A5568] hover:bg-[#EBF5FF] hover:text-[#3A86FF] transition-colors duration-150"
-                  >
-                    <User className="h-4 w-4 mr-2" />
-                    Your Profile
-                  </button>
-                  <div className="h-px bg-[#EBF5FF] my-1"></div>
-                  <button
-                    onClick={handleLogout}
-                    className="flex items-center w-full text-left px-4 py-2 text-sm text-[#EF4444] hover:bg-[#EF4444]/10 transition-colors duration-150"
-                  >
-                    <LogOut className="h-4 w-4 mr-2" />
-                    Sign out
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
+        <div className="hidden lg:block w-px h-5 bg-slate-200" />
+
+        <div className="hidden lg:flex items-center gap-2 min-w-0">
+          <span className="text-[11px] text-slate-400">Module</span>
+          <span className="text-slate-300">/</span>
+          <span className="text-[12px] font-medium text-slate-700 truncate max-w-[220px]">{routeLabel}</span>
         </div>
       </div>
-    </nav>
+
+      {/* Right: notification bell + user profile */}
+      <div className="flex items-center gap-2">
+
+        {/*
+         * Skill 02 — notification bell icon-button:
+         * p-1.5 rounded-md, icon w-4 h-4
+         * NOT: p-2 rounded-full, h-5 w-5
+         *
+         * Notification dot: absolute top-1 right-1, w-1.5 h-1.5 bg-rose-500
+         */}
+        <button
+          title="Notifications"
+          className="
+          relative p-1.5 text-slate-500 hover:text-slate-700 hover:bg-slate-100
+          rounded-md transition-colors duration-150
+        "
+        >
+          <Bell className="w-4 h-4" />
+          <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-rose-500 rounded-full" />
+        </button>
+
+        {/* Vertical divider */}
+        <div className="w-px h-5 bg-slate-200 mx-1.5" />
+
+        {/*
+         * User profile trigger
+         *
+         * Skill 02 — avatar: w-7 h-7 rounded-full bg-blue-100, initials text-[10px]
+         * NOT: User icon inside a tinted circle with #3A86FF
+         *
+         * Name: text-[12px] font-medium text-slate-800
+         * Role: text-[10px] text-slate-400
+         * NOT: text-sm text-[#2A5C8A] / text-xs text-[#4A5568]/70
+         */}
+        <div className="relative" ref={dropdownRef}>
+          <button
+            onClick={() => setIsProfileOpen(!isProfileOpen)}
+            className="
+              flex items-center gap-2 px-2 py-1.5
+              text-slate-600 bg-white border border-[0.5px] border-transparent
+              hover:bg-slate-100 hover:border-slate-200
+              rounded-md transition-colors duration-150
+            "
+            aria-expanded={isProfileOpen}
+            aria-haspopup="menu"
+          >
+            {/* Initials avatar */}
+            <div className="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+              <span className="text-[10px] font-medium text-blue-800 leading-none">
+                {initials}
+              </span>
+            </div>
+
+            {/* Name + role — hidden on small screens */}
+            <div className="hidden md:block text-left">
+              <p className="text-[12px] font-medium text-slate-800 leading-none">
+                {displayName}
+              </p>
+              <p className="text-[10px] text-slate-400 mt-0.5 leading-none">
+                {userData?.role}
+              </p>
+            </div>
+
+            {/* Chevron */}
+            <ChevronDown className={`
+              w-3.5 h-3.5 text-slate-400 flex-shrink-0
+              transition-transform duration-150
+              ${isProfileOpen ? "rotate-180" : ""}
+            `} />
+          </button>
+
+          {/*
+           * Profile dropdown
+           *
+           * Skill rules:
+           * — No shadow-lg. Border only for separation: border border-slate-200
+           * — bg-white rounded-[10px] (card radius)
+           * — Menu items: text-[12px] text-slate-600 hover:bg-slate-100
+           * — Danger item: text-rose-600 hover:bg-rose-50
+           * — Divider: h-px bg-slate-100
+           * — min-w-[180px] — enough to read the menu
+           *
+           * z-50 so it sits above page content.
+           * right-0 aligns with the right edge of the trigger.
+           * top-full mt-1.5 positions below the button with a small gap.
+           */}
+          {isProfileOpen && (
+            <div className="
+              absolute right-0 top-full mt-1.5 z-50
+              min-w-[220px] bg-white
+              rounded-[10px] border border-slate-200
+              overflow-hidden
+            ">
+
+              {/* User info header */}
+              <div className="px-4 py-3 border-b border-slate-100">
+                <p className="text-[12px] font-medium text-slate-800 leading-none">
+                  {displayName}
+                </p>
+                <p className="text-[11px] text-slate-400 mt-1 leading-none">
+                  {userData?.email || userData?.role}
+                </p>
+              </div>
+
+              {/* Menu items */}
+              <div className="py-1">
+                <p className="px-4 py-1 text-[10px] font-medium text-slate-400 uppercase tracking-[0.08em]">Account</p>
+                <button
+                  onClick={() => { navigate("/profile"); setIsProfileOpen(false) }}
+                  className="
+                    flex items-center gap-2.5 w-full px-4 py-2.5
+                    text-[12px] text-slate-600
+                    hover:bg-slate-100 hover:text-slate-900
+                    transition-colors duration-150
+                  "
+                >
+                  <User className="w-3.5 h-3.5 flex-shrink-0" />
+                  Your profile
+                </button>
+
+                <button
+                  onClick={() => { navigate("/settings"); setIsProfileOpen(false) }}
+                  className="
+                    flex items-center gap-2.5 w-full px-4 py-2.5
+                    text-[12px] text-slate-600
+                    hover:bg-slate-100 hover:text-slate-900
+                    transition-colors duration-150
+                  "
+                >
+                  <Settings className="w-3.5 h-3.5 flex-shrink-0" />
+                  Settings
+                </button>
+              </div>
+
+              {/* Divider */}
+              <div className="h-px bg-slate-100" />
+
+              {/* Logout — danger variant */}
+              <div className="py-1">
+                <button
+                  onClick={handleLogout}
+                  className="
+                    flex items-center gap-2.5 w-full px-4 py-2.5
+                    text-[12px] text-rose-600
+                    hover:bg-rose-50 hover:text-rose-700
+                    transition-colors duration-150
+                  "
+                >
+                  <LogOut className="w-3.5 h-3.5 flex-shrink-0" />
+                  Sign out
+                </button>
+              </div>
+
+            </div>
+          )}
+        </div>
+
+      </div>
+    </header>
   )
 }

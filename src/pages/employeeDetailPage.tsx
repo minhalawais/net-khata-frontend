@@ -186,13 +186,13 @@ const KPICard: React.FC<{
   color: string
   subtext?: string
 }> = ({ icon, label, value, color, subtext }) => (
-  <div className="bg-white rounded-xl shadow-sm border border-[#E5E1DA] p-5 hover:shadow-md transition-shadow duration-300">
+  <div className="bg-white rounded-[10px] shadow-sm border border-slate-200 p-4 hover:border-slate-300 transition-colors duration-150">
     <div className="flex items-center gap-4">
-      <div className={`${color} p-3 rounded-xl shadow-lg`}>{icon}</div>
+      <div className={`${color} p-2.5 rounded-md`}>{icon}</div>
       <div className="flex-1">
-        <p className="text-sm text-[#89A8B2] font-medium">{label}</p>
-        <p className="text-2xl font-bold text-[#2A5C8A]">{value}</p>
-        {subtext && <p className="text-xs text-[#B3C8CF]">{subtext}</p>}
+        <p className="text-[11px] text-slate-500 font-medium uppercase tracking-[0.06em]">{label}</p>
+        <p className="text-[22px] font-semibold text-slate-900">{value}</p>
+        {subtext && <p className="text-[11px] text-slate-400">{subtext}</p>}
       </div>
     </div>
   </div>
@@ -206,23 +206,23 @@ const StatusBadge: React.FC<{ status: string }> = ({ status }) => {
       case "completed":
       case "resolved":
       case "paid":
-        return "bg-[#10B981] text-white"
+        return "bg-emerald-50 text-emerald-700 border-emerald-200"
       case "pending":
       case "open":
-        return "bg-[#F59E0B] text-white"
+        return "bg-amber-50 text-amber-700 border-amber-200"
       case "in_progress":
-        return "bg-[#3A86FF] text-white"
+        return "bg-blue-50 text-blue-700 border-blue-200"
       case "cancelled":
       case "inactive":
       case "failed":
-        return "bg-[#EF4444] text-white"
+        return "bg-rose-50 text-rose-700 border-rose-200"
       default:
-        return "bg-[#89A8B2] text-white"
+        return "bg-slate-100 text-slate-600 border-slate-200"
     }
   }
 
   return (
-    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor()}`}>
+    <span className={`px-2 py-1 rounded text-[11px] border font-medium ${getStatusColor()}`}>
       {status?.replace("_", " ").split(" ").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ") || "N/A"}
     </span>
   )
@@ -236,9 +236,9 @@ const DataTable: React.FC<{
   data: any[]
   emptyMessage?: string
 }> = ({ title, icon, columns, data, emptyMessage = "No data available" }) => (
-  <div className="bg-white rounded-xl shadow-sm border border-[#E5E1DA] overflow-hidden">
-    <div className="bg-gradient-to-r from-[#89A8B2] to-[#B3C8CF] px-6 py-4">
-      <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+  <div className="bg-white rounded-[10px] shadow-sm border border-slate-200 overflow-hidden">
+    <div className="bg-slate-50 border-b border-slate-100 px-6 py-4">
+      <h3 className="text-[13px] font-medium text-slate-900 flex items-center gap-2">
         {icon}
         {title}
       </h3>
@@ -246,20 +246,20 @@ const DataTable: React.FC<{
     <div className="overflow-x-auto">
       {data.length > 0 ? (
         <table className="w-full">
-          <thead className="bg-[#F1F0E8]">
+          <thead className="bg-slate-50 border-b border-slate-100">
             <tr>
               {columns.map((col) => (
-                <th key={col.key} className="px-4 py-3 text-left text-xs font-semibold text-[#89A8B2] uppercase tracking-wider">
+                <th key={col.key} className="px-4 py-3 text-left text-[11px] font-medium text-slate-500 uppercase tracking-[0.06em] whitespace-nowrap">
                   {col.label}
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#E5E1DA]">
+          <tbody className="divide-y divide-slate-100">
             {data.map((row, idx) => (
-              <tr key={row.id || idx} className="hover:bg-[#F1F0E8]/50 transition-colors">
+              <tr key={row.id || idx} className="hover:bg-slate-50 transition-colors">
                 {columns.map((col) => (
-                  <td key={col.key} className="px-4 py-3 text-sm text-[#2A5C8A]">
+                  <td key={col.key} className="px-4 py-3 text-[13px] text-slate-700">
                     {col.render ? col.render(row[col.key], row) : row[col.key] || "-"}
                   </td>
                 ))}
@@ -268,7 +268,7 @@ const DataTable: React.FC<{
           </tbody>
         </table>
       ) : (
-        <div className="p-8 text-center text-[#89A8B2]">
+        <div className="p-8 text-center text-slate-500">
           <AlertCircle className="w-10 h-10 mx-auto mb-2 opacity-50" />
           <p>{emptyMessage}</p>
         </div>
@@ -283,9 +283,9 @@ const InfoCard: React.FC<{
   icon: React.ReactNode
   children: React.ReactNode
 }> = ({ title, icon, children }) => (
-  <div className="bg-white rounded-xl shadow-sm border border-[#E5E1DA] overflow-hidden">
-    <div className="bg-gradient-to-r from-[#89A8B2] to-[#B3C8CF] px-6 py-4">
-      <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+  <div className="bg-white rounded-[10px] shadow-sm border border-slate-200 overflow-hidden">
+    <div className="bg-slate-50 border-b border-slate-100 px-6 py-4">
+      <h3 className="text-[13px] font-medium text-slate-900 flex items-center gap-2">
         {icon}
         {title}
       </h3>
@@ -296,9 +296,9 @@ const InfoCard: React.FC<{
 
 // Info Row Component
 const InfoRow: React.FC<{ label: string; value: string | number | null }> = ({ label, value }) => (
-  <div className="flex justify-between items-center py-3 border-b border-[#E5E1DA] last:border-0">
-    <span className="text-[#89A8B2] text-sm">{label}</span>
-    <span className="font-semibold text-[#2A5C8A]">{value || "N/A"}</span>
+  <div className="flex justify-between items-center py-3 border-b border-slate-100 last:border-0">
+    <span className="text-slate-500 text-[12px]">{label}</span>
+    <span className="font-medium text-slate-900 text-[13px]">{value || "N/A"}</span>
   </div>
 )
 
@@ -359,10 +359,10 @@ const EmployeeDetailPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[#F1F0E8]">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#89A8B2] mx-auto mb-4"></div>
-          <p className="text-[#89A8B2] text-xl font-semibold">Loading employee profile...</p>
+      <div className="flex items-center justify-center min-h-screen bg-slate-50">
+        <div className="text-center bg-white border border-slate-200 rounded-[10px] p-6">
+          <div className="animate-spin rounded-full h-10 w-10 border-2 border-slate-200 border-t-blue-600 mx-auto mb-3"></div>
+          <p className="text-slate-600 text-[13px] font-medium">Loading employee profile...</p>
         </div>
       </div>
     )
@@ -370,10 +370,10 @@ const EmployeeDetailPage: React.FC = () => {
 
   if (!employee) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[#F1F0E8]">
+      <div className="flex items-center justify-center min-h-screen bg-slate-50">
         <div className="text-center">
-          <AlertCircle className="w-16 h-16 text-[#EF4444] mx-auto mb-4" />
-          <p className="text-[#89A8B2] text-xl font-semibold">Employee not found</p>
+          <AlertCircle className="w-14 h-14 text-rose-500 mx-auto mb-3" />
+          <p className="text-slate-600 text-[15px] font-medium">Employee not found</p>
         </div>
       </div>
     )
@@ -385,30 +385,30 @@ const EmployeeDetailPage: React.FC = () => {
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <KPICard
-          icon={<Users className="w-5 h-5 text-white" />}
+          icon={<Users className="w-5 h-5 text-current" />}
           label="Managed Customers"
           value={employee.customerMetrics.totalManagedCustomers}
-          color="bg-gradient-to-br from-[#3A86FF] to-[#2A5C8A]"
+          color="bg-blue-50 text-blue-600"
           subtext={`${employee.customerMetrics.activeCustomers} active`}
         />
         <KPICard
-          icon={<DollarSign className="w-5 h-5 text-white" />}
+          icon={<DollarSign className="w-5 h-5 text-current" />}
           label="Payments Collected"
           value={`PKR ${employee.financialMetrics.totalPaymentsCollected.toLocaleString()}`}
-          color="bg-gradient-to-br from-[#10B981] to-[#059669]"
+          color="bg-emerald-50 text-emerald-600"
           subtext={`${employee.financialMetrics.paymentsCount} transactions`}
         />
         <KPICard
-          icon={<Wallet className="w-5 h-5 text-white" />}
+          icon={<Wallet className="w-5 h-5 text-current" />}
           label="Current Balance"
           value={`PKR ${employee.current_balance.toLocaleString()}`}
-          color="bg-gradient-to-br from-[#8B5CF6] to-[#6D28D9]"
+          color="bg-slate-100 text-slate-600"
         />
         <KPICard
-          icon={<Clock className="w-5 h-5 text-white" />}
+          icon={<Clock className="w-5 h-5 text-current" />}
           label="Service Duration"
           value={`${employee.serviceDuration} days`}
-          color="bg-gradient-to-br from-[#F59E0B] to-[#D97706]"
+          color="bg-amber-50 text-amber-600"
         />
       </div>
 
@@ -441,17 +441,17 @@ const EmployeeDetailPage: React.FC = () => {
       {/* Payment Balances */}
       <InfoCard title="Payment Balances" icon={<DollarSign className="w-5 h-5" />}>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-gradient-to-br from-amber-50 to-amber-100 border border-amber-200 rounded-lg p-4 text-center">
+          <div className="bg-amber-50 border border-amber-200 rounded-md p-4 text-center">
             <p className="text-sm text-amber-700 font-medium">Pending Balance</p>
             <p className="text-2xl font-bold text-amber-600">PKR {(employee.pending_amount || 0).toLocaleString()}</p>
             <p className="text-xs text-amber-600/70 mt-1">Salary + Commissions owed</p>
           </div>
-          <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 border border-emerald-200 rounded-lg p-4 text-center">
+          <div className="bg-emerald-50 border border-emerald-200 rounded-md p-4 text-center">
             <p className="text-sm text-emerald-700 font-medium">Total Paid</p>
             <p className="text-2xl font-bold text-emerald-600">PKR {(employee.paid_amount || 0).toLocaleString()}</p>
             <p className="text-xs text-emerald-600/70 mt-1">Via expense module</p>
           </div>
-          <div className="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-lg p-4 text-center">
+          <div className="bg-blue-50 border border-blue-200 rounded-md p-4 text-center">
             <p className="text-sm text-blue-700 font-medium">Total Earned</p>
             <p className="text-2xl font-bold text-blue-600">
               PKR {((employee.pending_amount || 0) + (employee.paid_amount || 0)).toLocaleString()}
@@ -464,13 +464,13 @@ const EmployeeDetailPage: React.FC = () => {
       {/* Commission Settings */}
       <InfoCard title="Commission Settings" icon={<Award className="w-5 h-5" />}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-[#F1F0E8] rounded-lg p-4 text-center">
-            <p className="text-sm text-[#89A8B2]">Per Complaint</p>
-            <p className="text-2xl font-bold text-[#3A86FF]">PKR {employee.commission_amount_per_complaint}</p>
+          <div className="bg-slate-50 border border-slate-200 rounded-md p-4 text-center">
+            <p className="text-sm text-slate-500">Per Complaint</p>
+            <p className="text-2xl font-bold text-blue-600">PKR {employee.commission_amount_per_complaint}</p>
           </div>
-          <div className="bg-[#F1F0E8] rounded-lg p-4 text-center">
-            <p className="text-sm text-[#89A8B2]">Total Earned</p>
-            <p className="text-2xl font-bold text-[#8B5CF6]">PKR {employee.financialMetrics.totalCommissionEarned.toLocaleString()}</p>
+          <div className="bg-slate-50 border border-slate-200 rounded-md p-4 text-center">
+            <p className="text-sm text-slate-500">Total Earned</p>
+            <p className="text-2xl font-bold text-slate-700">PKR {employee.financialMetrics.totalCommissionEarned.toLocaleString()}</p>
           </div>
         </div>
         <p className="text-sm text-slate-500 mt-4">Note: Connection commissions are set per customer in Customer Management.</p>
@@ -483,30 +483,30 @@ const EmployeeDetailPage: React.FC = () => {
       {/* Performance KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <KPICard
-          icon={<CheckCircle className="w-5 h-5 text-white" />}
+          icon={<CheckCircle className="w-5 h-5 text-current" />}
           label="Complaints Resolved"
           value={employee.performanceMetrics.resolvedComplaints}
-          color="bg-gradient-to-br from-[#10B981] to-[#059669]"
+          color="bg-emerald-50 text-emerald-600"
           subtext={`${employee.performanceMetrics.complaintResolutionRate.toFixed(0)}% rate`}
         />
         <KPICard
-          icon={<Clock className="w-5 h-5 text-white" />}
+          icon={<Clock className="w-5 h-5 text-current" />}
           label="Avg Resolution Time"
           value={`${employee.performanceMetrics.avgResolutionTime}h`}
-          color="bg-gradient-to-br from-[#3A86FF] to-[#2A5C8A]"
+          color="bg-blue-50 text-blue-600"
         />
         <KPICard
-          icon={<ClipboardList className="w-5 h-5 text-white" />}
+          icon={<ClipboardList className="w-5 h-5 text-current" />}
           label="Tasks Completed"
           value={employee.performanceMetrics.completedTasks}
-          color="bg-gradient-to-br from-[#8B5CF6] to-[#6D28D9]"
+          color="bg-slate-100 text-slate-600"
           subtext={`${employee.performanceMetrics.taskCompletionRate.toFixed(0)}% rate`}
         />
         <KPICard
-          icon={<RefreshCw className="w-5 h-5 text-white" />}
+          icon={<RefreshCw className="w-5 h-5 text-current" />}
           label="Recovery Success"
           value={`${employee.performanceMetrics.recoverySuccessRate}%`}
-          color="bg-gradient-to-br from-[#F59E0B] to-[#D97706]"
+          color="bg-amber-50 text-amber-600"
           subtext={`${employee.performanceMetrics.completedRecoveryTasks}/${employee.performanceMetrics.totalRecoveryTasks}`}
         />
       </div>
@@ -539,28 +539,28 @@ const EmployeeDetailPage: React.FC = () => {
       {/* Financial KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <KPICard
-          icon={<TrendingUp className="w-5 h-5 text-white" />}
+          icon={<TrendingUp className="w-5 h-5 text-current" />}
           label="Total Earned"
           value={`PKR ${(employee.financialMetrics.totalCommissionEarned + employee.financialMetrics.totalSalaryAccrued).toLocaleString()}`}
-          color="bg-gradient-to-br from-[#10B981] to-[#059669]"
+          color="bg-emerald-50 text-emerald-600"
         />
         <KPICard
-          icon={<DollarSign className="w-5 h-5 text-white" />}
+          icon={<DollarSign className="w-5 h-5 text-current" />}
           label="Commission Earned"
           value={`PKR ${employee.financialMetrics.totalCommissionEarned.toLocaleString()}`}
-          color="bg-gradient-to-br from-[#3A86FF] to-[#2A5C8A]"
+          color="bg-blue-50 text-blue-600"
         />
         <KPICard
-          icon={<CreditCard className="w-5 h-5 text-white" />}
+          icon={<CreditCard className="w-5 h-5 text-current" />}
           label="Total Payouts"
           value={`PKR ${employee.financialMetrics.totalPayouts.toLocaleString()}`}
-          color="bg-gradient-to-br from-[#EF4444] to-[#DC2626]"
+          color="bg-rose-50 text-rose-600"
         />
         <KPICard
-          icon={<Wallet className="w-5 h-5 text-white" />}
+          icon={<Wallet className="w-5 h-5 text-current" />}
           label="Current Balance"
           value={`PKR ${employee.current_balance.toLocaleString()}`}
-          color="bg-gradient-to-br from-[#8B5CF6] to-[#6D28D9]"
+          color="bg-slate-100 text-slate-600"
         />
       </div>
 
@@ -574,7 +574,7 @@ const EmployeeDetailPage: React.FC = () => {
             key: "transaction_type",
             label: "Type",
             render: (v) => (
-              <span className="px-2 py-1 bg-[#E5E1DA] rounded text-xs font-medium capitalize">
+              <span className="px-2 py-1 bg-slate-100 rounded text-[11px] font-medium capitalize text-slate-600">
                 {v?.replace("_", " ")}
               </span>
             )
@@ -601,22 +601,22 @@ const EmployeeDetailPage: React.FC = () => {
       {/* Customer Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <KPICard
-          icon={<Users className="w-5 h-5 text-white" />}
+          icon={<Users className="w-5 h-5 text-current" />}
           label="Total Customers"
           value={employee.customerMetrics.totalManagedCustomers}
-          color="bg-gradient-to-br from-[#3A86FF] to-[#2A5C8A]"
+          color="bg-blue-50 text-blue-600"
         />
         <KPICard
-          icon={<UserCheck className="w-5 h-5 text-white" />}
+          icon={<UserCheck className="w-5 h-5 text-current" />}
           label="Active Customers"
           value={employee.customerMetrics.activeCustomers}
-          color="bg-gradient-to-br from-[#10B981] to-[#059669]"
+          color="bg-emerald-50 text-emerald-600"
         />
         <KPICard
-          icon={<TrendingUp className="w-5 h-5 text-white" />}
+          icon={<TrendingUp className="w-5 h-5 text-current" />}
           label="Retention Rate"
           value={`${employee.customerMetrics.customerRetentionRate.toFixed(1)}%`}
-          color="bg-gradient-to-br from-[#8B5CF6] to-[#6D28D9]"
+          color="bg-slate-100 text-slate-600"
         />
       </div>
 
@@ -652,12 +652,12 @@ const EmployeeDetailPage: React.FC = () => {
             label: "Priority",
             render: (v) => {
               const colors: Record<string, string> = {
-                low: "bg-green-100 text-green-800",
-                medium: "bg-yellow-100 text-yellow-800",
-                high: "bg-orange-100 text-orange-800",
-                critical: "bg-red-100 text-red-800"
+                low: "bg-emerald-50 text-emerald-700 border border-emerald-200",
+                medium: "bg-amber-50 text-amber-700 border border-amber-200",
+                high: "bg-orange-50 text-orange-700 border border-orange-200",
+                critical: "bg-rose-50 text-rose-700 border border-rose-200"
               }
-              return <span className={`px-2 py-1 rounded text-xs font-medium ${colors[v] || "bg-gray-100"}`}>{v}</span>
+              return <span className={`px-2 py-1 rounded text-[11px] font-medium ${colors[v] || "bg-slate-100 text-slate-600 border border-slate-200"}`}>{v}</span>
             }
           },
           { key: "due_date", label: "Due Date", render: (v) => v ? new Date(v).toLocaleDateString() : "-" },
@@ -701,31 +701,31 @@ const EmployeeDetailPage: React.FC = () => {
         {/* Recovery KPIs */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <KPICard
-            icon={<RefreshCw className="w-5 h-5 text-white" />}
+            icon={<RefreshCw className="w-5 h-5 text-current" />}
             label="Total Recovery Tasks"
             value={recoveryTasks.length}
-            color="bg-gradient-to-br from-[#3A86FF] to-[#2A5C8A]"
+            color="bg-blue-50 text-blue-600"
             subtext={`PKR ${totalAmount.toLocaleString()} total`}
           />
           <KPICard
-            icon={<Clock className="w-5 h-5 text-white" />}
+            icon={<Clock className="w-5 h-5 text-current" />}
             label="Pending"
             value={pendingRecoveries.length}
-            color="bg-gradient-to-br from-[#F59E0B] to-[#D97706]"
+            color="bg-amber-50 text-amber-600"
             subtext={`PKR ${pendingAmount.toLocaleString()}`}
           />
           <KPICard
-            icon={<TrendingUp className="w-5 h-5 text-white" />}
+            icon={<TrendingUp className="w-5 h-5 text-current" />}
             label="In Progress"
             value={inProgressRecoveries.length}
-            color="bg-gradient-to-br from-[#8B5CF6] to-[#6D28D9]"
+            color="bg-slate-100 text-slate-600"
             subtext={`PKR ${inProgressAmount.toLocaleString()}`}
           />
           <KPICard
-            icon={<CheckCircle className="w-5 h-5 text-white" />}
+            icon={<CheckCircle className="w-5 h-5 text-current" />}
             label="Completed"
             value={completedRecoveries.length}
-            color="bg-gradient-to-br from-[#10B981] to-[#059669]"
+            color="bg-emerald-50 text-emerald-600"
             subtext={`PKR ${completedAmount.toLocaleString()} recovered`}
           />
         </div>
@@ -755,10 +755,10 @@ const EmployeeDetailPage: React.FC = () => {
               <div className="text-4xl font-bold text-[#10B981]">
                 {employee.performanceMetrics.recoverySuccessRate}%
               </div>
-              <p className="text-sm text-[#89A8B2] mt-2">Recovery Success Rate</p>
-              <div className="w-full bg-[#E5E1DA] rounded-full h-3 mt-4">
+              <p className="text-sm text-slate-500 mt-2">Recovery Success Rate</p>
+              <div className="w-full bg-slate-200 rounded-full h-3 mt-4">
                 <div
-                  className="bg-gradient-to-r from-[#10B981] to-[#059669] h-3 rounded-full transition-all duration-500"
+                  className="bg-emerald-500 h-3 rounded-full transition-all duration-500"
                   style={{ width: `${employee.performanceMetrics.recoverySuccessRate}%` }}
                 />
               </div>
@@ -820,8 +820,8 @@ const EmployeeDetailPage: React.FC = () => {
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {/* Employee Photo */}
       <div className="bg-white rounded-xl shadow-sm border border-[#E5E1DA] overflow-hidden">
-        <div className="bg-gradient-to-r from-[#89A8B2] to-[#B3C8CF] px-4 py-3">
-          <h4 className="text-white font-medium flex items-center gap-2">
+      <div className="bg-slate-50 border-b border-slate-100 px-4 py-3">
+          <h4 className="text-slate-900 text-[13px] font-medium flex items-center gap-2">
             <ImageIcon className="w-4 h-4" /> Employee Photo
           </h4>
         </div>
@@ -835,17 +835,17 @@ const EmployeeDetailPage: React.FC = () => {
               />
             </a>
           ) : (
-            <div className="w-full h-48 bg-[#F1F0E8] rounded-lg flex items-center justify-center">
-              <User className="w-16 h-16 text-[#89A8B2]/50" />
+            <div className="w-full h-48 bg-slate-50 rounded-lg border border-slate-200 flex items-center justify-center">
+              <User className="w-16 h-16 text-slate-300" />
             </div>
           )}
         </div>
       </div>
 
       {/* CNIC Image */}
-      <div className="bg-white rounded-xl shadow-sm border border-[#E5E1DA] overflow-hidden">
-        <div className="bg-gradient-to-r from-[#89A8B2] to-[#B3C8CF] px-4 py-3">
-          <h4 className="text-white font-medium flex items-center gap-2">
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <div className="bg-slate-50 border-b border-slate-100 px-4 py-3">
+          <h4 className="text-slate-900 text-[13px] font-medium flex items-center gap-2">
             <CreditCard className="w-4 h-4" /> CNIC Document
           </h4>
         </div>
@@ -859,17 +859,17 @@ const EmployeeDetailPage: React.FC = () => {
               />
             </a>
           ) : (
-            <div className="w-full h-48 bg-[#F1F0E8] rounded-lg flex items-center justify-center">
-              <CreditCard className="w-16 h-16 text-[#89A8B2]/50" />
+            <div className="w-full h-48 bg-slate-50 rounded-lg border border-slate-200 flex items-center justify-center">
+              <CreditCard className="w-16 h-16 text-slate-300" />
             </div>
           )}
         </div>
       </div>
 
       {/* Utility Bill */}
-      <div className="bg-white rounded-xl shadow-sm border border-[#E5E1DA] overflow-hidden">
-        <div className="bg-gradient-to-r from-[#89A8B2] to-[#B3C8CF] px-4 py-3">
-          <h4 className="text-white font-medium flex items-center gap-2">
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <div className="bg-slate-50 border-b border-slate-100 px-4 py-3">
+          <h4 className="text-slate-900 text-[13px] font-medium flex items-center gap-2">
             <FileText className="w-4 h-4" /> Utility Bill
           </h4>
         </div>
@@ -883,17 +883,17 @@ const EmployeeDetailPage: React.FC = () => {
               />
             </a>
           ) : (
-            <div className="w-full h-48 bg-[#F1F0E8] rounded-lg flex items-center justify-center">
-              <FileText className="w-16 h-16 text-[#89A8B2]/50" />
+            <div className="w-full h-48 bg-slate-50 rounded-lg border border-slate-200 flex items-center justify-center">
+              <FileText className="w-16 h-16 text-slate-300" />
             </div>
           )}
         </div>
       </div>
 
       {/* Reference CNIC */}
-      <div className="bg-white rounded-xl shadow-sm border border-[#E5E1DA] overflow-hidden">
-        <div className="bg-gradient-to-r from-[#89A8B2] to-[#B3C8CF] px-4 py-3">
-          <h4 className="text-white font-medium flex items-center gap-2">
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <div className="bg-slate-50 border-b border-slate-100 px-4 py-3">
+          <h4 className="text-slate-900 text-[13px] font-medium flex items-center gap-2">
             <CreditCard className="w-4 h-4" /> Reference CNIC
           </h4>
         </div>
@@ -907,8 +907,8 @@ const EmployeeDetailPage: React.FC = () => {
               />
             </a>
           ) : (
-            <div className="w-full h-48 bg-[#F1F0E8] rounded-lg flex items-center justify-center">
-              <CreditCard className="w-16 h-16 text-[#89A8B2]/50" />
+            <div className="w-full h-48 bg-slate-50 rounded-lg border border-slate-200 flex items-center justify-center">
+              <CreditCard className="w-16 h-16 text-slate-300" />
             </div>
           )}
         </div>
@@ -931,31 +931,33 @@ const EmployeeDetailPage: React.FC = () => {
   }
 
   return (
-    <div className="flex h-screen bg-[#F1F0E8]">
-      <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+    <div className="flex h-screen bg-slate-50 overflow-hidden">
+      <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} setIsOpen={setIsSidebarOpen} />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Topbar toggleSidebar={toggleSidebar} />
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 mt-12">
-          <div className="max-w-7xl mx-auto">
+        <main className={`flex-1 overflow-x-hidden overflow-y-auto bg-slate-50 p-0 sm:p-6 pt-20 transition-all duration-300 ${
+            isSidebarOpen ? "ml-64" : "ml-0 lg:ml-20"
+          }`}>
+          <div className="max-w-[1400px] mx-auto space-y-4">
             {/* Header */}
-            <div className="mb-6">
+            <div className="bg-white rounded-[10px] border border-slate-200 p-5">
               <button
                 onClick={() => navigate(-1)}
-                className="flex items-center gap-2 text-[#89A8B2] hover:text-[#2A5C8A] transition-colors mb-4"
+                className="h-8 px-3 inline-flex items-center gap-2 rounded-md border border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-slate-700 transition-colors mb-4 text-[12px]"
               >
                 <ArrowLeft className="w-4 h-4" />
                 Back
               </button>
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#89A8B2] to-[#B3C8CF] flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+                  <div className="w-14 h-14 rounded-[10px] bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-700 text-[20px] font-semibold">
                     {employee.first_name?.charAt(0)}{employee.last_name?.charAt(0)}
                   </div>
                   <div>
-                    <h1 className="text-2xl font-bold text-[#2A5C8A]">
+                    <h1 className="text-[18px] font-medium text-slate-900">
                       {employee.first_name} {employee.last_name}
                     </h1>
-                    <p className="text-[#89A8B2] flex items-center gap-2">
+                    <p className="text-slate-500 text-[12px] flex items-center gap-2">
                       <Mail className="w-4 h-4" /> {employee.email}
                     </p>
                   </div>
@@ -965,15 +967,15 @@ const EmployeeDetailPage: React.FC = () => {
             </div>
 
             {/* Navigation Tabs */}
-            <div className="bg-white rounded-lg shadow-sm border border-[#E5E1DA] mb-6 overflow-hidden">
-              <div className="flex overflow-x-auto">
+            <div className="bg-white rounded-[10px] shadow-sm border border-slate-200 overflow-hidden p-1">
+              <div className="flex overflow-x-auto gap-1">
                 {tabs.map((tab) => (
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors duration-200 whitespace-nowrap ${activeTab === tab.id
-                      ? "bg-[#2A5C8A] text-white"
-                      : "text-[#4A5568] hover:bg-[#F8F7F2]"
+                    className={`flex items-center gap-2 px-4 py-2 text-[12px] font-medium rounded-md transition-colors duration-150 whitespace-nowrap ${activeTab === tab.id
+                      ? "bg-blue-50 text-blue-700"
+                      : "text-slate-500 hover:bg-slate-50"
                       }`}
                   >
                     <tab.icon className="w-4 h-4" />
