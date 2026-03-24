@@ -1,5 +1,6 @@
 import type React from "react"
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom"
+import { HelmetProvider } from "react-helmet-async"
 import ForgotPasswordPage from "./pages/forgotPassowrdPage.tsx"
 import ResetPasswordPage from "./pages/resetPasswordPage.tsx"
 import EmployeeManagement from "./pages/crud_pages/employeeCrud.tsx"
@@ -54,20 +55,23 @@ const App: React.FC = () => {
 
   if (isCustomerPortal) {
     return (
-      <Router>
-        <Routes>
-          <Route path="/public/invoice/:id" element={<PublicInvoicePage />} />
-          <Route path="*" element={<CustomerPortalPage />} />
-        </Routes>
-      </Router>
+      <HelmetProvider>
+        <Router>
+          <Routes>
+            <Route path="/public/invoice/:id" element={<PublicInvoicePage />} />
+            <Route path="*" element={<CustomerPortalPage />} />
+          </Routes>
+        </Router>
+      </HelmetProvider>
     )
   }
 
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Navigate to="/login" />} />
-        <Route path="/login" element={<Login />} />
+    <HelmetProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Navigate to="/login" />} />
+          <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
         <Route path="/employee-management" element={<EmployeeManagement />} />
@@ -121,8 +125,9 @@ const App: React.FC = () => {
 
 
 
-      </Routes>
-    </Router>
+        </Routes>
+      </Router>
+    </HelmetProvider>
   )
 }
 

@@ -66,7 +66,7 @@ const ComplaintDetailPage = () => {
   }
 
   useEffect(() => {
-    document.title = "Complaint Details"
+    document.title = "Complaint Details | Net Khata"
     const fetchComplaintData = async () => {
       try {
         setLoading(true)

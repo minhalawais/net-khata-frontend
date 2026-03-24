@@ -59,7 +59,7 @@ const ExpenseManagement: React.FC = () => {
   const modalContentRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    document.title = "Net Khata - Expense Management"
+    document.title = "Expense Management | Net Khata"
     fetchExpenseTypes()
   }, [])
 

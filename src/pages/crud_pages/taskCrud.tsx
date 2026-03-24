@@ -28,7 +28,7 @@ interface Task {
 
 const TaskManagement: React.FC = () => {
   useEffect(() => {
-    document.title = "Net Khata - Task Management";
+    document.title = "Task Management | Net Khata";
   }, []);
 
   const getTaskTypeColor = (type: string) => {

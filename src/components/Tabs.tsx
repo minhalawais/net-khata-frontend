@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 
 /*
- * Tabs — NetDaftar ERP · Slate + Blue
+ * Tabs — Net Khata ERP · Slate + Blue
  *
  * Skill 02 — two tab patterns, both defined:
  *

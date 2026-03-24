@@ -40,7 +40,7 @@ const getInitials = (name: string) =>
 
 const ISPManagement: React.FC = () => {
   useEffect(() => {
-    document.title = "Net Khata - ISP Management"
+    document.title = "ISP Management | Net Khata"
   }, [])
 
   const columns = useMemo<ColumnDef<ISP>[]>(

@@ -1,3 +1,4 @@
+```typescript
 "use client"
 
 import type React from "react"
@@ -6,6 +7,7 @@ import { useParams } from "react-router-dom"
 import jsPDF from "jspdf"
 import html2canvas from "html2canvas"
 import axiosInstance from "../utils/axiosConfig.ts"
+import SEOHead from '../components/SEOHead.tsx'
 import NetKhataLogo from "../assets/NetKhataLogo.tsx"
 import { PaidStamp } from "../components/PaidStamp.tsx"
 
@@ -109,7 +111,6 @@ const PublicInvoicePage: React.FC = () => {
   }, [invoiceData])
 
   useEffect(() => {
-    document.title = "Net Khata - Invoice"
     fetchInvoiceData()
     fetchBankAccounts()
   }, [id])
@@ -291,7 +292,13 @@ const PublicInvoicePage: React.FC = () => {
   const statusConfig = getStatusConfig(invoiceData?.status || "")
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_#dbeafe_0,_#f8fafc_45%,_#eef2ff_100%)] py-8 px-4">
+    <>
+      <SEOHead
+        title={invoiceData ? `Invoice ${invoiceData.invoice_number}` : "Invoice"}
+        description="View your Net Khata service invoice and payment details."
+        noIndex={true}
+      />
+      <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_#dbeafe_0,_#f8fafc_45%,_#eef2ff_100%)] py-8 px-4">
       <div className="max-w-5xl mx-auto space-y-4">
         {/* Top Action Bar */}
         <div className="bg-white rounded-[12px] border border-slate-200 p-4 sm:p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">

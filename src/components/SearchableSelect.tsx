@@ -2,7 +2,7 @@ import { useState, useMemo } from "react"
 import { Search, FileText, User, Hash, Calendar, ChevronDown, X } from "lucide-react"
 
 /*
- * SearchableSelect (Invoice) — NetDaftar ERP · Slate + Blue
+ * SearchableSelect (Invoice) — Net Khata ERP · Slate + Blue
  *
  * Same token corrections as SearchableCustomerSelect:
  *   text-deep-ocean      → text-slate-900

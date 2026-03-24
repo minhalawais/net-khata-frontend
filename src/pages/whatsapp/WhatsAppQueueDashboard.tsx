@@ -47,7 +47,7 @@ const WhatsAppQueueDashboard: React.FC = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     useEffect(() => {
-        document.title = 'WhatsApp Queue - Net Khata';
+        document.title = 'WhatsApp Queue | Net Khata';
         fetchData();
         const interval = setInterval(fetchData, 30000);
         return () => {

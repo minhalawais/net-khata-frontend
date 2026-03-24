@@ -259,7 +259,7 @@ const CustomerDetail: React.FC = () => {
   }
 
   useEffect(() => {
-    document.title = "Net Khata - Customer Profile"
+    document.title = "Customer Profile | Net Khata"
     const fetchCustomerData = async () => {
       try {
         setLoading(true)

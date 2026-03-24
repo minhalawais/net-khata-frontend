@@ -25,7 +25,7 @@ const ComplaintManagement: React.FC = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
-    document.title = "Net Khata - Complaint Management"
+    document.title = "Complaint Management | Net Khata"
   }, [])
 
   const columns = useMemo<ColumnDef<Complaint>[]>(

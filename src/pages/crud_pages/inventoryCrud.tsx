@@ -39,7 +39,7 @@ const InventoryManagement: React.FC = () => {
       } catch (error) {
         console.error("Failed to fetch suppliers", error)
       }
-      document.title = "Net Khata - Inventory Management"
+      document.title = "Inventory Management | Net Khata"
     }
 
     fetchSuppliers()

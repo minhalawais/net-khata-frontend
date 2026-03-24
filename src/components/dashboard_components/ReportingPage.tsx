@@ -122,7 +122,7 @@ const ReportingPage = () => {
 
   const componentRef = useRef<HTMLDivElement>(null)
   const handlePrint = useReactToPrint({
-    documentTitle: `NetDaftar_Export_${currentSection.name.replace(/\s+/g, '_')}`,
+    documentTitle: `NetKhata_Export_${currentSection.name.replace(/\s+/g, '_')}`,
     contentRef: componentRef,
   })
 
@@ -160,7 +160,7 @@ const ReportingPage = () => {
 
   // Update document title when section changes — preserved exactly
   useEffect(() => {
-    document.title = `NetDaftar — ${currentSection.name}`
+    document.title = `${currentSection.name} | Net Khata`
   }, [currentSection.name])
 
   const toggleSidebar = () => setIsSidebarOpen(prev => !prev)

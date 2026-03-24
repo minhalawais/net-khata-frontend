@@ -67,7 +67,7 @@ const PaymentManagement: React.FC = () => {
   }
 
   useEffect(() => {
-    document.title = "Net Khata - Payment Management"
+    document.title = "Payment Management | Net Khata"
   }, [])
 
   const columns = React.useMemo<ColumnDef<Payment>[]>(

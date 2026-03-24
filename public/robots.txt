@@ -1,3 +1,45 @@
 # https://www.robotstxt.org/robotstxt.html
+# Net Khata — ISP Management Platform
+# Host: https://netkhata.com.pk
+
 User-agent: *
-Disallow:
+
+# Public pages — allow
+Allow: /login
+Allow: /forgot-password
+Allow: /customer-portal
+Allow: /public/invoice/
+
+# Internal admin routes — disallow
+Disallow: /employee-management
+Disallow: /customer-management
+Disallow: /service-plan-management
+Disallow: /complaint-management
+Disallow: /inventory-management
+Disallow: /supplier-management
+Disallow: /area-zone-management
+Disallow: /recovery-task-management
+Disallow: /task-management
+Disallow: /bank-management
+Disallow: /payment-management
+Disallow: /isp-payment-management
+Disallow: /billing-invoices
+Disallow: /invoices/
+Disallow: /customers/
+Disallow: /employees/
+Disallow: /complaints/
+Disallow: /reporting/
+Disallow: /reporting-analytics
+Disallow: /message-management
+Disallow: /profile
+Disallow: /logs-management
+Disallow: /isp-management
+Disallow: /vendor-management
+Disallow: /expense-management
+Disallow: /extra-income-management
+Disallow: /whatsapp/
+Disallow: /employee-portal
+Disallow: /areas/
+
+# Sitemap
+Sitemap: https://netkhata.com.pk/sitemap.xml

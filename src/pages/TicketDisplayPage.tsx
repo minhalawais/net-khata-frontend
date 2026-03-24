@@ -10,7 +10,7 @@ const TicketDisplayPage: React.FC = () => {
   const { ticketNumber } = useParams<{ ticketNumber: string }>()
 
   useEffect(() => {
-    document.title = `Ticket ${ticketNumber} - Net Khata`
+    document.title = `Ticket ${ticketNumber} | Net Khata`
   }, [ticketNumber])
 
   return (

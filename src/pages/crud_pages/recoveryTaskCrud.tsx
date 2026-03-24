@@ -20,7 +20,7 @@ interface RecoveryTask {
 
 const RecoveryTaskManagement: React.FC = () => {
   useEffect(() => {
-    document.title = "Net Khata - Recovery Task Management";
+    document.title = "Recovery Task Management | Net Khata";
   }, []);
 
   const getStatusColor = (status: string) => {

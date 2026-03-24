@@ -74,7 +74,7 @@ const ISPPaymentManagement: React.FC = () => {
   const imageViewer = useImageViewer()
 
   useEffect(() => {
-    document.title = "Net Khata - ISP Payment Management"
+    document.title = "ISP Payment Management | Net Khata"
   }, [])
 
   const columns = React.useMemo<ColumnDef<ISPPayment>[]>(

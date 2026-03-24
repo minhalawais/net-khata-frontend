@@ -3,6 +3,7 @@ import { useState } from "react"
 import { Link } from "react-router-dom"
 import { Mail } from "lucide-react"
 import axiosInstance from "../utils/axiosConfig.ts"
+import SEOHead from "../components/SEOHead"
 
 const ForgotPasswordPage: React.FC = () => {
   const [email, setEmail] = useState("")
@@ -28,6 +29,11 @@ const ForgotPasswordPage: React.FC = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-indigo-100">
+      <SEOHead 
+        title="Forgot Password" 
+        description="Reset your Net Khata account password. Enter your email to receive a password reset link."
+        canonical="/forgot-password"
+      />
       <div className="max-w-md w-full mx-4">
         <div className="backdrop-blur-lg bg-white/80 p-8 rounded-3xl shadow-xl border border-white/20">
           <h1 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">

@@ -40,7 +40,7 @@ const SubZoneManagement: React.FC = () => {
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
 
   useEffect(() => {
-    document.title = "Net Khata - Sub-Zone Management";
+    document.title = "Sub-Zone Management | Net Khata";
     fetchData();
   }, [areaId]);
 

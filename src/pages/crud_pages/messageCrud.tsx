@@ -16,7 +16,7 @@ interface Message {
 
 const MessageManagement: React.FC = () => {
   useEffect(() => {
-    document.title = "Net Khata - Message Management";
+    document.title = "Message Management | Net Khata";
   }, []);
   const columns = useMemo<ColumnDef<Message>[]>(
     () => [

@@ -24,7 +24,7 @@ interface Log {
 
 const LogManagement: React.FC = () => {
   useEffect(() => {
-    document.title = "Net Khata - Logs Management";
+    document.title = "Logs Management | Net Khata";
   }, []);
 
   const [selectedRecord, setSelectedRecord] = useState<{ tableName: string, recordId: string } | null>(null);

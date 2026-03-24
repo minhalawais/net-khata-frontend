@@ -61,7 +61,7 @@ const InvoiceManagement = () => {
   const [isPaymentLoading, setIsPaymentLoading] = useState(false)
 
   useEffect(() => {
-    document.title = "Net Khata - Invoice Management"
+    document.title = "Invoice Management | Net Khata"
   }, [])
 
   const handleBulkSuccess = () => {

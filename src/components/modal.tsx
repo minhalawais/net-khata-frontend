@@ -4,7 +4,7 @@ import React, { useEffect } from "react"
 import { X } from "lucide-react"
 
 /*
- * Modal — NetDaftar ERP · Slate + Blue
+ * Modal — Net Khata ERP · Slate + Blue
  *
  * Skill 09 — exact modal recipe. Every rule applied:
  *

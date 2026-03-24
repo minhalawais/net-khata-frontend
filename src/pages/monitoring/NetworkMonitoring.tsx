@@ -18,7 +18,7 @@ export default function NetworkMonitoring() {
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
-    document.title = "Net Khata - Network Monitoring"
+    document.title = "Network Monitoring | Net Khata"
     fetchConnections()
   }, [])
 

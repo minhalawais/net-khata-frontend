@@ -2,7 +2,7 @@ import { useState, useMemo } from "react"
 import { Search, Users, Hash, ChevronDown, X } from "lucide-react"
 
 /*
- * SearchableCustomerSelect — NetDaftar ERP · Slate + Blue
+ * SearchableCustomerSelect — Net Khata ERP · Slate + Blue
  *
  * All old custom tokens replaced with system tokens:
  *   text-deep-ocean      → text-slate-900

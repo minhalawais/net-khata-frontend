@@ -36,7 +36,7 @@ const getInitials = (name: string) =>
 
 const ServicePlanManagement: React.FC = () => {
   useEffect(() => {
-    document.title = "Net Khata - Service Plan Management"
+    document.title = "Service Plan Management | Net Khata"
   }, [])
 
   const columns = useMemo<ColumnDef<ServicePlan>[]>(

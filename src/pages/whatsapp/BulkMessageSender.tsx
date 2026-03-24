@@ -31,7 +31,7 @@ const BulkMessageSender: React.FC = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     useEffect(() => {
-        document.title = 'Bulk Message Sender - Net Khata';
+        document.title = 'Bulk Message Sender | Net Khata';
         fetchCustomers();
         fetchTemplates();
     }, []);

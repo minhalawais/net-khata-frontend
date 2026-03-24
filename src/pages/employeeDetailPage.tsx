@@ -319,7 +319,7 @@ const EmployeeDetailPage: React.FC = () => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    document.title = "Net Khata - Customer Profile"
+    document.title = "Employee Profile | Net Khata"
     fetchEmployeeData()
   }, [id])
 

@@ -98,7 +98,7 @@ const InvoiceGenerationPage: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   useEffect(() => {
-    document.title = "Net Khata - Invoice Details"
+    document.title = "Invoice Details | Net Khata"
     fetchInvoiceData()
     fetchBankAccounts()
   }, [id])

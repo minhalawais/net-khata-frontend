@@ -82,7 +82,7 @@ const EmployeeManagement: React.FC = () => {
   const [copied, setCopied] = useState<string | null>(null)
 
   useEffect(() => {
-    document.title = "Net Khata - Employee Management"
+    document.title = "Employee Management | Net Khata"
   }, [])
 
   const openCredentialsModal = async (employeeId: string) => {

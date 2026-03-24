@@ -38,7 +38,7 @@ const WhatsAppSettings: React.FC = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     useEffect(() => {
-        document.title = 'WhatsApp Settings - Net Khata';
+        document.title = 'WhatsApp Settings | Net Khata';
         fetchConfig();
     }, []);
 

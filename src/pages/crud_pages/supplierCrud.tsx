@@ -39,7 +39,7 @@ const getInitials = (name: string) =>
 
 const SupplierManagement: React.FC = () => {
   useEffect(() => {
-    document.title = "Net Khata - Supplier Management"
+    document.title = "Supplier Management | Net Khata"
   }, [])
 
   const columns = useMemo<ColumnDef<Supplier>[]>(

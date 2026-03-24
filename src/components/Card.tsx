@@ -1,7 +1,7 @@
 import React from "react"
 
 /*
- * Card — NetDaftar ERP · Slate + Blue
+ * Card — Net Khata ERP · Slate + Blue
  *
  * Skill 01 — card surface:
  *   bg-white rounded-[10px] border border-slate-200

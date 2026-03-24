@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from "react"
+```
+import React, { useState } from "react"
 import { useNavigate, Link } from "react-router-dom"
 import { Eye, EyeOff, Lock, User, LogIn, Zap, Shield, LineChart, Send, ArrowRight } from "lucide-react"
+import SEOHead from "../components/SEOHead"
 import NetKhataLogo from "../assets/NetKhataLogo.tsx"
 import axiosInstance from "../utils/axiosConfig.ts"
 
@@ -39,10 +41,6 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
 
-  useEffect(() => {
-    document.title = "NetDaftar OS - Secure Login"
-  }, [])
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
@@ -76,6 +74,11 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex w-full">
+      <SEOHead
+        title="Secure Login"
+        description="Sign in to your Net Khata ISP management account. Securely manage your billing, customers, and network operations."
+        canonical="/login"
+      />
       {/* ───────── RIGHT PANEL — Authentication Form (40%) ───────── */}
       <div
         className="w-full lg:w-[45%] xl:w-[40%] flex flex-col justify-center px-6 sm:px-10 lg:px-16"
@@ -101,7 +104,7 @@ const Login = () => {
               Sign in
             </h2>
             <p className="text-[14px] mt-2" style={{ color: "#64748B" }}>
-              Welcome back to NetDaftar OS.
+              Welcome back to Net Khata.
             </p>
           </div>
 

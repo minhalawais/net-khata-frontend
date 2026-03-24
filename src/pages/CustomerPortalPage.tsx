@@ -4,6 +4,7 @@ import type React from "react"
 import { useState } from "react"
 import axiosInstance from "../utils/axiosConfig.ts"
 import NetKhataLogo from "../assets/NetKhataLogo.tsx"
+import SEOHead from "../components/SEOHead"
 import {
   User,
   CreditCard,
@@ -162,6 +163,11 @@ export default function CustomerPortalPage() {
   if (!data) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4">
+        <SEOHead 
+          title="Customer Portal" 
+          description="Access the Net Khata customer portal to view your invoices, payments, and account status using your CNIC."
+          canonical="/customer-portal"
+        />
         <div className="max-w-md w-full mx-4">
           {/* Card */}
           <div className="bg-white rounded-[10px] shadow-sm border border-slate-200 overflow-hidden">
@@ -254,6 +260,11 @@ export default function CustomerPortalPage() {
 
   return (
     <div className="min-h-screen bg-slate-50">
+      <SEOHead 
+        title={`Portal: ${customer.name}`} 
+        description={`Customer portal for ${customer.name} - ${customer.internet_id}. View billings and account details.`}
+        noIndex={true}
+      />
       {/* White Top Navbar with Logo */}
       <nav className="bg-white border-b border-slate-200">
         <div className="max-w-[1400px] mx-auto px-4 py-2 flex items-center justify-between">

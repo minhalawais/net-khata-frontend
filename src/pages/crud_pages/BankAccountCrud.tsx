@@ -38,7 +38,7 @@ const getInitials = (name: string) =>
 
 const BankAccountManagement: React.FC = () => {
   useEffect(() => {
-    document.title = "Net Khata - Bank Account Management"
+    document.title = "Bank Account Management | Net Khata"
   }, [])
 
   const columns = React.useMemo<ColumnDef<BankAccount>[]>(

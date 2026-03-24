@@ -53,7 +53,7 @@ const CustomerManagement: React.FC = () => {
   const imageViewer = useImageViewer()
 
   useEffect(() => {
-    document.title = "Net Khata - Customer Management"
+    document.title = "Customer Management | Net Khata"
   }, [])
 
   const columns = useMemo<ColumnDef<Customer>[]>(
