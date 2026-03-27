@@ -48,8 +48,9 @@ interface SubZone { id: string; area_id: string; name: string }
 interface ServicePlan { id: string; name: string }
 interface ISP { id: string; name: string }
 interface InventoryItem {
-  id: string; name: string; serial_number: string; is_splitter: boolean
+  id: string; name: string; serial_number?: string; is_splitter: boolean
   splitter_number?: string; item_type: string; quantity: number; unit_price?: number
+  attributes?: { model?: string; serial_number?: string; type?: string }
 }
 
 interface InputFieldProps {
@@ -236,6 +237,7 @@ export function CustomerForm({
         setServicePlans(plansRes.data)
         setIsps(ispsRes.data)
         setInventoryItems(inventoryRes.data)
+        console.log('Inventory Items:', inventoryRes.data) // Debug log for inventory items
         setEmployees(employeesRes.data)
       } catch (error) {
         console.error("Failed to fetch data", error)
@@ -564,7 +566,10 @@ export function CustomerForm({
                   <InputField label="Router" name="router_id" type="select"
                     value={formData.router_id || ""} onChange={memoizedHandleInputChange} required
                     options={inventoryItems.filter((i) => i.item_type === "Router")
-                      .map((i) => ({ value: i.id, label: `${i.item_type} - ${i.serial_number || "No Serial"}` }))}
+                      .map((i) => ({
+                        value: i.id,
+                        label: `${i.item_type} - ${i.attributes?.model || i.name || "Unknown Model"} - ${i.attributes?.serial_number || i.serial_number || "No Serial"}`,
+                      }))}
                     icon={<Router />} {...inputFieldProps} />
                 )}
                 {formData.router_ownership === "customer" && (

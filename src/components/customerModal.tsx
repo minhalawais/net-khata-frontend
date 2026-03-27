@@ -9,14 +9,15 @@ interface ModalProps {
   title: string
   children: React.ReactNode
   isLoading?: boolean
+  footer?: React.ReactNode
 }
 
-export function Modal({ isVisible, onClose, title, children, isLoading }: ModalProps) {
+export function Modal({ isVisible, onClose, title, children, isLoading, footer }: ModalProps) {
   if (!isVisible) return null
 
   return (
     <div
-      className="fixed z-50 inset-0 overflow-y-auto backdrop-blur-sm"
+      className="fixed z-50 inset-0 overflow-y-auto"
       aria-labelledby="modal-title"
       role="dialog"
       aria-modal="true"
@@ -26,7 +27,7 @@ export function Modal({ isVisible, onClose, title, children, isLoading }: ModalP
         <div
           className="fixed inset-0 bg-slate-900/45 transition-opacity"
           aria-hidden="true"
-          onClick={onClose}
+          onClick={() => { if (!isLoading) onClose() }}
         />
 
         {/* Modal positioning */}
@@ -45,7 +46,7 @@ export function Modal({ isVisible, onClose, title, children, isLoading }: ModalP
               {title}
             </h3>
             <button
-              onClick={onClose}
+              onClick={() => { if (!isLoading) onClose() }}
               className="h-8 w-8 inline-flex items-center justify-center text-slate-500 hover:text-slate-700 transition-colors rounded-md border border-transparent hover:border-slate-200 hover:bg-white"
               disabled={isLoading}
             >
@@ -55,13 +56,15 @@ export function Modal({ isVisible, onClose, title, children, isLoading }: ModalP
 
           {/* Body */}
           <div className="px-6 py-5 max-h-[calc(100vh-200px)] overflow-y-auto custom-scrollbar bg-white">
-            {React.Children.map(children, (child) => {
-              if (React.isValidElement(child) && child.type === "form") {
-                return React.cloneElement(child as React.ReactElement<any>, { isLoading } as any)
-              }
-              return child
-            })}
+            {children}
           </div>
+
+          {/* Footer (optional) */}
+          {footer && (
+            <div className="px-6 py-3 border-t border-slate-200 bg-slate-50 flex items-center justify-end gap-2">
+              {footer}
+            </div>
+          )}
         </div>
       </div>
     </div>

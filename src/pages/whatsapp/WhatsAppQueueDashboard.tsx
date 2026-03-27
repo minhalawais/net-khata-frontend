@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { RefreshCw, MessageSquare, CheckCircle2, XCircle, Clock, Send, TrendingUp, Filter } from 'lucide-react';
+import { RefreshCw, MessageSquare, CheckCircle2, XCircle, Clock, Send, TrendingUp, Filter, Wifi, WifiOff, Shield } from 'lucide-react';
 import axiosInstance from '../../utils/axiosConfig.ts';
 import { Sidebar } from '../../components/sideNavbar.tsx';
 import { Topbar } from '../../components/topNavbar.tsx';
@@ -45,6 +45,7 @@ const WhatsAppQueueDashboard: React.FC = () => {
     const [totalPages, setTotalPages] = useState(1);
     const [refreshing, setRefreshing] = useState(false);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [connectionStatus, setConnectionStatus] = useState<{connected: boolean; phone_number?: string; warmup_complete?: boolean; warmup_start_date?: string; current_daily_limit?: number} | null>(null);
 
     useEffect(() => {
         document.title = 'WhatsApp Queue | Net Khata';
@@ -79,6 +80,14 @@ const WhatsAppQueueDashboard: React.FC = () => {
 
             const quotaResponse = await axiosInstance.get('/api/whatsapp/quota');
             setQuotaStats(quotaResponse.data);
+
+            // Fetch connection status
+            try {
+                const connResp = await axiosInstance.get('/api/whatsapp/instance/status');
+                setConnectionStatus(connResp.data);
+            } catch {
+                setConnectionStatus(null);
+            }
 
             setLoading(false);
             setRefreshing(false);
@@ -158,6 +167,71 @@ const WhatsAppQueueDashboard: React.FC = () => {
                             <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
                             Refresh
                         </button>
+                    </div>
+
+                    {/* Connection & Warm-up Status Row */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {/* Connection Status */}
+                        <div className="bg-white rounded-[10px] border border-slate-200 p-4">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <div className={`w-3 h-3 rounded-full ${connectionStatus?.connected ? 'bg-emerald-500 animate-pulse' : 'bg-slate-300'}`} />
+                                    <div>
+                                        <p className="text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em]">WhatsApp Status</p>
+                                        <p className="text-[15px] font-semibold text-slate-900 mt-0.5">
+                                            {connectionStatus?.connected ? 'Connected' : 'Disconnected'}
+                                        </p>
+                                        {connectionStatus?.connected && connectionStatus?.phone_number && (
+                                            <p className="text-[11px] text-slate-400 mt-0.5 flex items-center gap-1">
+                                                <Wifi className="w-3 h-3" /> {connectionStatus.phone_number}
+                                            </p>
+                                        )}
+                                        {!connectionStatus?.connected && (
+                                            <p className="text-[11px] text-slate-400 mt-0.5 flex items-center gap-1">
+                                                <WifiOff className="w-3 h-3" /> Go to Settings to connect
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
+                                <span className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
+                                    {connectionStatus?.connected ? <Wifi className="w-4 h-4 text-emerald-600" /> : <WifiOff className="w-4 h-4 text-slate-400" />}
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* Warm-up Progress */}
+                        <div className="bg-white rounded-[10px] border border-slate-200 p-4">
+                            <div className="flex items-center justify-between mb-2">
+                                <div className="flex items-center gap-2">
+                                    <Shield className="w-4 h-4 text-amber-500" />
+                                    <p className="text-[11px] font-medium text-slate-400 uppercase tracking-[0.06em]">Warm-up Status</p>
+                                </div>
+                                <span className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
+                                    <Shield className="w-4 h-4 text-blue-600" />
+                                </span>
+                            </div>
+                            {connectionStatus?.warmup_complete ? (
+                                <>
+                                    <p className="text-[15px] font-semibold text-emerald-700">Complete ✓</p>
+                                    <p className="text-[11px] text-slate-400 mt-0.5">Full {connectionStatus.current_daily_limit} msgs/day</p>
+                                </>
+                            ) : connectionStatus?.connected ? (
+                                <>
+                                    <p className="text-[15px] font-semibold text-amber-600">
+                                        {connectionStatus.current_daily_limit} msgs/day
+                                    </p>
+                                    <div className="mt-2 bg-amber-100 rounded-full h-1.5 overflow-hidden">
+                                        <div className="bg-amber-500 h-full rounded-full" style={{ width: `${Math.min((connectionStatus.current_daily_limit || 20) / 2, 100)}%` }} />
+                                    </div>
+                                    <p className="text-[11px] text-slate-400 mt-1">Gradually increasing over 4 weeks</p>
+                                </>
+                            ) : (
+                                <>
+                                    <p className="text-[15px] font-semibold text-slate-400">—</p>
+                                    <p className="text-[11px] text-slate-400 mt-0.5">Connect WhatsApp to start warm-up</p>
+                                </>
+                            )}
+                        </div>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

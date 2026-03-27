@@ -1,0 +1,28 @@
+{
+  "instance": {
+    "instanceName": "test_instance_3",
+    "instanceId": "eb2347eb-8fdd-40ff-9519-920da01ce076",
+    "integration": "WHATSAPP-BAILEYS",
+    "webhookWaBusiness": null,
+    "accessTokenWaBusiness": "",
+    "status": "connecting"
+  },
+  "hash": "83E367AC-C094-48B2-9C54-BD1A26580BC7",
+  "webhook": {},
+  "websocket": {},
+  "rabbitmq": {},
+  "sqs": {},
+  "settings": {
+    "rejectCall": false,
+    "msgCall": "",
+    "groupsIgnore": false,
+    "alwaysOnline": false,
+    "readMessages": false,
+    "readStatus": false,
+    "syncFullHistory": false,
+    "wavoipToken": ""
+  },
+  "qrcode": {
+    "count": 0
+  }
+}
