@@ -245,6 +245,22 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar, setIsOp
    */
   const shouldExpand = isMobile ? isOpen : (isOpen || isHovered)
 
+  // Restore saved scroll position when the sidebar becomes expanded/open.
+  // This ensures the nav stays at the previous scroll location after navigation.
+  useEffect(() => {
+    if (!shouldExpand) return
+    try {
+      const raw = localStorage.getItem(SIDEBAR_SCROLL_POSITION_KEY)
+      const pos = raw ? parseInt(raw, 10) : 0
+      if (!isNaN(pos) && navRef.current) {
+        // Apply on next animation frame so DOM/layout is ready.
+        requestAnimationFrame(() => { if (navRef.current) navRef.current.scrollTop = pos })
+      }
+    } catch (e) {
+      /* ignore */
+    }
+  }, [shouldExpand])
+
   // ─── Render ────────────────────────────────────────────────────────────────
 
   return (

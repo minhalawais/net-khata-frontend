@@ -112,30 +112,36 @@ const WhatsAppSettings: React.FC = () => {
 
     // ─── Evolution API Handlers ──────────────────────────────────
     const handleConnect = async () => {
-        try {
-            setConnecting(true);
-            const response = await axiosInstance.post('/api/whatsapp/instance/create');
-            if (response.data.success && response.data.qr_code_base64) {
+    try {
+        setConnecting(true);
+        const response = await axiosInstance.post('/api/whatsapp/instance/create');
+        
+        if (response.data.success) {
+            // 1. Unconditionally show the QR container and start the polling loop.
+            // If the QR isn't ready yet, the UI will show the loading spinner,
+            // and the polling loop will fetch the QR code in 5 seconds.
+            setShowQr(true);
+            startPolling();
+            
+            // 2. Try to set the QR code immediately if it's available
+            if (response.data.qr_code_base64) {
                 setQrCode(response.data.qr_code_base64);
-                setShowQr(true);
-                startPolling();
-            } else if (response.data.success) {
-                // Instance created but no QR yet, fetch QR
+            } else {
+                // If not, make ONE immediate attempt to fetch it, but don't trap the UI
                 const qrResp = await axiosInstance.get('/api/whatsapp/instance/qr');
                 if (qrResp.data.qr_code_base64) {
                     setQrCode(qrResp.data.qr_code_base64);
-                    setShowQr(true);
-                    startPolling();
                 }
-            } else {
-                alert(response.data.error || 'Failed to create instance');
             }
-        } catch (error: any) {
-            alert(error?.response?.data?.error || 'Failed to connect. Is Docker running?');
-        } finally {
-            setConnecting(false);
+        } else {
+            alert(response.data.error || 'Failed to create instance');
         }
-    };
+    } catch (error: any) {
+        alert(error?.response?.data?.error || 'Failed to connect. Is Docker running?');
+    } finally {
+        setConnecting(false);
+    }
+};
 
     const handleDisconnect = async () => {
         if (!window.confirm('Are you sure you want to disconnect WhatsApp? Messages will stop sending.')) return;

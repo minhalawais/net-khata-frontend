@@ -1,13 +1,18 @@
 # ============================================================
 # Evolution API - WhatsApp Gateway (Baileys-based)
-# Run alongside the Flask backend for WhatsApp messaging
-# Usage: docker-compose -f docker-compose.evolution.yml up -d
+# Upgraded to v2 — run alongside Flask backend
+#
+# Usage:
+#   docker-compose -f docker-compose.evolution.yml up -d
+#
+# On Linux hosts replace host.docker.internal references in
+# .env.evolution with your host machine's LAN IP (e.g. 192.168.x.x)
 # ============================================================
 
 services:
   evolution-api:
     container_name: evolution-api
-    image: atendai/evolution-api:v1.8.2
+    image: atendai/evolution-api:v2.2.3
     restart: unless-stopped
     ports:
       - "8081:8080"
@@ -18,6 +23,10 @@ services:
     depends_on:
       redis:
         condition: service_healthy
+    # Allows Evolution API to reach host machine services (Flask, Postgres)
+    # via host.docker.internal on Linux add: --add-host=host.docker.internal:host-gateway
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - evolution-net
 
