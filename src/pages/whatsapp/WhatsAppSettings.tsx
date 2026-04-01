@@ -64,7 +64,15 @@ const WhatsAppSettings: React.FC = () => {
     useEffect(() => {
         document.title = 'WhatsApp Settings | Net Khata';
         fetchConfig();
+
+        // Periodically re-sync connection status so the UI stays accurate
+        // even when the user isn't in the QR flow (e.g. after a webhook fires).
+        const refreshInterval = setInterval(() => {
+            fetchConfig();
+        }, 30000); // every 30 seconds
+
         return () => {
+            clearInterval(refreshInterval);
             if (pollingRef.current) clearInterval(pollingRef.current);
         };
     }, []);
@@ -112,36 +120,64 @@ const WhatsAppSettings: React.FC = () => {
 
     // ─── Evolution API Handlers ──────────────────────────────────
     const handleConnect = async () => {
-    try {
-        setConnecting(true);
-        const response = await axiosInstance.post('/api/whatsapp/instance/create');
-        
-        if (response.data.success) {
-            // 1. Unconditionally show the QR container and start the polling loop.
-            // If the QR isn't ready yet, the UI will show the loading spinner,
-            // and the polling loop will fetch the QR code in 5 seconds.
-            setShowQr(true);
-            startPolling();
-            
-            // 2. Try to set the QR code immediately if it's available
-            if (response.data.qr_code_base64) {
-                setQrCode(response.data.qr_code_base64);
-            } else {
-                // If not, make ONE immediate attempt to fetch it, but don't trap the UI
-                const qrResp = await axiosInstance.get('/api/whatsapp/instance/qr');
-                if (qrResp.data.qr_code_base64) {
-                    setQrCode(qrResp.data.qr_code_base64);
+        try {
+            setConnecting(true);
+            const response = await axiosInstance.post('/api/whatsapp/instance/create');
+
+            if (response.data.success) {
+                // ── Case 1: Backend says already connected (e.g. genuine active session) ──
+                // Call /instance/status to force-sync the DB connection state, THEN
+                // refresh config. The status endpoint writes phone_connected=true to
+                // the DB — without this the DB stays stale and config shows Disconnected.
+                if (response.data.already_connected) {
+                    try {
+                        const statusResp = await axiosInstance.get('/api/whatsapp/instance/status');
+                        // If status also confirms connected, no QR needed — stop here.
+                        if (statusResp.data.connected) {
+                            await fetchConfig();
+                            return;
+                        }
+                    } catch {
+                        // Status call failed — fall through to QR flow as a safe fallback.
+                    }
+                    // Status says not connected despite already_connected flag — start QR flow.
+                    setShowQr(true);
+                    startPolling();
+                    return;
                 }
+
+                // ── Case 2: QR code already in the response (fast path) ─────────────────
+                if (response.data.qr_code_base64) {
+                    setQrCode(response.data.qr_code_base64);
+                    setShowQr(true);
+                    startPolling();
+                    return;
+                }
+
+                // ── Case 3: QR not ready yet — show spinner and let polling fetch it ─────
+                // This is the async path: Evolution is generating the QR in the background.
+                // The polling loop will call GET /instance/qr every 5s until it arrives.
+                setShowQr(true);
+                startPolling();
+
+                // Make one immediate attempt to fetch QR without blocking the spinner
+                try {
+                    const qrResp = await axiosInstance.get('/api/whatsapp/instance/qr');
+                    if (qrResp.data.qr_code_base64) {
+                        setQrCode(qrResp.data.qr_code_base64);
+                    }
+                } catch {
+                    // Silently ignore — polling will retry in 5s
+                }
+            } else {
+                alert(response.data.error || 'Failed to create instance');
             }
-        } else {
-            alert(response.data.error || 'Failed to create instance');
+        } catch (error: any) {
+            alert(error?.response?.data?.error || 'Failed to connect. Is Docker running?');
+        } finally {
+            setConnecting(false);
         }
-    } catch (error: any) {
-        alert(error?.response?.data?.error || 'Failed to connect. Is Docker running?');
-    } finally {
-        setConnecting(false);
-    }
-};
+    };
 
     const handleDisconnect = async () => {
         if (!window.confirm('Are you sure you want to disconnect WhatsApp? Messages will stop sending.')) return;
@@ -177,19 +213,27 @@ const WhatsAppSettings: React.FC = () => {
             try {
                 const resp = await axiosInstance.get('/api/whatsapp/instance/status');
                 if (resp.data.connected) {
+                    // Stop polling immediately — don't wait for the next tick.
+                    if (pollingRef.current) {
+                        clearInterval(pollingRef.current);
+                        pollingRef.current = null;
+                    }
                     setShowQr(false);
                     setQrCode('');
-                    if (pollingRef.current) clearInterval(pollingRef.current);
-                    fetchConfig();
+                    await fetchConfig();
                 } else {
-                    // Refresh QR if still not connected
-                    const qrResp = await axiosInstance.get('/api/whatsapp/instance/qr');
-                    if (qrResp.data.qr_code_base64) {
-                        setQrCode(qrResp.data.qr_code_base64);
+                    // Refresh QR while still waiting for scan
+                    try {
+                        const qrResp = await axiosInstance.get('/api/whatsapp/instance/qr');
+                        if (qrResp.data.qr_code_base64) {
+                            setQrCode(qrResp.data.qr_code_base64);
+                        }
+                    } catch (qrErr) {
+                        console.warn('QR refresh failed:', qrErr);
                     }
                 }
-            } catch {
-                // Silently ignore polling errors
+            } catch (err) {
+                console.warn('Status poll failed:', err);
             }
         }, 5000);
     };
