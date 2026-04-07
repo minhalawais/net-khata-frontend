@@ -1,12 +1,12 @@
 "use client"
 
+import { toast } from "../utils/toast.ts"
 import type React from "react"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { ComplaintForm } from "../components/forms/complaintForm.tsx"
 import { getToken } from "../utils/auth.ts"
 import axiosInstance from "../utils/axiosConfig.ts"
-import { toast } from "react-toastify"
 import { ArrowLeft, MessageSquare } from "lucide-react"
 import HorizontalLogo from "../assets/net_khata_horizontal.png"
 

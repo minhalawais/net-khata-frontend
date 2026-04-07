@@ -8,6 +8,7 @@ import { Modal } from '../../components/modal.tsx'
 import { ImageViewerModal, useImageViewer } from '../../components/modals/ImageViewerModal.tsx'
 import { getToken } from '../../utils/auth.ts'
 import axiosInstance from '../../utils/axiosConfig.ts'
+import { toast } from '../../utils/toast.ts'
 import { Plus, Trash2, Pencil, Save, X, Eye, FileText } from 'lucide-react'
 
 interface Expense {
@@ -68,7 +69,10 @@ const ExpenseManagement: React.FC = () => {
       const token = getToken()
       const response = await axiosInstance.get('/expense-types/list', { headers: { Authorization: `Bearer ${token}` } })
       setExpenseTypes(response.data)
-    } catch (error) { console.error('Failed to fetch expense types', error) }
+    } catch (error) {
+      console.error('Failed to fetch expense types', error)
+      toast.error('Failed to fetch expense types')
+    }
   }
 
   const handleAddExpenseType = async () => {
@@ -78,7 +82,11 @@ const ExpenseManagement: React.FC = () => {
       await axiosInstance.post('/expense-types/add', newExpenseType, { headers: { Authorization: `Bearer ${token}` } })
       setNewExpenseType({ name: '', description: '', is_employee_payment: false })
       await fetchExpenseTypes()
-    } catch (error) { console.error('Failed to add expense type', error) }
+      toast.success('Expense type added successfully')
+    } catch (error: any) {
+      console.error('Failed to add expense type', error)
+      toast.error(error.response?.data?.message || 'Failed to add expense type')
+    }
   }
 
   const handleEditExpenseType = (type: ExpenseType) => {
@@ -95,7 +103,11 @@ const ExpenseManagement: React.FC = () => {
       setEditingType(null)
       setEditTypeData({ name: '', description: '', is_employee_payment: false })
       await fetchExpenseTypes()
-    } catch (error) { console.error('Failed to update expense type', error) }
+      toast.success('Expense type updated successfully')
+    } catch (error: any) {
+      console.error('Failed to update expense type', error)
+      toast.error(error.response?.data?.message || 'Failed to update expense type')
+    }
   }
 
   const handleCancelEdit = () => {
@@ -109,8 +121,9 @@ const ExpenseManagement: React.FC = () => {
         const token = getToken()
         await axiosInstance.delete(`/expense-types/delete/${id}`, { headers: { Authorization: `Bearer ${token}` } })
         await fetchExpenseTypes()
+        toast.success('Expense type deleted successfully')
       } catch (error: any) {
-        alert(error.response?.data?.message || 'Failed to delete expense type')
+        toast.error(error.response?.data?.message || 'Failed to delete expense type')
       }
     }
   }

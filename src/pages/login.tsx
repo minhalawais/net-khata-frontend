@@ -59,7 +59,9 @@ const Login = () => {
       localStorage.setItem("company_id", data.company_id)
       localStorage.setItem("id", data.id)
 
-      if (data.role === "company_owner" || data.role === "super_admin" || data.role === "auditor") {
+      if (data.role === "super_admin") {
+        navigate("/super-admin/overview")
+      } else if (data.role === "company_owner" || data.role === "auditor") {
         navigate("/reporting-analytics")
       } else if (data.role === "employee") {
         navigate("/employee-portal")

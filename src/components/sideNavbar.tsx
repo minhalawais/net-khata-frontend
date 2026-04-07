@@ -35,6 +35,7 @@ import {
   MapPin,
   Store,
   Shield,
+  Building2,
   ChevronRight,
   ChevronLeft,
 } from "lucide-react"
@@ -55,6 +56,7 @@ export const menuItems = [
     title: "Reporting & Analytics",
     icon: BarChart,
     description: "Comprehensive business intelligence",
+    allowedRoles: ["company_owner", "auditor"],
     isDropdown: true,
     subItems: [
       { title: "Executive Overview",    description: "High-level business summary",     path: "/reporting/executive",   icon: PieChart   },
@@ -126,7 +128,18 @@ export const menuItems = [
     isDropdown: true,
     subItems: [
       { title: "Area / Zone Management", description: "Manage main areas",  path: "/area-zone-management", icon: Map    },
-      { title: "Sub-Zones",              description: "Manage sub-zones",   path: "/areas",                 icon: Layers },
+      { title: "Sub-Zones",              description: "Manage sub-zones",   path: "/sub-zones-management",  icon: Layers },
+    ],
+  },
+  {
+    title: "Company Control",
+    icon: Building2,
+    description: "Company and tenant management",
+    isDropdown: true,
+    allowedRoles: ["super_admin"],
+    subItems: [
+      { title: "Overview", description: "Platform-wide overview", path: "/super-admin/overview", icon: PieChart },
+      { title: "Company Management", description: "Manage companies", path: "/company-management", icon: Building2 },
     ],
   },
   {
@@ -156,6 +169,7 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar, setIsOpen }) => {
   const [searchQuery, setSearchQuery] = useState("")
+  const [userRole] = useState<string>(() => localStorage.getItem("role") || "")
   const location  = useLocation()
   const navigate  = useNavigate()
   const navRef    = useRef<HTMLElement>(null)
@@ -208,7 +222,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar, setIsOp
   }, [isMobile, isOpen, setIsOpen])
 
   // Filter logic — preserved exactly
-  const filteredMenuItems = menuItems.filter(item => {
+  const roleFilteredItems = menuItems.filter((item: any) => {
+    if (userRole === "super_admin") {
+      return !!item.allowedRoles?.includes("super_admin")
+    }
+    if (!item.allowedRoles || item.allowedRoles.length === 0) return true
+    return item.allowedRoles.includes(userRole)
+  })
+
+  const filteredMenuItems = roleFilteredItems.filter(item => {
     if (item.title.toLowerCase().includes(searchQuery.toLowerCase())) return true
     if (item.subItems?.some(sub => sub.title.toLowerCase().includes(searchQuery.toLowerCase()))) return true
     return false

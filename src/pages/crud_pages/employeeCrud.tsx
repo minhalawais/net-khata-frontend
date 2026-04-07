@@ -1,5 +1,6 @@
 "use client"
 
+import { toast } from "../../utils/toast.ts"
 import type React from "react"
 import { useState, useEffect } from "react"
 import { useMemo } from "react"
@@ -10,7 +11,6 @@ import { useNavigate } from "react-router-dom"
 import { Eye, Key, X, RefreshCw, Copy, Check } from "lucide-react"
 import { getToken } from "../../utils/auth.ts"
 import axiosInstance from "../../utils/axiosConfig.ts"
-import { toast } from "react-toastify"
 
 interface Employee {
   id: string
@@ -46,6 +46,7 @@ interface CredentialsData {
 
 /* ── ROLE BADGE COLORS: semantic muted pair per role ── */
 const ROLE_COLORS: Record<string, string> = {
+  super_admin:   "bg-indigo-50 text-indigo-700 border-indigo-200",
   technician:     "bg-blue-50   text-blue-700   border-blue-200",
   employee:       "bg-slate-100 text-slate-600  border-slate-200",
   company_owner:  "bg-violet-50 text-violet-700 border-violet-200",

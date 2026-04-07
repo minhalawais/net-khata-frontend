@@ -1,10 +1,10 @@
 "use client"
 
+import { toast } from "../../utils/toast.ts"
 import { useState, useEffect } from "react"
 import { Calendar, Users, CheckCircle, Loader, AlertCircle, X, FileText } from "lucide-react"
 import { getToken } from "../../utils/auth.ts"
 import axiosInstance from "../../utils/axiosConfig.ts"
-import { toast } from "react-toastify"
 
 interface CustomerPreview {
   id: string; name: string; internet_id: string; service_plan_name: string

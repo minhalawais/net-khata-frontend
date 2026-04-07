@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { useState, useEffect, useMemo, useRef } from "react"
-import { Menu, Bell, ChevronDown, Settings, LogOut, User } from "lucide-react"
+import { Menu, Bell, ChevronDown, LogOut, User } from "lucide-react"
 import { getToken, removeToken } from "../utils/auth.ts"
 import { useLocation, useNavigate } from "react-router-dom"
 import axiosInstance from "../utils/axiosConfig.ts"
@@ -15,6 +15,7 @@ interface TopbarProps {
 export const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false)
   const [userData, setUserData]           = useState<any>(null)
+  const [imageLoadError, setImageLoadError] = useState(false)
   const dropdownRef                       = useRef<HTMLDivElement>(null)
   const navigate                          = useNavigate()
   const location                          = useLocation()
@@ -41,6 +42,7 @@ export const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
         headers: { Authorization: `Bearer ${token}` },
       })
       setUserData(response.data)
+      setImageLoadError(false)
     } catch (error) {
       console.error("Failed to fetch user data", error)
     }
@@ -69,6 +71,14 @@ export const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
     const last  = userData?.last_name ?? ""
     const name = `${first} ${last}`.trim()
     return name || "User"
+  }, [userData])
+
+  const profilePictureUrl = useMemo(() => {
+    if (!userData?.picture) return null
+    const apiBase = (axiosInstance.defaults.baseURL as string | undefined) || window.location.origin
+    const apiUrl = apiBase.endsWith("/") ? apiBase.slice(0, -1) : apiBase
+    const path = userData.picture.startsWith("/") ? userData.picture.slice(1) : userData.picture
+    return `${apiUrl}/${path}`
   }, [userData])
 
   const routeLabel = useMemo(() => {
@@ -179,9 +189,18 @@ export const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
           >
             {/* Initials avatar */}
             <div className="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-              <span className="text-[10px] font-medium text-blue-800 leading-none">
-                {initials}
-              </span>
+              {profilePictureUrl && !imageLoadError ? (
+                <img
+                  src={profilePictureUrl}
+                  alt="Profile"
+                  className="w-full h-full object-cover rounded-full"
+                  onError={() => setImageLoadError(true)}
+                />
+              ) : (
+                <span className="text-[10px] font-medium text-blue-800 leading-none">
+                  {initials}
+                </span>
+              )}
             </div>
 
             {/* Name + role — hidden on small screens */}
@@ -251,18 +270,6 @@ export const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
                   Your profile
                 </button>
 
-                <button
-                  onClick={() => { navigate("/settings"); setIsProfileOpen(false) }}
-                  className="
-                    flex items-center gap-2.5 w-full px-4 py-2.5
-                    text-[12px] text-slate-600
-                    hover:bg-slate-100 hover:text-slate-900
-                    transition-colors duration-150
-                  "
-                >
-                  <Settings className="w-3.5 h-3.5 flex-shrink-0" />
-                  Settings
-                </button>
               </div>
 
               {/* Divider */}

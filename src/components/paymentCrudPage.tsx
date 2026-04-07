@@ -1,5 +1,6 @@
 "use client"
 
+import { toast } from "../utils/toast.ts"
 import type React from "react"
 import { useState, useEffect, useMemo, useCallback } from "react"
 import type { ColumnDef } from "@tanstack/react-table"
@@ -12,8 +13,6 @@ import { Modal } from "./modal.tsx"
 import { Topbar } from "./topNavbar.tsx"
 import { Sidebar } from "./sideNavbar.tsx"
 import { getToken } from "../utils/auth.ts"
-import { toast, ToastContainer } from "react-toastify"
-import "react-toastify/dist/ReactToastify.css"
 import axiosInstance from "../utils/axiosConfig.ts"
 
 interface CRUDPageProps<T> {
@@ -448,8 +447,6 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
         </form>
       </Modal>
 
-      <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false}
-        newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" />
     </div>
   )
 }

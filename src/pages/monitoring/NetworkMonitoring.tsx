@@ -1,12 +1,12 @@
 "use client"
 
+import { toast } from "../../utils/toast.ts"
 import { useEffect, useState } from "react"
 import { Topbar } from "../../components/topNavbar.tsx"
 import { Sidebar } from "../../components/sideNavbar.tsx"
 import { Activity, Settings, AlertCircle } from "lucide-react"
 import { getToken } from "../../utils/auth.ts"
 import axiosInstance from "../../utils/axiosConfig.ts"
-import { toast } from "react-toastify"
 import APIConnectionList from "../../components/monitoring/APIConnectionList.tsx"
 import MetricsDashboard from "../../components/monitoring/MetricsDashboard.tsx"
 import NetworkAlerts from "../../components/monitoring/NetworkAlerts.tsx"

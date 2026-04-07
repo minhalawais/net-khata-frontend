@@ -33,8 +33,11 @@ import NewComplaintPage from "./pages/ComplaintFormPage.tsx"
 import TicketDisplayPage from "./pages/TicketDisplayPage.tsx"
 import BankAccountManagement from "./pages/crud_pages/BankAccountCrud.tsx"
 import ISPPaymentManagement from "./pages/crud_pages/ISPPaymentCrud.tsx"
-import "./styles/toastStyles.css"
 import PublicInvoicePage from "./pages/PublicInvoicePage.tsx"
+import { Toaster } from "sonner"
+import CompanyManagement from "./pages/crud_pages/companyCrud.tsx"
+import CompanyProfilePage from "./pages/companyProfilePage.tsx"
+import SuperAdminOverview from "./pages/SuperAdminOverview.tsx"
 
 // WhatsApp Messaging Pages
 import WhatsAppQueueDashboard from "./pages/whatsapp/WhatsAppQueueDashboard.tsx"
@@ -43,10 +46,28 @@ import WhatsAppSettings from "./pages/whatsapp/WhatsAppSettings.tsx"
 import EmployeePortal from "./pages/EmployeePortal.tsx"
 import CustomerPortalPage from "./pages/CustomerPortalPage.tsx"
 
+const MANAGEMENT_ROLES = ["company_owner", "auditor"]
 
-const PrivateRoute: React.FC<{ element: React.ReactElement }> = ({ element }) => {
+const getDefaultRouteByRole = (role: string) => {
+  if (role === "super_admin") return "/super-admin/overview"
+  if (role === "employee") return "/employee-portal"
+  return "/reporting-analytics"
+}
+
+
+const PrivateRoute: React.FC<{ element: React.ReactElement; allowedRoles?: string[] }> = ({ element, allowedRoles }) => {
   const isAuthenticated = !!localStorage.getItem("token")
-  return isAuthenticated ? element : <Navigate to="/login" />
+  const role = localStorage.getItem("role") || ""
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" />
+  }
+
+  if (allowedRoles && allowedRoles.length > 0 && !allowedRoles.includes(role)) {
+    return <Navigate to={getDefaultRouteByRole(role)} />
+  }
+
+  return element
 }
 
 const App: React.FC = () => {
@@ -74,40 +95,65 @@ const App: React.FC = () => {
           <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
-        <Route path="/employee-management" element={<EmployeeManagement />} />
+        <Route path="/employee-management" element={<PrivateRoute element={<EmployeeManagement />} allowedRoles={MANAGEMENT_ROLES} />} />
 
-        <Route path="/employees/:id" element={<PrivateRoute element={<EmployeeDetailPage />} />} />
-        <Route path="/customer-management" element={<PrivateRoute element={<CustomerManagement />} />} />
-        <Route path="/service-plan-management" element={<PrivateRoute element={<ServicePlanManagement />} />} />
-        <Route path="/complaint-management" element={<PrivateRoute element={<ComplaintManagement />} />} />
-        <Route path="/complaints/new" element={<PrivateRoute element={<NewComplaintPage />} />} />
-        <Route path="/complaints/:id" element={<PrivateRoute element={<ComplaintDetailPage />} />} />
-        <Route path="/complaints/ticket/:ticketNumber" element={<PrivateRoute element={<TicketDisplayPage />} />} />
-        <Route path="/inventory-management" element={<PrivateRoute element={<InventoryManagement />} />} />
-        <Route path="/supplier-management" element={<PrivateRoute element={<SupplierManagement />} />} />
-        <Route path="/area-zone-management" element={<PrivateRoute element={<AreaZoneManagement />} />} />
-        <Route path="/areas" element={<PrivateRoute element={<AreaZoneManagement />} />} />
-        <Route path="/areas/:areaId/sub-zones" element={<PrivateRoute element={<SubZoneManagement />} />} />
-        <Route path="/recovery-task-management" element={<PrivateRoute element={<RecoveryTaskManagement />} />} />
-        <Route path="/task-management" element={<PrivateRoute element={<TaskManagement />} />} />
-        <Route path="/bank-management" element={<PrivateRoute element={<BankAccountManagement />} />} />
-        <Route path="/payment-management" element={<PrivateRoute element={<PaymentManagement />} />} />
-        <Route path="/isp-payment-management" element={<PrivateRoute element={<ISPPaymentManagement />} />} />
-        <Route path="/billing-invoices" element={<PrivateRoute element={<InvoiceManagement />} />} />
-        <Route path="/invoices/:id" element={<PrivateRoute element={<InvoiceGeneration />} />} />
-        <Route path="/customers/:id" element={<PrivateRoute element={<CustomerDetailPage />} />} />
+        <Route path="/employees/:id" element={<PrivateRoute element={<EmployeeDetailPage />} allowedRoles={MANAGEMENT_ROLES} />} />
+        <Route path="/customer-management" element={<PrivateRoute element={<CustomerManagement />} allowedRoles={MANAGEMENT_ROLES} />} />
+        <Route path="/service-plan-management" element={<PrivateRoute element={<ServicePlanManagement />} allowedRoles={MANAGEMENT_ROLES} />} />
+        <Route path="/complaint-management" element={<PrivateRoute element={<ComplaintManagement />} allowedRoles={MANAGEMENT_ROLES} />} />
+        <Route path="/complaints/new" element={<PrivateRoute element={<NewComplaintPage />} allowedRoles={MANAGEMENT_ROLES} />} />
+        <Route path="/complaints/:id" element={<PrivateRoute element={<ComplaintDetailPage />} allowedRoles={MANAGEMENT_ROLES} />} />
+        <Route path="/complaints/ticket/:ticketNumber" element={<PrivateRoute element={<TicketDisplayPage />} allowedRoles={MANAGEMENT_ROLES} />} />
+        <Route path="/inventory-management" element={<PrivateRoute element={<InventoryManagement />} allowedRoles={MANAGEMENT_ROLES} />} />
+        <Route path="/supplier-management" element={<PrivateRoute element={<SupplierManagement />} allowedRoles={MANAGEMENT_ROLES} />} />
+        <Route path="/area-zone-management" element={<PrivateRoute element={<AreaZoneManagement />} allowedRoles={MANAGEMENT_ROLES} />} />
+        <Route path="/areas" element={<PrivateRoute element={<AreaZoneManagement />} allowedRoles={MANAGEMENT_ROLES} />} />
+        <Route path="/sub-zones-management" element={<PrivateRoute element={<SubZoneManagement />} allowedRoles={MANAGEMENT_ROLES} />} />
+        <Route path="/areas/:areaId/sub-zones" element={<PrivateRoute element={<SubZoneManagement />} allowedRoles={MANAGEMENT_ROLES} />} />
+        <Route path="/recovery-task-management" element={<PrivateRoute element={<RecoveryTaskManagement />} allowedRoles={MANAGEMENT_ROLES} />} />
+        <Route path="/task-management" element={<PrivateRoute element={<TaskManagement />} allowedRoles={MANAGEMENT_ROLES} />} />
+        <Route path="/bank-management" element={<PrivateRoute element={<BankAccountManagement />} allowedRoles={MANAGEMENT_ROLES} />} />
+        <Route path="/payment-management" element={<PrivateRoute element={<PaymentManagement />} allowedRoles={MANAGEMENT_ROLES} />} />
+        <Route path="/isp-payment-management" element={<PrivateRoute element={<ISPPaymentManagement />} allowedRoles={MANAGEMENT_ROLES} />} />
+        <Route path="/billing-invoices" element={<PrivateRoute element={<InvoiceManagement />} allowedRoles={MANAGEMENT_ROLES} />} />
+        <Route path="/invoices/:id" element={<PrivateRoute element={<InvoiceGeneration />} allowedRoles={MANAGEMENT_ROLES} />} />
+        <Route path="/customers/:id" element={<PrivateRoute element={<CustomerDetailPage />} allowedRoles={MANAGEMENT_ROLES} />} />
 
         {/* Reporting & Analytics Routes */}
-        <Route path="/reporting/:section" element={<PrivateRoute element={<ReportingPage />} />} />
-        <Route path="/reporting-analytics" element={<Navigate to="/reporting/executive" />} />
-        <Route path="/message-management" element={<PrivateRoute element={<MessageManagement />} />} />
+        <Route
+          path="/reporting/:section"
+          element={<PrivateRoute element={<ReportingPage />} allowedRoles={MANAGEMENT_ROLES} />}
+        />
+        <Route
+          path="/reporting-analytics"
+          element={
+            <PrivateRoute
+              element={<Navigate to="/reporting/executive" />}
+              allowedRoles={MANAGEMENT_ROLES}
+            />
+          }
+        />
+        <Route
+          path="/super-admin/overview"
+          element={<PrivateRoute element={<SuperAdminOverview />} allowedRoles={["super_admin"]} />}
+        />
+        <Route path="/message-management" element={<PrivateRoute element={<MessageManagement />} allowedRoles={MANAGEMENT_ROLES} />} />
         <Route path="/profile" element={<PrivateRoute element={<UserProfile />} />} />
-        <Route path="/logs-management" element={<PrivateRoute element={<LogManagement />} />} />
+        <Route path="/logs-management" element={<PrivateRoute element={<LogManagement />} allowedRoles={MANAGEMENT_ROLES} />} />
 
-        <Route path="/isp-management" element={<PrivateRoute element={<ISPManagement />} />} />
-        <Route path="/vendor-management" element={<PrivateRoute element={<VendorManagement />} />} />
-        <Route path="/expense-management" element={<PrivateRoute element={<ExpenseManagement />} />} />
-        <Route path="/extra-income-management" element={<PrivateRoute element={<ExtraIncomeManagement />} />} />
+        <Route path="/isp-management" element={<PrivateRoute element={<ISPManagement />} allowedRoles={MANAGEMENT_ROLES} />} />
+        <Route path="/vendor-management" element={<PrivateRoute element={<VendorManagement />} allowedRoles={MANAGEMENT_ROLES} />} />
+        <Route path="/expense-management" element={<PrivateRoute element={<ExpenseManagement />} allowedRoles={MANAGEMENT_ROLES} />} />
+        <Route path="/extra-income-management" element={<PrivateRoute element={<ExtraIncomeManagement />} allowedRoles={MANAGEMENT_ROLES} />} />
+
+        <Route
+          path="/company-management"
+          element={<PrivateRoute element={<CompanyManagement />} allowedRoles={["super_admin"]} />}
+        />
+        <Route
+          path="/companies/:id"
+          element={<PrivateRoute element={<CompanyProfilePage />} allowedRoles={["super_admin"]} />}
+        />
 
         <Route path="/public/invoice/:id" element={<PublicInvoicePage />} />
 
@@ -116,16 +162,26 @@ const App: React.FC = () => {
         <Route path="/customer-portal" element={<CustomerPortalPage />} />
 
         {/* WhatsApp Messaging Routes */}
-        <Route path="/whatsapp/queue" element={<PrivateRoute element={<WhatsAppQueueDashboard />} />} />
-        <Route path="/whatsapp/bulk-sender" element={<PrivateRoute element={<BulkMessageSender />} />} />
-        <Route path="/whatsapp/settings" element={<PrivateRoute element={<WhatsAppSettings />} />} />
+        <Route path="/whatsapp/queue" element={<PrivateRoute element={<WhatsAppQueueDashboard />} allowedRoles={MANAGEMENT_ROLES} />} />
+        <Route path="/whatsapp/bulk-sender" element={<PrivateRoute element={<BulkMessageSender />} allowedRoles={MANAGEMENT_ROLES} />} />
+        <Route path="/whatsapp/settings" element={<PrivateRoute element={<WhatsAppSettings />} allowedRoles={MANAGEMENT_ROLES} />} />
 
         {/* Employee Self-Service Portal */}
-        <Route path="/employee-portal" element={<PrivateRoute element={<EmployeePortal />} />} />
+        <Route path="/employee-portal" element={<PrivateRoute element={<EmployeePortal />} allowedRoles={["employee"]} />} />
 
 
 
         </Routes>
+        <Toaster
+          position="bottom-right"
+          expand={false}
+          richColors
+          closeButton
+          duration={5000}
+          toastOptions={{
+            className: "nk-sonner-toast",
+          }}
+        />
       </Router>
     </HelmetProvider>
   )

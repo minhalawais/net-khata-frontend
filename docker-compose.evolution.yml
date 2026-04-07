@@ -44,7 +44,6 @@ services:
       retries: 3
     networks:
       - evolution-net
-
 volumes:
   evolution_instances:
     driver: local

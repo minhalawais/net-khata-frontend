@@ -290,11 +290,19 @@ export function Table<T>({
             filename="selected_rows.csv"
             className={`flex items-center gap-2 px-4 py-2.5 rounded-lg transition-colors ${
               selectedRowsData.length === 0
-                ? "bg-slate-gray/10 text-slate-gray/50 cursor-not-allowed"
-                : "bg-electric-blue text-white hover:bg-btn-hover shadow-sm"
+                ? "bg-white text-slate-gray/50 border border-slate-gray/20 cursor-not-allowed"
+                : "bg-gradient-to-b from-electric-blue to-btn-hover text-white border border-btn-hover shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] hover:from-btn-hover hover:to-electric-blue"
             }`}
+            title={selectedRowsData.length > 0 ? "Export selected rows" : "Select rows to export"}
+            onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
+              if (selectedRowsData.length === 0) e.preventDefault()
+            }}
           >
-            <FileDown className="h-4 w-4" />
+            <span className={`inline-flex items-center justify-center w-5 h-5 rounded ${
+              selectedRowsData.length === 0 ? "bg-slate-gray/10" : "bg-white/15"
+            }`}>
+              <FileDown className="h-4 w-4" />
+            </span>
             <span>Export {selectedRowsData.length > 0 ? `(${selectedRowsData.length})` : ""}</span>
           </CSVLink>
         </div>

@@ -1,5 +1,6 @@
 "use client"
 
+import { toast } from "../../utils/toast.ts"
 import type React from "react"
 import { useState, useEffect } from "react"
 import { X, Check, DollarSign, TrendingDown, Wifi, TrendingUp, ArrowRightLeft } from "lucide-react"
@@ -10,7 +11,6 @@ import { ExtraIncomeForm } from "../forms/ExtraIncomeForm.tsx"
 import { InternalTransferForm } from "../forms/InternalTransferForm.tsx"
 import { getToken } from "../../utils/auth.ts"
 import axiosInstance from "../../utils/axiosConfig.ts"
-import { toast } from "react-toastify"
 
 interface UnifiedPaymentModalProps {
     isOpen: boolean

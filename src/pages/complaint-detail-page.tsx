@@ -1,5 +1,6 @@
 "use client"
 
+import { toast } from "../utils/toast.ts"
 import { useState, useEffect, useRef } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { getToken } from "../utils/auth.ts"
@@ -23,7 +24,6 @@ import {
   Save,
   X,
 } from "lucide-react"
-import { toast } from "react-toastify"
 
 interface Complaint {
   id: string

@@ -64,6 +64,17 @@ interface TableProps<T> {
   setSelectedRows?: (rows: string[]) => void
   handleToggleStatus?: (id: string, currentStatus: boolean) => void
   isLoading?: boolean
+  manualPagination?: boolean
+  pageIndex?: number
+  pageSize?: number
+  pageCount?: number
+  totalRows?: number
+  onPageChange?: (pageIndex: number) => void
+  onPageSizeChange?: (pageSize: number) => void
+  globalSearchValue?: string
+  onGlobalSearchChange?: (value: string) => void
+  columnFilterValues?: Record<string, string>
+  onColumnFiltersChange?: (filters: Record<string, string>) => void
 }
 
 // ─── Loading Skeleton ─────────────────────────────────────────────────────────
@@ -122,15 +133,38 @@ export function Table<T extends { id: string }>({
   setSelectedRows: setExternalSelectedRows,
   handleToggleStatus,
   isLoading = false,
+  manualPagination = false,
+  pageIndex = 0,
+  pageSize = 20,
+  pageCount = 1,
+  totalRows,
+  onPageChange,
+  onPageSizeChange,
+  globalSearchValue = "",
+  onGlobalSearchChange,
+  columnFilterValues = {},
+  onColumnFiltersChange,
 }: TableProps<T>) {
 
+  const serverMode = manualPagination
+
   const [globalFilter, setGlobalFilter]             = useState("")
-  const [localGlobalFilter, setLocalGlobalFilter]   = useState("")
+  const [localGlobalFilter, setLocalGlobalFilter]   = useState(globalSearchValue)
   const [columnFilters, setColumnFilters]           = useState<ColumnFiltersState>([])
-  const [localColumnFilters, setLocalColumnFilters] = useState<Record<string, string>>({})
+  const [localColumnFilters, setLocalColumnFilters] = useState<Record<string, string>>(columnFilterValues)
   const [rowSelection, setRowSelection]             = useState<RowSelectionState>({})
   const [distinctValues, setDistinctValues]         = useState<Record<string, Set<any>>>({})
   const [showFilters, setShowFilters]               = useState(false)
+
+  useEffect(() => {
+    if (!serverMode) return
+    setLocalGlobalFilter(globalSearchValue)
+  }, [serverMode, globalSearchValue])
+
+  useEffect(() => {
+    if (!serverMode) return
+    setLocalColumnFilters(columnFilterValues)
+  }, [serverMode, columnFilterValues])
 
   // TanStack table setup — preserved exactly
   const table = useReactTable({
@@ -142,19 +176,46 @@ export function Table<T extends { id: string }>({
     getFilteredRowModel: getFilteredRowModel(),
     filterFns: { fuzzy: fuzzyFilter },
     onRowSelectionChange: setRowSelection,
-    onColumnFiltersChange: setColumnFilters,
-    onGlobalFilterChange: setGlobalFilter,
+    onColumnFiltersChange: serverMode ? undefined : setColumnFilters,
+    onGlobalFilterChange: serverMode ? undefined : setGlobalFilter,
     globalFilterFn: fuzzyFilter,
-    state: { rowSelection, globalFilter, columnFilters },
+    state: {
+      rowSelection,
+      globalFilter: serverMode ? "" : globalFilter,
+      columnFilters: serverMode ? [] : columnFilters,
+      ...(serverMode ? { pagination: { pageIndex, pageSize } } : {}),
+    },
     initialState: { pagination: { pageSize: 20 } },
     enableRowSelection: true,
     getRowId: (originalRow) => originalRow.id,
+    manualPagination: serverMode,
+    manualFiltering: serverMode,
+    pageCount: serverMode ? Math.max(pageCount, 1) : undefined,
+    onPaginationChange: serverMode
+      ? (updater) => {
+          const current = { pageIndex, pageSize }
+          const next = typeof updater === "function" ? updater(current) : updater
+          if (next.pageIndex !== pageIndex) {
+            onPageChange?.(next.pageIndex)
+          }
+          if (next.pageSize !== pageSize) {
+            onPageSizeChange?.(next.pageSize)
+          }
+        }
+      : undefined,
   })
 
   // Debounced handlers — preserved exactly
   const debouncedGlobalSearch = useMemo(
-    () => debounce((value: string) => setGlobalFilter(value), 150),
-    [],
+    () =>
+      debounce((value: string) => {
+        if (serverMode) {
+          onGlobalSearchChange?.(value)
+          return
+        }
+        setGlobalFilter(value)
+      }, 150),
+    [serverMode, onGlobalSearchChange],
   )
 
   const debouncedColumnSearch = useMemo(
@@ -176,9 +237,23 @@ export function Table<T extends { id: string }>({
   }, [debouncedGlobalSearch])
 
   const handleColumnFilterChange = useCallback((columnId: string, value: string) => {
+    if (serverMode) {
+      setLocalColumnFilters((prev) => {
+        const next = { ...prev, [columnId]: value }
+        Object.keys(next).forEach((key) => {
+          if (!next[key] || next[key].trim() === "") {
+            delete next[key]
+          }
+        })
+        onColumnFiltersChange?.(next)
+        return next
+      })
+      return
+    }
+
     setLocalColumnFilters(prev => ({ ...prev, [columnId]: value }))
     debouncedColumnSearch(columnId, value)
-  }, [debouncedColumnSearch])
+  }, [serverMode, onColumnFiltersChange, debouncedColumnSearch])
 
   useEffect(() => {
     return () => {
@@ -238,8 +313,13 @@ export function Table<T extends { id: string }>({
   )
 
   const selectedCount = selectedRowsData.length
-  const totalCount = table.getFilteredRowModel().rows.length
-  const hasActiveFilters = columnFilters.length > 0 || globalFilter !== ""
+  const totalCount = serverMode ? (totalRows ?? data.length) : table.getFilteredRowModel().rows.length
+  const activeColumnFilterCount = serverMode
+    ? Object.values(localColumnFilters).filter((value) => value && value.trim() !== "").length
+    : columnFilters.length
+  const hasActiveFilters = serverMode
+    ? activeColumnFilterCount > 0 || localGlobalFilter.trim() !== ""
+    : columnFilters.length > 0 || globalFilter !== ""
 
   // ─── Render ──────────────────────────────────────────────────────────────────
 
@@ -322,9 +402,9 @@ export function Table<T extends { id: string }>({
         >
           <SlidersHorizontal className="w-3.5 h-3.5" />
           Filters
-          {columnFilters.length > 0 && (
+          {activeColumnFilterCount > 0 && (
             <span className="ml-0.5 inline-flex items-center justify-center w-4 h-4 text-[10px] font-medium bg-blue-600 text-white rounded-full">
-              {columnFilters.length}
+              {activeColumnFilterCount}
             </span>
           )}
           <ChevronDown className={`w-3 h-3 text-current opacity-60 transition-transform duration-150 ${showFilters ? "rotate-180" : ""}`} />
@@ -344,17 +424,26 @@ export function Table<T extends { id: string }>({
           data={selectedRowsData}
           filename="export.csv"
           className={`
-            flex items-center gap-1.5 h-9 px-3
-            text-[12px] font-medium rounded-md
-            transition-colors duration-150
+            inline-flex items-center gap-2 h-9 px-3.5
+            text-[12px] font-semibold rounded-md border
+            transition-all duration-150
+            focus:outline-none focus:ring-2 focus:ring-blue-500/20
             ${selectedCount > 0
-              ? "bg-blue-600 text-white hover:bg-blue-700"
-              : "text-slate-400 border border-slate-200 cursor-not-allowed"
+              ? "bg-gradient-to-b from-blue-600 to-blue-700 text-white border-blue-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.18)] hover:from-blue-700 hover:to-blue-800 hover:border-blue-800"
+              : "bg-white text-slate-400 border-slate-200 cursor-not-allowed"
             }
           `}
-          onClick={e => { if (selectedCount === 0) e.preventDefault() }}
+          title={selectedCount > 0 ? "Export selected rows" : "Select rows to export"}
+          onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
+            if (selectedCount === 0) e.preventDefault()
+          }}
         >
-          <FileDown className="w-3.5 h-3.5" />
+          <span className={`
+            inline-flex items-center justify-center w-5 h-5 rounded
+            ${selectedCount > 0 ? "bg-white/15" : "bg-slate-100"}
+          `}>
+            <FileDown className="w-3.5 h-3.5" />
+          </span>
           Export
           {selectedCount > 0 && (
             <span className="ml-0.5 text-blue-200 tabular-nums">({selectedCount})</span>
@@ -424,12 +513,16 @@ export function Table<T extends { id: string }>({
               })}
 
             {/* Clear all filters button */}
-            {columnFilters.length > 0 && (
+            {activeColumnFilterCount > 0 && (
               <div className="flex items-end">
                 <button
                   onClick={() => {
-                    setColumnFilters([])
                     setLocalColumnFilters({})
+                    if (serverMode) {
+                      onColumnFiltersChange?.({})
+                      return
+                    }
+                    setColumnFilters([])
                   }}
                   className="
                     h-9 px-3 text-[12px] font-medium text-rose-600
@@ -641,8 +734,15 @@ export function Table<T extends { id: string }>({
           {/* Per-page select — Skill 10 SelectField pattern */}
           <div className="relative">
             <select
-              value={table.getState().pagination.pageSize}
-              onChange={e => table.setPageSize(Number(e.target.value))}
+              value={serverMode ? pageSize : table.getState().pagination.pageSize}
+              onChange={e => {
+                const newSize = Number(e.target.value)
+                if (serverMode) {
+                  onPageSizeChange?.(newSize)
+                  return
+                }
+                table.setPageSize(newSize)
+              }}
               className="
                 h-7 pl-2.5 pr-7 appearance-none
                 text-[12px] text-slate-700 bg-white
@@ -681,11 +781,11 @@ export function Table<T extends { id: string }>({
           <span className="text-[12px] text-slate-500">
             Page{" "}
             <span className="font-medium text-slate-700 tabular-nums">
-              {table.getState().pagination.pageIndex + 1}
+              {(serverMode ? pageIndex : table.getState().pagination.pageIndex) + 1}
             </span>
             {" "}of{" "}
             <span className="font-medium text-slate-700 tabular-nums">
-              {table.getPageCount()}
+              {serverMode ? Math.max(pageCount, 1) : table.getPageCount()}
             </span>
           </span>
 
@@ -698,29 +798,46 @@ export function Table<T extends { id: string }>({
            * transition-colors duration-150
            */}
           <div className="flex items-center gap-1">
-            {[
-              { icon: <ChevronsLeft className="w-3.5 h-3.5" />, action: () => table.setPageIndex(0),              disabled: !table.getCanPreviousPage(), title: "First page"    },
-              { icon: <ChevronLeft  className="w-3.5 h-3.5" />, action: () => table.previousPage(),               disabled: !table.getCanPreviousPage(), title: "Previous page" },
-              { icon: <ChevronRight className="w-3.5 h-3.5" />, action: () => table.nextPage(),                   disabled: !table.getCanNextPage(),     title: "Next page"     },
-              { icon: <ChevronsRight className="w-3.5 h-3.5" />, action: () => table.setPageIndex(table.getPageCount() - 1), disabled: !table.getCanNextPage(), title: "Last page" },
-            ].map((btn, i) => (
-              <button
-                key={i}
-                onClick={btn.action}
-                disabled={btn.disabled}
-                title={btn.title}
-                className="
-                  w-7 h-7 flex items-center justify-center
-                  rounded-md text-slate-500
-                  border border-slate-200
-                  hover:border-slate-300 hover:text-slate-700
-                  disabled:opacity-40 disabled:cursor-not-allowed
-                  transition-colors duration-150
-                "
-              >
-                {btn.icon}
-              </button>
-            ))}
+            {(() => {
+              const canPrevious = serverMode ? pageIndex > 0 : table.getCanPreviousPage()
+              const canNext = serverMode
+                ? pageIndex + 1 < Math.max(pageCount, 1)
+                : table.getCanNextPage()
+              const goFirst = () => (serverMode ? onPageChange?.(0) : table.setPageIndex(0))
+              const goPrev = () => (serverMode ? onPageChange?.(Math.max(pageIndex - 1, 0)) : table.previousPage())
+              const goNext = () =>
+                serverMode
+                  ? onPageChange?.(Math.min(pageIndex + 1, Math.max(pageCount, 1) - 1))
+                  : table.nextPage()
+              const goLast = () =>
+                serverMode
+                  ? onPageChange?.(Math.max(pageCount, 1) - 1)
+                  : table.setPageIndex(table.getPageCount() - 1)
+
+              return [
+                { icon: <ChevronsLeft className="w-3.5 h-3.5" />, action: goFirst, disabled: !canPrevious, title: "First page" },
+                { icon: <ChevronLeft className="w-3.5 h-3.5" />, action: goPrev, disabled: !canPrevious, title: "Previous page" },
+                { icon: <ChevronRight className="w-3.5 h-3.5" />, action: goNext, disabled: !canNext, title: "Next page" },
+                { icon: <ChevronsRight className="w-3.5 h-3.5" />, action: goLast, disabled: !canNext, title: "Last page" },
+              ].map((btn, i) => (
+                <button
+                  key={i}
+                  onClick={btn.action}
+                  disabled={btn.disabled}
+                  title={btn.title}
+                  className="
+                    w-7 h-7 flex items-center justify-center
+                    rounded-md text-slate-500
+                    border border-slate-200
+                    hover:border-slate-300 hover:text-slate-700
+                    disabled:opacity-40 disabled:cursor-not-allowed
+                    transition-colors duration-150
+                  "
+                >
+                  {btn.icon}
+                </button>
+              ))
+            })()}
           </div>
 
         </div>

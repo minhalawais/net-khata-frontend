@@ -1,11 +1,11 @@
 "use client"
 
+import { toast } from "../../utils/toast.ts"
 import type React from "react"
 import { useState } from "react"
 import { Download, Upload, AlertCircle, CheckCircle, X, FileText, Loader } from "lucide-react"
 import { getToken } from "../../utils/auth.ts"
 import axiosInstance from "../../utils/axiosConfig.ts"
-import { toast } from "react-toastify"
 
 interface BulkAddModalProps {
   isVisible: boolean

@@ -1,5 +1,6 @@
 "use client"
 
+import { toast } from "../../utils/toast.ts"
 import type React from "react"
 import { useState, useEffect } from "react"
 import {
@@ -9,7 +10,6 @@ import {
 } from "lucide-react"
 import { getToken } from "../../utils/auth.ts"
 import axiosInstance from "../../utils/axiosConfig.ts"
-import { toast } from "react-toastify"
 
 interface EnhancedBulkAddModalProps {
   isVisible: boolean; onClose: () => void; endpoint: string

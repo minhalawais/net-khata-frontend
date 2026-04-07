@@ -10,7 +10,7 @@ import {
   AlertCircle, Clock, ShieldAlert, Star, Users,
   ListTodo, CheckCircle, AlertTriangle, Ticket,
   RefreshCw, Calendar, ArrowUpRight, ArrowDownRight,
-  Download, Wifi, Globe, Package, Truck, Briefcase
+  Download, Wifi, Globe, Package, Truck, Briefcase, MapPin
 } from "lucide-react"
 import axiosInstance from "../../utils/axiosConfig.ts"
 import { exportToCSV } from "../../utils/exportUtils.ts"
@@ -587,19 +587,29 @@ export default function ServiceSupport({ dateRange, onDateRangeChange }: Service
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <ChartCard title="Customer Distribution by Area" className="h-[280px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart layout="vertical" data={data.customer_health.area_distribution} margin={{ left: 20 }}>
-                  <CartesianGrid stroke={CHART.grid} horizontal={false} />
-                  <XAxis type="number" tick={{ fontSize: 11, fill: CHART.axis }} axisLine={false} tickLine={false} />
-                  <YAxis dataKey="area" type="category" tick={{ fontSize: 11, fill: CHART.axis }} axisLine={false} tickLine={false} width={80} />
-                  <Tooltip content={<ChartTooltip />} />
-                  <Bar dataKey="count" name="Customers" fill={CHART.blue} radius={[0, 4, 4, 0]} maxBarSize={16} />
-                </BarChart>
-              </ResponsiveContainer>
+            <ChartCard title="Customer Distribution by Area">
+              {data.customer_health.area_distribution.length === 0 ? (
+                <div className="h-[260px] flex flex-col items-center justify-center">
+                  <div className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center mb-3">
+                    <MapPin className="w-4 h-4 text-slate-400" />
+                  </div>
+                  <p className="text-[13px] font-medium text-slate-700">No area distribution data</p>
+                  <p className="text-[11px] text-slate-400 mt-0.5">Assign customers to areas to view this chart.</p>
+                </div>
+              ) : (
+                <ResponsiveContainer width="100%" height={260}>
+                  <BarChart layout="vertical" data={data.customer_health.area_distribution} margin={{ left: 20 }}>
+                    <CartesianGrid stroke={CHART.grid} horizontal={false} />
+                    <XAxis type="number" tick={{ fontSize: 11, fill: CHART.axis }} axisLine={false} tickLine={false} />
+                    <YAxis dataKey="area" type="category" tick={{ fontSize: 11, fill: CHART.axis }} axisLine={false} tickLine={false} width={80} />
+                    <Tooltip content={<ChartTooltip />} />
+                    <Bar dataKey="count" name="Customers" fill={CHART.blue} radius={[0, 4, 4, 0]} maxBarSize={16} />
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
             </ChartCard>
 
-            <div className="bg-white border border-slate-200 rounded-[10px] overflow-hidden flex flex-col h-[280px] lg:col-span-2">
+            <div className="bg-white border border-slate-200 rounded-[10px] overflow-hidden flex flex-col h-[355px] lg:col-span-2">
               <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
                 <div>
                   <h3 className="text-[13px] font-medium text-slate-900">Churn by Area</h3>

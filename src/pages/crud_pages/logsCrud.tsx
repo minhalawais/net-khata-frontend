@@ -6,6 +6,7 @@ import { LogForm } from '../../components/forms/logForm.tsx';
 import { Eye, X } from 'lucide-react';
 import axiosInstance from '../../utils/axiosConfig.ts';
 import { getToken } from '../../utils/auth.ts';
+import { toast } from '../../utils/toast.ts';
 
 interface Log {
   id: string;
@@ -44,7 +45,9 @@ const LogManagement: React.FC = () => {
       });
       setRecordDetails(res.data);
     } catch (err: any) {
-      setDetailsError(err.response?.data?.error || "Failed to fetch details");
+      const message = err.response?.data?.error || "Failed to fetch details";
+      setDetailsError(message);
+      toast.error(message);
     } finally {
       setIsLoadingDetails(false);
     }

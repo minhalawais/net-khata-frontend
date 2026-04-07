@@ -1,5 +1,6 @@
 "use client"
 
+import { toast } from "../utils/toast.ts"
 import type React from "react"
 import { useState, useEffect, useMemo, useCallback } from "react"
 import { CSVLink } from "react-csv"
@@ -11,7 +12,6 @@ import {
   Eye,
   FileDown,
   LayoutDashboard,
-  ChevronLeft,
   ChevronRight,
   Users,
   CheckCircle2,
@@ -23,8 +23,6 @@ import { Modal } from "./customerModal.tsx"
 import { Topbar } from "./topNavbar.tsx"
 import { Sidebar } from "./sideNavbar.tsx"
 import { getToken } from "../utils/auth.ts"
-import { toast, ToastContainer } from "react-toastify"
-import "react-toastify/dist/ReactToastify.css"
 import axiosInstance from "../utils/axiosConfig.ts"
 import { EnhancedBulkAddModal } from "./modals/EnhancedBulkAddModal.tsx"
 
@@ -69,8 +67,10 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
   const [isBulkAddModalVisible, setIsBulkAddModalVisible] = useState(false)
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({})
   const [currentPage, setCurrentPage] = useState(1)
-  const [pageSize] = useState(50)
+  const [pageSize, setPageSize] = useState(20)
   const [totalPages, setTotalPages] = useState(1)
+  const [searchQuery, setSearchQuery] = useState("")
+  const [columnFilters, setColumnFilters] = useState<Record<string, string>>({})
   const [stats, setStats] = useState({ total: 0, active: 0, inactive: 0 })
   const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>({
     cnic_front_image: false,
@@ -82,21 +82,30 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
 
   useEffect(() => {
     fetchData()
-  }, [currentPage])
+  }, [currentPage, pageSize, searchQuery, columnFilters])
 
   const fetchData = async () => {
     setIsLoading(true)
     try {
+      const activeFilters = Object.fromEntries(
+        Object.entries(columnFilters).filter(([, value]) => value && value.trim() !== ""),
+      )
+
       const response = await axiosInstance.get(`/${endpoint}/list`, {
         params: {
           paginate: true,
           page: currentPage,
           page_size: pageSize,
+          search: searchQuery,
+          ...(Object.keys(activeFilters).length > 0
+            ? { filters: JSON.stringify(activeFilters) }
+            : {}),
         },
       })
       const payload = response.data
       const rows = Array.isArray(payload) ? payload : payload.items || []
       setData(rows)
+      setSelectedRows([])
 
       let active = 0
       for (const item of rows) {
@@ -112,7 +121,15 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
         return
       }
       setTotalPages(resolvedTotalPages)
-      setStats({ total, active, inactive: Math.max(rows.length - active, 0) })
+      setStats({
+        total: Array.isArray(payload) ? total : payload.overall_total ?? total,
+        active: Array.isArray(payload) ? active : payload.overall_active ?? payload.total_active ?? active,
+        inactive: Array.isArray(payload)
+          ? Math.max(rows.length - active, 0)
+          : payload.overall_inactive
+            ?? payload.total_inactive
+            ?? Math.max((payload.total ?? rows.length) - (payload.total_active ?? active), 0),
+      })
       if (onDataChange) onDataChange()
     } catch (error) {
       console.error(`Failed to fetch ${title}`, error)
@@ -271,9 +288,6 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
   }, [])
 
   const toggleSidebar = () => setIsSidebarOpen((prev) => !prev)
-
-  const goToPreviousPage = () => { if (currentPage > 1) setCurrentPage((prev) => prev - 1) }
-  const goToNextPage = () => { if (currentPage < totalPages) setCurrentPage((prev) => prev + 1) }
 
   const memoizedColumns = useMemo(() => {
     return [
@@ -522,30 +536,27 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
               setSelectedRows={setSelectedRows}
               handleToggleStatus={handleToggleStatus}
               isLoading={isLoading}
+              manualPagination={true}
+              pageIndex={Math.max(currentPage - 1, 0)}
+              pageSize={pageSize}
+              pageCount={Math.max(totalPages, 1)}
+              totalRows={stats.total}
+              onPageChange={(pageIndex) => setCurrentPage(pageIndex + 1)}
+              onPageSizeChange={(size) => {
+                setPageSize(size)
+                setCurrentPage(1)
+              }}
+              globalSearchValue={searchQuery}
+              onGlobalSearchChange={(value) => {
+                setSearchQuery(value)
+                setCurrentPage(1)
+              }}
+              columnFilterValues={columnFilters}
+              onColumnFiltersChange={(filters) => {
+                setColumnFilters(filters)
+                setCurrentPage(1)
+              }}
             />
-
-            {/* ── PAGINATION ── */}
-            <div className="mt-4 flex items-center justify-between bg-white rounded-[10px] border border-slate-200 px-4 py-3">
-              <span className="text-[13px] text-slate-400">
-                Page {currentPage} of {totalPages}
-              </span>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={goToPreviousPage}
-                  disabled={currentPage <= 1 || isLoading}
-                  className="inline-flex items-center gap-1 px-3 py-1.5 text-[13px] text-slate-600 border border-slate-200 rounded-md hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150"
-                >
-                  <ChevronLeft className="w-4 h-4" /> Prev
-                </button>
-                <button
-                  onClick={goToNextPage}
-                  disabled={currentPage >= totalPages || isLoading}
-                  className="inline-flex items-center gap-1 px-3 py-1.5 text-[13px] text-slate-600 border border-slate-200 rounded-md hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150"
-                >
-                  Next <ChevronRight className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
 
           </div>
         </main>
@@ -581,18 +592,6 @@ export function CRUDPage<T extends { id: string; is_active?: boolean }>({
         onSuccess={fetchData}
       />
 
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
     </div>
   )
 }

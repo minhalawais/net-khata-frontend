@@ -1,10 +1,10 @@
 "use client"
 
+import { toast } from "../../utils/toast.ts"
 import type React from "react"
 import { useState, useEffect } from "react"
 import { getToken } from "../../utils/auth.ts"
 import axiosInstance from "../../utils/axiosConfig.ts"
-import { toast } from "react-toastify"
 import {
   User,
   Mail,

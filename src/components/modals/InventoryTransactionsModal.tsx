@@ -1,11 +1,11 @@
 "use client"
 
+import { toast } from "../../utils/toast.ts"
 import type React from "react"
 import { useState, useEffect } from "react"
 import { Modal } from "../modal.tsx"
 import axiosInstance from "../../utils/axiosConfig.ts"
 import { getToken } from "../../utils/auth.ts"
-import { toast } from "react-toastify"
 import { Plus, Minus } from "lucide-react"
 
 interface InventoryTransaction {

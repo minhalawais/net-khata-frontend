@@ -1,5 +1,6 @@
 "use client"
 
+import { toast } from "../../utils/toast.ts"
 import React from "react"
 import { useEffect, useState } from "react"
 import type { ColumnDef } from "@tanstack/react-table"
@@ -10,7 +11,6 @@ import { Modal } from "../../components/modal.tsx"
 import { PaymentForm } from "../../components/forms/paymentForm.tsx"
 import { getToken } from "../../utils/auth.ts"
 import axiosInstance from "../../utils/axiosConfig.ts"
-import { toast } from "react-toastify"
 import { FileText, Plus } from "lucide-react"
 
 interface Invoice {

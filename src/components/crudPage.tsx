@@ -1,5 +1,6 @@
 "use client"
 
+import { toast } from "../utils/toast.ts"
 import type React from "react"
 import { useState, useEffect, useMemo } from "react"
 import type { ColumnDef } from "@tanstack/react-table"
@@ -20,7 +21,6 @@ import { Modal } from "./modal.tsx"
 import { Topbar } from "./topNavbar.tsx"
 import { Sidebar } from "./sideNavbar.tsx"
 import { getToken } from "../utils/auth.ts"
-import { toast } from "react-toastify"
 import axiosInstance from "../utils/axiosConfig.ts"
 import { CredentialsModal } from "./modals/CredentialsModal.tsx"
 

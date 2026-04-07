@@ -1,9 +1,9 @@
 "use client"
 
+import { toast } from "../../utils/toast.ts"
 import React, { useState, useEffect } from 'react'
 import { X, Check, XCircle, CreditCard, Hash, FileText, AlertCircle, Loader2, Download } from 'lucide-react'
 import axiosInstance from '../../utils/axiosConfig.ts'
-import { toast } from 'react-toastify'
 
 interface PaymentVerificationModalProps {
   isOpen: boolean

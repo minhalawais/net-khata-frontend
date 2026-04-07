@@ -76,3 +76,36 @@ th, td {
   overflow-x: auto;
   margin-bottom: 1rem;
 }
+
+/* Sonner toast theme aligned with Net Khata slate-blue UI */
+.nk-sonner-toast {
+  border-radius: 10px !important;
+  border: 1px solid #e2e8f0 !important;
+  background: #ffffff !important;
+  color: #0f172a !important;
+  box-shadow: 0 10px 24px rgba(2, 6, 23, 0.08) !important;
+}
+
+[data-sonner-toast][data-type="success"] {
+  border-color: #a7f3d0 !important;
+  background: #ecfdf5 !important;
+  color: #065f46 !important;
+}
+
+[data-sonner-toast][data-type="error"] {
+  border-color: #fecaca !important;
+  background: #fef2f2 !important;
+  color: #991b1b !important;
+}
+
+[data-sonner-toast][data-type="warning"] {
+  border-color: #fde68a !important;
+  background: #fffbeb !important;
+  color: #92400e !important;
+}
+
+[data-sonner-toast][data-type="info"] {
+  border-color: #bfdbfe !important;
+  background: #eff6ff !important;
+  color: #1e3a8a !important;
+}

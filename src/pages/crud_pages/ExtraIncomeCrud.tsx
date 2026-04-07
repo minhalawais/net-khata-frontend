@@ -7,6 +7,7 @@ import { ExtraIncomeForm } from '../../components/forms/ExtraIncomeForm.tsx'
 import { Modal } from '../../components/modal.tsx'
 import { getToken } from '../../utils/auth.ts'
 import axiosInstance from '../../utils/axiosConfig.ts'
+import { toast } from '../../utils/toast.ts'
 import { ImageViewerModal, useImageViewer } from '../../components/modals/ImageViewerModal.tsx'
 import { Plus, Trash2, Pencil, Save, X, Eye, FileText } from 'lucide-react'
 
@@ -65,7 +66,10 @@ const ExtraIncomeManagement: React.FC = () => {
       const token = getToken()
       const response = await axiosInstance.get('/extra-income-types/list', { headers: { Authorization: `Bearer ${token}` } })
       setIncomeTypes(response.data)
-    } catch (error) { console.error('Failed to fetch income types', error) }
+    } catch (error) {
+      console.error('Failed to fetch income types', error)
+      toast.error('Failed to fetch income types')
+    }
   }
 
   const handleAddIncomeType = async () => {
@@ -75,7 +79,11 @@ const ExtraIncomeManagement: React.FC = () => {
       await axiosInstance.post('/extra-income-types/add', newIncomeType, { headers: { Authorization: `Bearer ${token}` } })
       setNewIncomeType({ name: '', description: '' })
       await fetchIncomeTypes()
-    } catch (error) { console.error('Failed to add income type', error) }
+      toast.success('Income type added successfully')
+    } catch (error: any) {
+      console.error('Failed to add income type', error)
+      toast.error(error.response?.data?.message || 'Failed to add income type')
+    }
   }
 
   const handleEditIncomeType = (type: IncomeType) => {
@@ -92,7 +100,11 @@ const ExtraIncomeManagement: React.FC = () => {
       setEditingType(null)
       setEditTypeData({ name: '', description: '' })
       await fetchIncomeTypes()
-    } catch (error) { console.error('Failed to update income type', error) }
+      toast.success('Income type updated successfully')
+    } catch (error: any) {
+      console.error('Failed to update income type', error)
+      toast.error(error.response?.data?.message || 'Failed to update income type')
+    }
   }
 
   const handleCancelEdit = () => {
@@ -106,8 +118,9 @@ const ExtraIncomeManagement: React.FC = () => {
         const token = getToken()
         await axiosInstance.delete(`/extra-income-types/delete/${id}`, { headers: { Authorization: `Bearer ${token}` } })
         await fetchIncomeTypes()
+        toast.success('Income type deleted successfully')
       } catch (error: any) {
-        alert(error.response?.data?.message || 'Failed to delete income type')
+        toast.error(error.response?.data?.message || 'Failed to delete income type')
       }
     }
   }

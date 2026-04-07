@@ -1,10 +1,10 @@
 "use client"
 
+import { toast } from "../utils/toast.ts"
 import type React from "react"
 import { useState, useEffect, useRef } from "react"
 import { User, Mail, Phone, Key, Edit2, Save, X, Camera, Lock, Eye, EyeOff, Upload, Shield } from "lucide-react"
 import axiosInstance from "../utils/axiosConfig.ts"
-import { toast } from "react-toastify"
 import { getToken } from "../utils/auth.ts"
 import { Sidebar } from "../components/sideNavbar.tsx"
 import { Topbar } from "../components/topNavbar.tsx"

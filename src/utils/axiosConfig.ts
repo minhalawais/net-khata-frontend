@@ -1,14 +1,14 @@
+import { toast } from "./toast.ts"
 // src/utils/axiosConfig.ts
 import axios from "axios";
-import { toast } from "react-toastify";
 import { removeToken, getToken, getRefreshToken } from "./auth.ts";
 
 // Environment-based configuration
 const getBaseURL = () => {
   return process.env.REACT_APP_API_BASE_URL ||
     (process.env.NODE_ENV === "development"
-      ? "https://netkhata.com.pk/api"  // Development URL
-      : "https://netkhata.com.pk/api"                       // Production: Relative path
+      ? "http://localhost:8000"  // Development URL
+      : "http://localhost:8000"                       // Production: Relative path
     );
 };
 

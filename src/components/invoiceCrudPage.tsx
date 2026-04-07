@@ -1,5 +1,6 @@
 "use client"
 
+import { toast } from "../utils/toast.ts"
 import type React from "react"
 import { useState, useEffect, useMemo } from "react"
 import { CSVLink } from "react-csv"
@@ -14,7 +15,6 @@ import { Topbar } from "./topNavbar.tsx"
 import { Sidebar } from "./sideNavbar.tsx"
 import { UnifiedPaymentModal } from "./modals/UnifiedPaymentModal.tsx"
 import { getToken } from "../utils/auth.ts"
-import { toast } from "react-toastify"
 import axiosInstance from "../utils/axiosConfig.ts"
 
 interface CRUDPageProps<T> {

@@ -1,9 +1,9 @@
 "use client"
 
+import { toast } from "../../utils/toast.ts"
 import type React from "react"
 import { useState, useRef } from "react"
 import { Upload, X, Eye, FileText, ImageIcon } from "lucide-react"
-import { toast } from "react-toastify"
 import axiosInstance from "../../utils/axiosConfig.ts"
 import { getToken } from "../../utils/auth.ts"
 

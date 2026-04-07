@@ -7,6 +7,7 @@ import { CRUDPage } from "../../components/complaintCrudPage.tsx"
 import { ComplaintForm } from "../../components/forms/complaintForm.tsx"
 import { useNavigate } from "react-router-dom"
 import axiosInstance from "../../utils/axiosConfig.ts"
+import { toast } from "../../utils/toast.ts"
 
 interface Complaint {
   id: string
@@ -115,6 +116,7 @@ const ComplaintManagement: React.FC = () => {
                   window.URL.revokeObjectURL(url);
                 } catch (error) {
                   console.error("Error fetching attachment:", error);
+                  toast.error("Failed to fetch attachment");
                 }
               }
             }}

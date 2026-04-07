@@ -7,6 +7,7 @@ import { InventoryTransactionsModal } from "../../components/modals/InventoryTra
 import { InventoryAssignmentsModal } from "../../components/modals/InventoryAssignmentsModal.tsx"
 import axiosInstance from "../../utils/axiosConfig.ts"
 import { getToken } from "../../utils/auth.ts"
+import { toast } from "../../utils/toast.ts"
 
 interface InventoryItem {
   id: string
@@ -38,6 +39,7 @@ const InventoryManagement: React.FC = () => {
         setSuppliers(response.data)
       } catch (error) {
         console.error("Failed to fetch suppliers", error)
+        toast.error("Failed to fetch suppliers")
       }
       document.title = "Inventory Management | Net Khata"
     }

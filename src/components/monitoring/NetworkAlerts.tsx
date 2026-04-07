@@ -1,10 +1,10 @@
 "use client"
 
+import { toast } from "../../utils/toast.ts"
 import { useEffect, useState } from "react"
 import { AlertCircle, CheckCircle2, Clock } from "lucide-react"
 import { getToken } from "../../utils/auth.ts"
 import axiosInstance from "../../utils/axiosConfig.ts"
-import { toast } from "react-toastify"
 
 interface NetworkAlert {
   id: string
